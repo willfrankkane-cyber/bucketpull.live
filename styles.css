@@ -234,7 +234,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .up{color:var(--lime)} .down{color:#ff6b88}
 
 /* soundboard */
-.sb{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sb{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:12px}
 .snd{position:relative;height:96px;border-radius:20px;padding:12px 12px 10px;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;
   background:radial-gradient(120% 90% at 30% 15%,color-mix(in srgb,var(--c) 70%,#fff 30%),var(--c) 45%,color-mix(in srgb,var(--c) 55%,#000 45%));
   box-shadow:0 7px 0 color-mix(in srgb,var(--c) 45%,#000 55%),0 14px 30px -6px color-mix(in srgb,var(--c) 70%,transparent),inset 0 2px 0 rgba(255,255,255,.45),inset 0 -6px 14px rgba(0,0,0,.25);
@@ -242,7 +242,10 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .snd:hover{filter:brightness(1.1) saturate(1.1)}
 .snd:active,.snd.hit{transform:translateY(6px);box-shadow:0 1px 0 color-mix(in srgb,var(--c) 45%,#000 55%),0 4px 30px 2px color-mix(in srgb,var(--c) 90%,transparent),inset 0 2px 0 rgba(255,255,255,.45)}
 .snd .k{position:absolute;top:10px;right:11px;font-size:10px;font-weight:800;background:rgba(0,0,0,.28);padding:2px 7px;border-radius:6px;letter-spacing:.06em}
-.snd .em{position:absolute;top:8px;left:12px;font-size:24px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+/* icon box: fixed size, in normal flow at the top-left, glyph centered; text sits below it and can never overlap it */
+.snd{height:auto;min-height:96px;padding-top:8px}
+.snd .em,.li-em,.m-prev>span{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Segoe UI Symbol",sans-serif;font-style:normal;font-variant-emoji:emoji;line-height:1;display:grid;place-items:center;overflow:hidden;flex:none}
+.snd .em{width:30px;height:30px;font-size:24px;margin:0 0 auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
 .snd b{font-family:var(--display);font-size:17px;letter-spacing:.03em;text-shadow:0 2px 0 rgba(0,0,0,.25);line-height:1.1}
 .snd small{font-size:11.5px;font-weight:600;opacity:.92;line-height:1.2}
 .snd .cnt{position:absolute;right:11px;bottom:10px;font-size:10.5px;font-weight:700;opacity:.85}
@@ -342,14 +345,14 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   .floaters{bottom:44px;right:8px}
   .big{font-size:46px}
   .rate{gap:4px} .rate button{height:36px;font-size:16px}
-  .snd{height:92px}
+  .snd{min-height:92px}
 }
 
 /* ===== soundboard v2 ===== */
 .vol{display:flex;align-items:center;gap:6px;font-size:13px;background:var(--glass2);padding:3px 10px 3px 8px;border-radius:999px;cursor:pointer}
 .vol input{width:74px;accent-color:var(--pink);height:4px;cursor:pointer}
-.snd-wrap{position:relative}
-.snd{width:100%}
+.snd-wrap{position:relative;display:flex}
+.snd{width:100%;min-width:0}
 .snd .k{top:auto;bottom:10px;right:11px}
 .snd b{padding-right:20px}
 .snd.long b{font-size:13.5px;letter-spacing:.01em}
@@ -357,7 +360,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .swap{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;z-index:2;color:#fff;
   background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(4px);transition:transform .25s,background .2s;opacity:.85}
 .swap:hover{transform:rotate(60deg) scale(1.08);background:rgba(0,0,0,.5);opacity:1}
-.snd .eq{position:absolute;top:12px;left:44px;display:flex;gap:2px;align-items:flex-end;height:14px;opacity:0;transition:opacity .2s}
+.snd .eq{position:absolute;top:16px;left:46px;display:flex;gap:2px;align-items:flex-end;height:14px;opacity:0;transition:opacity .2s}
 .snd .eq i{width:3px;background:#fff;border-radius:2px;height:30%;animation:eq .5s ease-in-out infinite alternate}
 .snd .eq i:nth-child(2){animation-delay:-.2s}.snd .eq i:nth-child(3){animation-delay:-.35s}
 .snd.playing .eq{opacity:.95}
@@ -395,7 +398,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .li:hover{background:rgba(255,255,255,.08);transform:translateY(-1px)}
 .li.sel{border-color:rgba(255,79,216,.75);background:linear-gradient(90deg,rgba(255,79,216,.18),rgba(139,92,255,.10));box-shadow:0 0 0 1px rgba(255,79,216,.35) inset}
 .li.sel::after{content:"✓";position:absolute;top:-7px;left:-7px;width:20px;height:20px;border-radius:50%;background:var(--pink);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 8px rgba(255,79,216,.6)}
-.li-em{font-size:22px;width:30px;text-align:center}
+.li-em{font-size:22px;width:30px;height:30px}
 .li-t{flex:1;min-width:0;line-height:1.2}
 .li-t b{display:block;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .li-t small{font-size:11px;color:var(--dim)}
@@ -426,7 +429,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   .lib{grid-template-columns:repeat(2,minmax(0,1fr))}
   .li.def .li-t b::after{display:none}
   .li{gap:8px;padding:8px 6px 8px 8px}
-  .li-em{font-size:20px;width:24px}
+  .li-em{font-size:20px;width:24px;height:24px}
   .li-t small,.li-t .li-by{display:none}
   .li-t b{white-space:normal;font-size:12.5px;line-height:1.2}
   .pv{width:28px;height:28px}
