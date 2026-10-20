@@ -3,16 +3,16 @@
    Choices persist in localStorage; uploaded clips are stored in IndexedDB (fallback: localStorage data URL). */
 (function(){
 const LIB={
-  'gunshots':      {name:'Gunshots',        label:'GUNSHOTS',         sub:'Pew pew pew',      em:'🔫', burst:'BANG BANG!',    fx:['💥','🔫','💨','😱']},
-  'airhorn':       {name:'Airhorn',         label:'AIRHORN',          sub:'Stadium blast',    em:'📢', burst:'BWAAAMP!',      fx:['📢','🔊','🎉','🤯'], tag:'CC0 sample'},
-  'fanfare':       {name:'Triumphant horns',label:'TRIUMPHANT HORNS', sub:'Ta-ta-ta-TAAA',    em:'🎺', burst:'TA-DAAA!',      fx:['🎺','👑','🏆','✨']},
-  'vader-breath':  {name:'Vader breath',    label:'VADER BREATH',     sub:'Heavy breathing',  em:'🫁', burst:'*kshhh-pahhh*', fx:['🖤','🌑','💨','⚫']},
-  'rimshot':       {name:'Rimshot',         label:'RIMSHOT',          sub:'Ba-dum-tss',       em:'🥁', burst:'BA-DUM-TSS!',   fx:['🥁','😂','👏']},
-  'crowd-ooh':     {name:'Crowd "ooooh"',   label:'CROWD OOOH',       sub:'Collective gasp',  em:'😮', burst:'OOOOOH!',       fx:['😮','😲','🙊']},
-  'sad-trombone':  {name:'Sad trombone',    label:'SAD TROMBONE',     sub:'Wah wah waaah',    em:'📯', burst:'WAH WAAAH…',    fx:['😢','💔','📉']},
-  'record-scratch':{name:'Record scratch',  label:'RECORD SCRATCH',   sub:'Wait, what?',      em:'💿', burst:'SKRRRT!',       fx:['💿','⏪','🤨']},
-  'applause':      {name:'Applause',        label:'APPLAUSE',         sub:'Give it up!',      em:'👏', burst:'CLAP CLAP!',    fx:['👏','🙌','🎉']},
-  'bell-ding':     {name:'Bell ding',       label:'BELL DING',        sub:'Ding ding ding',   em:'🔔', burst:'DING!',         fx:['🔔','✨','⭐']},
+  'gunshots':      {name:'Gunshots',        label:'GUNSHOTS',         sub:'Bang bang bang',   em:'🔫', burst:'BANG BANG!',    fx:['💥','🔫','💨','😱'], cr:{t:'9mm pistol shot',by:'michorvath',u:'https://freesound.org/people/michorvath/sounds/427592/'}},
+  'airhorn':       {name:'Airhorn',         label:'AIRHORN',          sub:'Stadium blast',    em:'📢', burst:'BWAAAMP!',      fx:['📢','🔊','🎉','🤯'], cr:{t:'DJ airhorn sound',by:'pfranzen',u:'https://freesound.org/people/pfranzen/sounds/528807/'}},
+  'fanfare':       {name:'Triumphant horns',label:'TRIUMPHANT HORNS', sub:'Ta-ta-ta-TAAA',    em:'🎺', burst:'TA-DAAA!',      fx:['🎺','👑','🏆','✨'], cr:{t:'Success Fanfare Trumpets.mp3',by:'FunWithSound',u:'https://freesound.org/people/FunWithSound/sounds/456966/'}},
+  'vader-breath':  {name:'Vader breath',    label:'VADER BREATH',     sub:'Gas-mask breathing', em:'🫁', burst:'*kshhh-pahhh*', fx:['🖤','🌑','💨','⚫'], cr:{t:'Gas Mask breath',by:'Nuclearoid',u:'https://freesound.org/people/Nuclearoid/sounds/435825/'}},
+  'rimshot':       {name:'Rimshot',         label:'RIMSHOT',          sub:'Ba-dum-tss',       em:'🥁', burst:'BA-DUM-TSS!',   fx:['🥁','😂','👏'], cr:{t:'Ba Dum Tss! (classic edition)',by:'DJczyszy',u:'https://freesound.org/people/DJczyszy/sounds/431811/'}},
+  'crowd-ooh':     {name:'Crowd "ooooh"',   label:'CROWD OOOH',       sub:'Collective oooh',  em:'😮', burst:'OOOOOH!',       fx:['😮','😲','🙊'], cr:{t:'Crowd Oooh.wav',by:'deleted_user_2104797',u:'https://freesound.org/s/324890/'}},
+  'sad-trombone':  {name:'Sad trombone',    label:'SAD TROMBONE',     sub:'Wah wah waaah',    em:'📯', burst:'WAH WAAAH…',    fx:['😢','💔','📉'], cr:{t:'wah wah sad trombone.wav',by:'kirbydx',u:'https://freesound.org/people/kirbydx/sounds/175409/'}},
+  'record-scratch':{name:'Record scratch',  label:'RECORD SCRATCH',   sub:'Wait, what?',      em:'💿', burst:'SKRRRT!',       fx:['💿','⏪','🤨'], cr:{t:'Record Scratch #1',by:'musicvision31',u:'https://freesound.org/people/musicvision31/sounds/431774/'}},
+  'applause':      {name:'Applause',        label:'APPLAUSE',         sub:'Give it up!',      em:'👏', burst:'CLAP CLAP!',    fx:['👏','🙌','🎉'], cr:{t:'Applause 3.aif',by:'lchapman1980',u:'https://freesound.org/people/lchapman1980/sounds/439894/'}},
+  'bell-ding':     {name:'Bell ding',       label:'BELL DING',        sub:'Service bell',     em:'🔔', burst:'DING!',         fx:['🔔','✨','⭐'], cr:{t:'Service bell louder',by:'Squidems',u:'https://freesound.org/people/Squidems/sounds/709925/'}},
   'synth-airhorn': {name:'Synth airhorn',   label:'SYNTH AIRHORN',    sub:'Bwaaamp (synth)',  em:'🔊', burst:'BWAAAMP!',      fx:['🔊','📢','🎉']}
 };
 const DEFAULTS=['gunshots','airhorn','fanfare','vader-breath'];
@@ -81,7 +81,7 @@ function closeModal(){stopPreview();modal.classList.remove('open');setTimeout(()
 function renderPrev(){const L=draft.sound==='upload'?{em:'🎵'}:LIB[draft.sound];
   $('mPrev').style.setProperty('--c',COLORS[cur]);$('mPrev').innerHTML=`<span>${L.em}</span>`}
 function renderLib(){$('mLib').innerHTML=Object.entries(LIB).map(([id,L])=>`<div class="li${draft.sound===id?' sel':''}${DEFAULTS.includes(id)?' def':''}" data-id="${id}" tabindex="0">
-  <span class="li-em">${L.em}</span><span class="li-t"><b>${L.name}</b><small>${L.sub}</small></span><button class="pv" data-id="${id}" aria-label="Preview ${L.name}">▶</button></div>`).join('')}
+  <span class="li-em">${L.em}</span><span class="li-t"><b>${L.name}</b><small>${L.sub}</small>${L.cr?`<i class="li-by" title="“${L.cr.t}” by ${L.cr.by} · Freesound · CC0">Freesound · ${L.cr.by} · CC0</i>`:'<i class="li-by">Original synth</i>'}</span><button class="pv" data-id="${id}" aria-label="Preview ${L.name}">▶</button></div>`).join('')}
 $('mLib').addEventListener('click',e=>{const pv=e.target.closest('.pv');if(pv){const on=pv.classList.contains('on');stopPreview();if(!on){pv.classList.add('on');preview=play(src(pv.dataset.id),()=>pv.classList.remove('on'))}return}
   const li=e.target.closest('.li');if(!li)return;const id=li.dataset.id;const wasDefaultLabel=!draft.label||Object.values(LIB).some(L=>L.label===draft.label)||draft.sound==='upload'&&draft.label===(draft.autoLabel||'');
   draft.sound=id;if(wasDefaultLabel){draft.label=LIB[id].label;$('mLabel').value=draft.label}if(!$('mSub').value||Object.values(LIB).some(L=>L.sub===$('mSub').value)){$('mSub').value=LIB[id].sub}

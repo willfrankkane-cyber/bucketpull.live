@@ -399,6 +399,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .li-t{flex:1;min-width:0;line-height:1.2}
 .li-t b{display:block;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .li-t small{font-size:11px;color:var(--dim)}
+.li-t .li-by{display:block;font-style:normal;font-size:9.5px;letter-spacing:.03em;color:rgba(255,255,255,.42);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 .li.def .li-t b::after{content:"DEFAULT";font-size:8.5px;font-weight:800;letter-spacing:.08em;margin-left:6px;padding:1px 5px;border-radius:4px;background:rgba(255,194,61,.16);color:var(--gold);vertical-align:2px}
 .pv{flex:none;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.08);font-size:11px;display:grid;place-items:center;transition:background .15s}
 .pv:hover{background:rgba(255,255,255,.18)}
@@ -426,7 +427,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   .li.def .li-t b::after{display:none}
   .li{gap:8px;padding:8px 6px 8px 8px}
   .li-em{font-size:20px;width:24px}
-  .li-t small{display:none}
+  .li-t small,.li-t .li-by{display:none}
   .li-t b{white-space:normal;font-size:12.5px;line-height:1.2}
   .pv{width:28px;height:28px}
   .m-sec{flex-direction:column;gap:2px;align-items:flex-start}
