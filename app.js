@@ -1,0 +1,65 @@
+// marquee bulbs
+(function(){const b=document.getElementById('bulbs');const m=b.parentElement;const W=m.offsetWidth+12,H=m.offsetHeight+12;const step=13;let pts=[];
+for(let x=4;x<W-4;x+=step){pts.push([x,0],[x,H-5])}for(let y=step;y<H-step/2;y+=step){pts.push([0,y],[W-5,y])}
+pts.forEach((p,i)=>{const e=document.createElement('i');e.style.left=p[0]+'px';e.style.top=p[1]+'px';e.style.animationDelay=(i%2?.6:0)+'s';b.appendChild(e)})})();
+
+// ticker
+const tk=['<i>NOW</i>Comic #4 Dusty Marrowbone on stage','<i>UP NEXT</i>Marcy Okonkwo-Bell','<i>TOP SET</i>Priya "Lowkey" Ramos · 8.8','<i>PANEL</i>Tony · Redban · Mo Vance · Jules Ortega','<i>FAN POLL</i>Golden ticket tonight? 61% yes','<i>RECORD</i>Most KILLs in a minute: 3,402','<i>REMINDER</i>New episodes premiere Mondays 8:00 PM CT'];
+const tr=document.getElementById('track');tr.innerHTML=[...tk,...tk].map(t=>`<span>${t}</span><span style="color:#5d5670">✦</span>`).join('');
+
+// distribution
+const dist=[2,2,3,5,8,13,22,24,14,7];const dc=['#ff2d55','#ff3d5f','#ff5a4a','#ff7a33','#ff9f1c','#ffc23d','#ffd76a','#c6ff5a','#8cff5a','#5fe7a3'];
+const de=document.getElementById('dist');const mx=Math.max(...dist);
+dist.forEach((v,i)=>{const e=document.createElement('i');e.style.height=(v/mx*100)+'%';e.style.setProperty('--c',dc[i]);de.appendChild(e)});
+
+// rate buttons
+const words=['','yikes','rough','meh','eh','okay','decent','good','solid set','great','legendary'];
+const re=document.getElementById('rate');for(let i=1;i<=10;i++){const b=document.createElement('button');b.textContent=i;if(i===8)b.className='on';
+b.onclick=e=>{re.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('mine').textContent=i+' · '+words[i];burst(e.clientX,e.clientY,dc[i-1],i>=8?'🔥':i<=3?'💣':'👏',i>=8?'+'+i:'')};re.appendChild(b)}
+
+// panel
+const panel=[
+ {i:'T',n:'Tony',r:'Host',g:'linear-gradient(135deg,#ffc23d,#ff6a00)',rc:'#ffc23d',s:4,a:'8.6',d:'+0.2'},
+ {i:'R',n:'Redban',r:'Co-host · soundboard',g:'linear-gradient(135deg,#ff4fd8,#8b5cff)',rc:'#ff4fd8',s:5,a:'9.1',d:'+0.4'},
+ {i:'MV',n:'Mo Vance',r:'Guest (fictional)',g:'linear-gradient(135deg,#22e4ff,#2b6bff)',rc:'#22e4ff',s:4,a:'7.8',d:'+0.1'},
+ {i:'JO',n:'Jules Ortega',r:'Guest (fictional)',g:'linear-gradient(135deg,#b6ff3b,#14b86a)',rc:'#b6ff3b',s:3,a:'6.9',d:'-0.3'}];
+document.getElementById('panel').innerHTML=panel.map((p,k)=>`<div class="pm"><div class="av" style="--g:${p.g};--rc:${p.rc}">${p.i}</div>
+<div class="info"><b>${p.n}</b><small>${p.r}</small><div class="stars" data-k="${k}">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}">★</button>`).join('')}</div></div>
+<div class="avg">${p.a}<small><span class="d ${p.d[0]=='+'?'up':'down'}">${p.d[0]=='+'?'▲':'▼'} ${p.d.slice(1)}</span> live</small></div></div>`).join('');
+document.querySelectorAll('.stars').forEach(s=>s.addEventListener('click',e=>{const v=+e.target.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j<v));burst(e.clientX,e.clientY,'#ffc23d','⭐','')}));
+
+// chat
+const users=[['bucketboi_99','#ffc23d','og'],['LaughTrackLarry','#22e4ff',''],['mic_drop_maria','#ff4fd8','sub'],['TulsaTornado','#b6ff3b',''],['heckler_hank','#ff7a33',''],['ModSquad_Kai','#22e4ff','mod'],['goldenticketgal','#ffd76a','sub'],['NoNotesNate','#a78bff',''],['crowdwork.carl','#5fe7a3',''],['spotlight_sue','#ff6b88','og']];
+const lines=['TULSA IN THE HOUSE 🌪️🌪️','that callback to the bucket 💀💀💀','kill kill kill 🔥','bro is SHAKING but it\'s working lol','Redban hit the button at the perfect time 😂','8 from me, the closer saved it','rating him a 9 purely for the shoes','minute goes by so fast 😭','PANEL IS COOKING tonight','who else voted KILL instantly 🙋','golden ticket energy fr 🎟️','the pause before the punchline 👌','ok that one bombed but I respect it 💣','first timers always the best','Tony\'s face lmaooo'];
+const ms=document.getElementById('msgs');
+function addMsg(u,t){const[n,c,b]=u;const d=document.createElement('div');d.className='m';d.style.setProperty('--hc',c);
+d.innerHTML=`<div class="a">${n[0].toUpperCase()}</div><div>${b?`<span class="badge ${b}">${b.toUpperCase()}</span>`:''}<span class="u">${n}</span><span class="t">${t}</span></div>`;ms.appendChild(d);while(ms.children.length>16)ms.removeChild(ms.firstChild)}
+const seed=[[0,0],[1,1],[2,2],[3,3],[5,'Reminder: KILL / BOMB buttons are under the comic card 👈'],[4,12],[6,10],[7,4],[8,9],[9,5],[2,6]];
+seed.forEach(([u,l],i)=>{addMsg(users[u],typeof l=='number'?lines[l]:l);if(i===4){const s=document.createElement('div');s.className='m sys';s.innerHTML='<span>🪣 <b>Comic #4</b> pulled from the bucket</span>';ms.appendChild(s)}});
+document.getElementById('send').onclick=()=>{const i=document.getElementById('ci');if(!i.value.trim())return;addMsg(['you','#ffffff','sub'],i.value);i.value=''};
+document.getElementById('ci').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('send').click()});
+if(!/static/.test(location.hash)){
+setInterval(()=>addMsg(users[Math.random()*users.length|0],lines[Math.random()*lines.length|0]),2600);
+// viewers + timer
+let v=48213;setInterval(()=>{v+=(Math.random()*90-30)|0;document.getElementById('vc').textContent=v.toLocaleString()},1500);
+let t=47;setInterval(()=>{t=t<=0?60:t-1;document.getElementById('tm').textContent='0:'+String(t).padStart(2,'0')},1000);
+// floaters
+const fl=document.getElementById('floaters');const em=['🔥','😂','💀','👏','🪣','⭐'];
+setInterval(()=>{const s=document.createElement('span');s.textContent=em[Math.random()*em.length|0];s.style.left=(Math.random()*30)+'px';s.style.animationDuration=(3+Math.random()*2)+'s';fl.appendChild(s);setTimeout(()=>s.remove(),5000)},700);
+}
+
+// countdown to next Monday 8pm CT
+function nextPremiere(){const now=new Date();
+ const fmt=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',hour12:false,weekday:'short',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+ for(let h=1;h<24*8;h++){const c=new Date(Math.floor(now.getTime()/3.6e6)*3.6e6+h*3.6e6);const p=Object.fromEntries(fmt.formatToParts(c).map(x=>[x.type,x.value]));if(p.weekday==='Mon'&&p.hour==='20')return c}}
+const target=nextPremiere();
+function tick(){if(!target)return;let s=Math.max(0,(target-new Date())/1000|0);const d=s/86400|0;s%=86400;const h=s/3600|0;s%=3600;const m=s/60|0;s%=60;
+ document.getElementById('cd').textContent=`${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
+tick();setInterval(tick,1000);
+
+// bursts + beeps
+let ac;function beep(f){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.setValueAtTime(f,ac.currentTime);o.frequency.exponentialRampToValueAtTime(f*1.5,ac.currentTime+.12);g.gain.setValueAtTime(.08,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+.25);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.26)}catch(e){}}
+function burst(x,y,c,emo,word){const b=document.createElement('div');b.className='burst';b.style.left=x+'px';b.style.top=y+'px';b.style.setProperty('--c',c);
+ let h='<div class="ring"></div>';const set=Array.isArray(emo)?emo:[emo];for(let i=0;i<10;i++){const a=Math.PI*2*i/10+Math.random()*.4,r=60+Math.random()*50;h+=`<span style="--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px;--r:${(Math.random()*80-40)|0}deg">${set[i%set.length]}</span>`}
+ if(word)h+=`<div class="word">${word}</div>`;b.innerHTML=h;document.body.appendChild(b);setTimeout(()=>b.remove(),1000)}
+document.querySelectorAll('.quick button').forEach(b=>b.addEventListener('click',e=>{const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,b.dataset.c,b.classList.contains('kill')?['🔥','💀','👏']:['💣','🍅','😬'],b.dataset.burst)}));

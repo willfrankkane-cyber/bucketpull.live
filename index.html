@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bucket Pull Live — Unofficial Kill Tony Fan Room</title>
+<meta name="description" content="An unofficial, fan-made live room for Kill Tony premieres (Mondays 8:00 PM CT): rate the comics and the panel, chat with fans, and hit the soundboard. Not affiliated with the show. Design mockup with sample data.">
+<meta name="theme-color" content="#07060b">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bucket Pull Live — Unofficial Kill Tony Fan Room">
+<meta property="og:description" content="Rate the comics, rate the panel, chat and hit the soundboard live during Monday premieres. Unofficial fan-made mockup.">
+<meta property="og:url" content="https://bucketpull.live/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🪣%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="stage-bg"><div class="beam b1"></div><div class="beam b2"></div><div class="grain"></div></div>
+
+<div class="app">
+  <!-- HEADER -->
+  <header class="top">
+    <a class="wordmark" href="#">
+      <div class="marquee"><div class="bulbs" id="bulbs"></div><div class="w">BUCKET PULL <em>LIVE</em></div></div>
+      <div class="tagline">unofficial<br><b>fan room</b> ✶</div>
+    </a>
+    <div class="spacer"></div>
+    <div class="ep"><strong>Ep. #000 · Premiere Night</strong>Sample data · fan-made mockup</div>
+    <div class="chip live"><span class="dot"></span>LIVE</div>
+    <div class="chips">
+      <div class="chip viewers"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><b id="vc">48,213</b><span class="hide-m">watching</span></div>
+      <div class="chip countdown"><span class="lbl">⏱ <span class="hide-m">Next premiere </span>Mon 8:00 PM CT</span><span class="t" id="cd">6d 22:28:41</span></div>
+    </div>
+    <div class="me"><span>SD</span></div>
+  </header>
+
+  <div class="ticker"><div class="track" id="track"></div></div>
+
+  <main class="grid">
+    <!-- LEFT -->
+    <section class="col left">
+      <div class="card onstage">
+        <div class="card-h"><h3><span class="ic" style="background:rgba(255,194,61,.18)">🎤</span>ON STAGE NOW</h3><span class="pill hot">● Rating open</span></div>
+        <div class="comic">
+          <div class="num">4</div>
+          <div class="who"><small>Comic #4 · Bucket Pull</small><b>Dusty Marrowbone</b><span>First time up · from Tulsa, OK</span></div>
+          <div class="timer"><span id="tm">0:47</span><small>OF 1:00</small></div>
+        </div>
+        <div class="avg-row">
+          <div class="big" id="avg">7.4<small>/10</small></div>
+          <div class="avg-meta"><b>▲ 0.6</b> last 30s<br><span id="votes">12,904</span> votes</div>
+        </div>
+        <div class="dist" id="dist"></div>
+        <div class="dist-l"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
+        <div class="rate-lbl"><span>Your rating</span><b id="mine">8 · solid set</b></div>
+        <div class="rate" id="rate"></div>
+        <div class="quick">
+          <button class="kill" data-burst="KILL!" data-c="#9dff3b">🔥 KILL <small>68%</small></button>
+          <button class="bomb" data-burst="BOMB!" data-c="#ff2d55">💣 BOMB <small>32%</small></button>
+        </div>
+        <div class="killmeter"><div class="k" style="width:68%"></div><div class="b" style="width:32%"></div></div>
+        <div class="km-l"><span>8,775 say kill</span><span>4,129 say bomb</span></div>
+      </div>
+
+      <div class="card lbcard">
+        <div class="card-h"><h3><span class="ic" style="background:rgba(139,92,255,.2)">🏆</span>TONIGHT'S BOARD</h3><span class="pill">Next up: #5</span></div>
+        <ol class="lb">
+          <li><span class="rk">1</span><span class="nm">Priya "Lowkey" Ramos <span class="tag gold">REGULAR</span><small>Comic #2 · 9,410 votes</small></span><span class="sc"><span class="mini"><i style="width:88%"></i></span>8.8</span></li>
+          <li><span class="rk">2</span><span class="nm">Gus Fettuccine<small>Comic #1 · 11,027 votes</small></span><span class="sc"><span class="mini"><i style="width:79%"></i></span>7.9</span></li>
+          <li class="now"><span class="rk">3</span><span class="nm">Dusty Marrowbone <span class="tag live">LIVE</span><small>Comic #4 · 12,904 votes</small></span><span class="sc"><span class="mini"><i style="width:74%"></i></span>7.4</span></li>
+          <li><span class="rk">4</span><span class="nm">Big Lenny Two-Shoes<small>Comic #3 · 10,118 votes</small></span><span class="sc"><span class="mini"><i style="width:52%"></i></span>5.2</span></li>
+          
+        </ol>
+      </div>
+    </section>
+
+    <!-- CENTER -->
+    <section class="col center">
+      <div class="player">
+        <div class="curtain l"></div><div class="curtain r"></div>
+        <div class="spot"></div>
+        <svg class="mic" viewBox="0 0 120 260" fill="none"><rect x="47" y="8" width="26" height="40" rx="13" fill="#2a2433" stroke="#5c5470" stroke-width="2"/><path d="M60 48v196" stroke="#3a3346" stroke-width="5"/><path d="M30 258l30-14 30 14" stroke="#3a3346" stroke-width="5" stroke-linecap="round"/></svg>
+        <div class="yt-top"><div class="ch">BP</div><div>Episode #000: Premiere Night (sample)<small>Fan channel placeholder · 48K watching</small></div><span class="premiere">PREMIERE</span></div>
+        <div class="play">
+          <div class="btn"><svg width="26" height="28" viewBox="0 0 26 28"><path d="M2 2l22 12L2 26z" fill="#fff"/></svg></div>
+          <div class="cap">▶ YouTube premiere plays here</div>
+        </div>
+        <div class="floaters" id="floaters"></div>
+        <div class="bar">
+          <div class="prog"><b></b></div>
+          <div class="ctrls"><span>❚❚</span><span>🔊</span><span class="livebadge">LIVE</span><span class="hide-m">1:12:08</span>
+            <span class="r"><span class="hide-m">CC</span><span>⚙</span><span class="hide-m">▭</span><span>⛶</span></span></div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="card panelcard">
+          <div class="card-h"><h3><span class="ic" style="background:rgba(34,228,255,.16)">🛋️</span>RATE THE PANEL</h3><span class="pill ok">avg 8.1</span></div>
+          <div class="panel-list" id="panel"></div>
+        </div>
+
+        <div class="card soundcard">
+          <div class="card-h"><h3><span class="ic" style="background:rgba(255,79,216,.18)">🎛️</span>SOUNDBOARD</h3>
+            <label class="vol" title="Soundboard volume"><span id="volIc">🔊</span><input type="range" id="vol" min="0" max="100" value="80"></label></div>
+          <div class="sb" id="sb"></div>
+          <div class="sb-note"><span>🎹</span><span>Sounds are original synth effects; swap in your own anytime. Keys <b>1–4</b> play, <b>⚙</b> swaps.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT -->
+    <section class="col right">
+      <div class="card chat">
+        <div class="card-h"><h3><span class="ic" style="background:rgba(182,255,59,.15)">💬</span>FAN CHAT</h3><span class="pill">2.1k/min</span></div>
+        <div class="chat-tabs"><button class="on">Top chat</button><button>All</button><button>Mods</button></div>
+        <div class="pinned">📌 <b>Mod:</b> Be cool. Rate the set, not the person. Spam the soundboard responsibly 🙏</div>
+        <div class="msgs" id="msgs"></div>
+        <div class="chat-in">
+          <div class="emoji-row"><button>😂</button><button>🔥</button><button>💀</button><button>🪣</button><button>👏</button><button>💣</button><span class="slow">Slow mode · 3s</span></div>
+          <div class="input"><input id="ci" placeholder="Say something nice… or funny"><button class="send" id="send"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div class="foot">Unofficial fan-made design mockup · not affiliated with or endorsed by the show · all names, numbers and messages are fictional sample data</div>
+</div>
+
+<!-- SWAP MODAL -->
+<div class="modal-bg" id="modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="m-head">
+      <div class="m-prev" id="mPrev"></div>
+      <div class="m-ttl"><small id="mSlot">BUTTON 1 · KEY 1</small><h2 id="mTitle">Swap this sound</h2></div>
+      <button class="m-x" id="mClose" aria-label="Close">✕</button>
+    </div>
+    <div class="m-body">
+      <div class="m-row">
+        <label class="fld"><span>Button label</span><input id="mLabel" maxlength="18" placeholder="e.g. AIRHORN"></label>
+        <label class="fld"><span>Subtitle</span><input id="mSub" maxlength="24" placeholder="e.g. Stadium blast"></label>
+      </div>
+      <div class="m-sec"><span>Built-in sound library</span><small>All original synth effects · tap ▶ to preview</small></div>
+      <div class="lib" id="mLib"></div>
+      <div class="m-sec"><span>Or upload your own</span><small>MP3, WAV or M4A · up to 8 MB · saved in this browser</small></div>
+      <label class="drop" id="mDrop">
+        <input type="file" id="mFile" accept="audio/mpeg,audio/wav,audio/x-wav,audio/mp4,audio/x-m4a,audio/aac,.mp3,.wav,.m4a">
+        <span class="d-ic">⬆</span>
+        <span class="d-txt"><b id="mFileName">Drop an audio file or click to browse</b><small id="mFileHint">Your clip stays on this device</small></span>
+        <span class="d-play" id="mUpPlay" hidden>▶</span>
+      </label>
+    </div>
+    <div class="m-foot">
+      <button class="m-reset" id="mReset">↺ Reset to default</button>
+      <span class="spacer"></span>
+      <button class="m-btn ghost" id="mCancel">Cancel</button>
+      <button class="m-btn" id="mSave">Save button</button>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+<script src="sounds-data.js"></script>
+<script src="soundboard.js"></script>
+</body>
+</html>
