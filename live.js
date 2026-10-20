@@ -85,7 +85,7 @@ function tickerItems(){const now=Date.now(),st=EP.start.getTime();const items=[]
   if(S.resolved==='yes')items.push({k:'gt',hot:true,t:`<i>🎟️ GOLDEN TICKET AWARDED</i>${esc(S.gtName||'Tonight\u2019s comic')}`});
   items.push(now<st?{k:'clock',t:`<i>NEXT PREMIERE</i>Mon 8:00 PM CT · starts in ${until(st-now)}`}:{k:'clock',t:`<i>ON AIR</i>${since(now-st)} since the premiere started`});
   const RS=LIVE&&window.BPRealtime?window.BPRealtime.state:null;
-  if(LIVE&&!RS){items.push({k:'idle',t:`<i>FAN ROOM</i>Opens when the host starts the episode`});const vc0=txt('#vc');if(vc0)items.push({k:'viewers',t:`<i>WATCHING</i>${esc(vc0)} fans in the room`});return items}
+  if(LIVE&&!RS){items.push({k:'idle',t:`<i>FAN ROOM</i>Opens when the host starts the episode`});const vc0=txt('#vc');if(vc0)items.push({k:'viewers',t:`<i>WATCHING</i>${esc(vc0)} ${vc0==='1'?'fan':'fans'} in the room`});return items}
   const onStage=!LIVE||!!(RS&&RS.episode&&RS.episode.current_comic_id);
   const comic=onStage?txt('.comic .who b'):'',num=txt('.comic .who small').split('·')[0].trim(),avg=(document.getElementById('avg')||{}).firstChild;
   if(comic)items.push({k:'stage',t:`<i>RATING NOW</i>${esc(num)} ${esc(comic)} · fan avg ${avg?esc(avg.textContent.trim()):'—'}/10`});
@@ -94,7 +94,7 @@ function tickerItems(){const now=Date.now(),st=EP.start.getTime();const items=[]
   const pa=txt('.panelcard .pill');if(pa)items.push({k:'panel',t:`<i>PANEL</i>fan ${esc(pa.toLowerCase())}`});
   const t=tally(),py=Math.round(t.p*100);
   items.push({k:'bet',t:`<i>GOLDEN TICKET BET</i>YES ${py}% (${american(t.p)}) · NO ${100-py}% (${american(1-t.p)}) · ${S.resolved?'settled YES':S.closed?'betting closed':'betting open'}`});
-  const vc=txt('#vc');if(vc)items.push({k:'viewers',t:`<i>WATCHING</i>${esc(vc)} fans in the room`});
+  const vc=txt('#vc');if(vc)items.push({k:'viewers',t:`<i>WATCHING</i>${esc(vc)} ${vc==='1'?'fan':'fans'} in the room`});
   return items}
 let tkSig='';
 function renderTicker(){if(!track)return;const items=tickerItems();const sig=items.map(x=>x.k).join(',');

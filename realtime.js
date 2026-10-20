@@ -50,7 +50,8 @@ const css=document.createElement('style');css.textContent=`
 .host .h-btn.ok{background:rgba(182,255,59,.12);border-color:rgba(182,255,59,.35);color:#e6ffc4}
 .host .h-list{display:flex;flex-direction:column;gap:3px;font-size:12px}
 .host .h-list div{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.04);border-radius:8px;padding:3px 8px}
-.host .h-err{color:#ff9db0;font-size:11.5px;min-height:14px}`;
+.host .h-err{color:#ff9db0;font-size:11.5px;min-height:14px}
+.lb li.empty{display:block;font-size:12.5px;color:var(--mute);text-align:center;padding:14px 10px;line-height:1.4}`;
 document.head.appendChild(css);
 const epEl=qs('.ep');if(epEl)epEl.innerHTML='<strong>Connecting…</strong>Live fan room';
 const foot=qs('.foot');if(foot&&foot.firstChild&&foot.firstChild.nodeType===3)foot.firstChild.textContent='Unofficial fan-made live room · not affiliated with or endorsed by the show · votes, chat and counts are from real fans in the room';
