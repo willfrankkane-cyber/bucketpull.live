@@ -1,7 +1,20 @@
-// marquee bulbs
-(function(){const b=document.getElementById('bulbs');const m=b.parentElement;const W=m.offsetWidth+12,H=m.offsetHeight+12;const step=13;let pts=[];
-for(let x=4;x<W-4;x+=step){pts.push([x,0],[x,H-5])}for(let y=step;y<H-step/2;y+=step){pts.push([0,y],[W-5,y])}
-pts.forEach((p,i)=>{const e=document.createElement('i');e.style.left=p[0]+'px';e.style.top=p[1]+'px';b.appendChild(e)})})();
+// marquee bulbs: evenly spaced on the centre line of the bulb lane, a bulb on every corner.
+// Count and spacing come from the sign's real size and are recomputed by a ResizeObserver.
+(function(){const lane=document.getElementById('bulbs');if(!lane)return;const sign=lane.parentElement;
+  const TARGET=14;let key='';
+  function layout(){const cs=getComputedStyle(sign);const band=parseFloat(cs.getPropertyValue('--band'))||16;
+    const W=sign.clientWidth,H=sign.clientHeight;if(!W||!H)return;   // padding box (inside the border)
+    const off=band/2,w=W-band,h=H-band;                            // rectangle through the lane centre
+    // pick the bulb counts whose horizontal and vertical spacing match best (near TARGET)
+    let nx=2,ny=1,best=1e9;for(let s=TARGET*.8;s<=TARGET*1.25;s+=.25){const ax=Math.max(2,Math.round(w/s)),ay=Math.max(1,Math.round(h/s));
+      const sx=w/ax,sy=h/ay;const cost=Math.abs(sx-sy)*4+Math.abs((sx+sy)/2-TARGET);if(cost<best){best=cost;nx=ax;ny=ay}}
+    const pts=[];for(let i=0;i<=nx;i++){const x=off+w*i/nx;pts.push([x,off],[x,off+h])}
+    for(let j=1;j<ny;j++){const y=off+h*j/ny;pts.push([off,y],[off+w,y])}
+    const k=pts.length;if(lane.childElementCount!==k){lane.textContent='';for(let i=0;i<k;i++)lane.appendChild(document.createElement('i'))}
+    pts.forEach((p,i)=>{lane.children[i].style.transform=`translate(${p[0].toFixed(2)}px,${p[1].toFixed(2)}px)`});
+    key=`${nx}x${ny}`;sign.dataset.bulbs=`${k} bulbs · ${nx}×${ny} gaps · ${(w/nx).toFixed(1)}/${(h/ny).toFixed(1)}px`}
+  layout();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layout);
+  if('ResizeObserver' in window)new ResizeObserver(layout).observe(sign);else addEventListener('resize',layout)})();
 
 // distribution
 const dist=[2,2,3,5,8,13,22,24,14,7];const dc=['#ff2d55','#ff3d5f','#ff5a4a','#ff7a33','#ff9f1c','#ffc23d','#ffd76a','#c6ff5a','#8cff5a','#5fe7a3'];
