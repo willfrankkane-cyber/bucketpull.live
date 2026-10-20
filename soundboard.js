@@ -4,7 +4,7 @@
 (function(){
 const LIB={
   'gunshots':      {name:'Gunshots',        label:'GUNSHOTS',         sub:'Pew pew pew',      em:'🔫', burst:'BANG BANG!',    fx:['💥','🔫','💨','😱']},
-  'airhorn':       {name:'Airhorn',         label:'AIRHORN',          sub:'Stadium blast',    em:'📢', burst:'BWAAAMP!',      fx:['📢','🔊','🎉','🤯']},
+  'airhorn':       {name:'Airhorn',         label:'AIRHORN',          sub:'Stadium blast',    em:'📢', burst:'BWAAAMP!',      fx:['📢','🔊','🎉','🤯'], tag:'CC0 sample'},
   'fanfare':       {name:'Triumphant horns',label:'TRIUMPHANT HORNS', sub:'Ta-ta-ta-TAAA',    em:'🎺', burst:'TA-DAAA!',      fx:['🎺','👑','🏆','✨']},
   'vader-breath':  {name:'Vader breath',    label:'VADER BREATH',     sub:'Heavy breathing',  em:'🫁', burst:'*kshhh-pahhh*', fx:['🖤','🌑','💨','⚫']},
   'rimshot':       {name:'Rimshot',         label:'RIMSHOT',          sub:'Ba-dum-tss',       em:'🥁', burst:'BA-DUM-TSS!',   fx:['🥁','😂','👏']},
@@ -12,7 +12,8 @@ const LIB={
   'sad-trombone':  {name:'Sad trombone',    label:'SAD TROMBONE',     sub:'Wah wah waaah',    em:'📯', burst:'WAH WAAAH…',    fx:['😢','💔','📉']},
   'record-scratch':{name:'Record scratch',  label:'RECORD SCRATCH',   sub:'Wait, what?',      em:'💿', burst:'SKRRRT!',       fx:['💿','⏪','🤨']},
   'applause':      {name:'Applause',        label:'APPLAUSE',         sub:'Give it up!',      em:'👏', burst:'CLAP CLAP!',    fx:['👏','🙌','🎉']},
-  'bell-ding':     {name:'Bell ding',       label:'BELL DING',        sub:'Ding ding ding',   em:'🔔', burst:'DING!',         fx:['🔔','✨','⭐']}
+  'bell-ding':     {name:'Bell ding',       label:'BELL DING',        sub:'Ding ding ding',   em:'🔔', burst:'DING!',         fx:['🔔','✨','⭐']},
+  'synth-airhorn': {name:'Synth airhorn',   label:'SYNTH AIRHORN',    sub:'Bwaaamp (synth)',  em:'🔊', burst:'BWAAAMP!',      fx:['🔊','📢','🎉']}
 };
 const DEFAULTS=['gunshots','airhorn','fanfare','vader-breath'];
 const COLORS=['#ff2d55','#7b4dff','#ff9f1c','#00b8d9'];

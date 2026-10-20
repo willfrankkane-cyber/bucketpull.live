@@ -62,4 +62,29 @@ let ac;function beep(f){try{ac=ac||new (window.AudioContext||window.webkitAudioC
 function burst(x,y,c,emo,word){const b=document.createElement('div');b.className='burst';b.style.left=x+'px';b.style.top=y+'px';b.style.setProperty('--c',c);
  let h='<div class="ring"></div>';const set=Array.isArray(emo)?emo:[emo];for(let i=0;i<10;i++){const a=Math.PI*2*i/10+Math.random()*.4,r=60+Math.random()*50;h+=`<span style="--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px;--r:${(Math.random()*80-40)|0}deg">${set[i%set.length]}</span>`}
  if(word)h+=`<div class="word">${word}</div>`;b.innerHTML=h;document.body.appendChild(b);setTimeout(()=>b.remove(),1000)}
-document.querySelectorAll('.quick button').forEach(b=>b.addEventListener('click',e=>{const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,b.dataset.c,b.classList.contains('kill')?['🔥','💀','👏']:['💣','🍅','😬'],b.dataset.burst)}));
+// KILL / BOMB emoji fountains (Web Animations API, pointer-events:none, works on touch)
+const FOUNTAIN={kill:{set:['🔪','❤️','💖','🗡️','❤️','🔪','💘'],word:'KILL!',c:'#9dff3b'},bomb:{set:['💣','💀','😭','☠️','😢','💣','💀'],word:'BOMB!',c:'#ff2d55'}};
+function fountain(btn,kind){const cfg=FOUNTAIN[kind];const r=btn.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;const n=reduce?8:22;
+  const layer=document.createElement('div');layer.className='fountain';layer.style.left=cx+'px';layer.style.top=cy+'px';layer.style.setProperty('--c',cfg.c);document.body.appendChild(layer);
+  const flash=document.createElement('div');flash.className='f-flash';layer.appendChild(flash);
+  flash.animate([{transform:'translate(-50%,-50%) scale(.2)',opacity:.9},{transform:'translate(-50%,-50%) scale(2.6)',opacity:0}],{duration:520,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
+  const w=document.createElement('div');w.className='f-word';w.textContent=cfg.word;layer.appendChild(w);
+  w.animate([{transform:'translate(-50%,-50%) scale(.4) rotate(-8deg)',opacity:0},{transform:'translate(-50%,-150%) scale(1.25) rotate(-4deg)',opacity:1,offset:.2},{transform:'translate(-50%,-190%) scale(1.1) rotate(-2deg)',opacity:1,offset:.7},{transform:'translate(-50%,-230%) scale(1) rotate(0deg)',opacity:0}],{duration:1050,fill:'forwards'});
+  for(let i=0;i<n;i++){const s=document.createElement('span');s.className='f-p';s.textContent=cfg.set[i%cfg.set.length];
+    const size=18+Math.random()*26;s.style.fontSize=size+'px';layer.appendChild(s);
+    const bias=Math.max(-30,Math.min(30,(innerWidth/2-cx)/innerWidth*90));const ang=(-90+bias+(Math.random()*140-70))*Math.PI/180;const v=140+Math.random()*190;const dx=Math.cos(ang)*v,peak=Math.sin(ang)*v;
+    const fall=90+Math.random()*120;const rot=(Math.random()*720-360)|0;const sx=(Math.random()*r.width*.7-r.width*.35);
+    const dur=850+Math.random()*350;
+    const X=f=>sx+dx*f;
+    s.animate([
+      {transform:`translate(calc(-50% + ${sx}px),-50%) scale(.3) rotate(0deg)`,opacity:0,easing:'cubic-bezier(.2,.9,.3,1)'},
+      {transform:`translate(calc(-50% + ${X(.2)}px),calc(-50% + ${peak*.55}px)) scale(1.15) rotate(${rot*.2}deg)`,opacity:1,offset:.14,easing:'cubic-bezier(.2,.7,.4,1)'},
+      {transform:`translate(calc(-50% + ${X(.55)}px),calc(-50% + ${peak}px)) scale(1) rotate(${rot*.55}deg)`,opacity:1,offset:.5,easing:'cubic-bezier(.5,0,.8,.6)'},
+      {transform:`translate(calc(-50% + ${X(.85)}px),calc(-50% + ${peak+fall*.6}px)) scale(.92) rotate(${rot*.85}deg)`,opacity:1,offset:.82,easing:'linear'},
+      {transform:`translate(calc(-50% + ${X(1)}px),calc(-50% + ${peak+fall}px)) scale(.8) rotate(${rot}deg)`,opacity:0}
+    ],{duration:dur,delay:Math.random()*90,fill:'forwards'});}
+  btn.animate([{transform:'scale(1)'},{transform:'scale(.92)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:320,easing:'ease-out'});
+  if(navigator.vibrate)try{navigator.vibrate(18)}catch(e){}
+  setTimeout(()=>layer.remove(),1400)}
+document.querySelectorAll('.quick button').forEach(b=>b.addEventListener('click',()=>fountain(b,b.classList.contains('kill')?'kill':'bomb')));

@@ -415,4 +415,12 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   .m-sec small{text-align:left}
   .m-reset{font-size:12px}
 }
+/* KILL / BOMB fountains */
+.fountain{position:fixed;left:0;top:0;width:0;height:0;z-index:60;pointer-events:none;contain:layout style}
+.fountain .f-p{position:absolute;left:0;top:0;line-height:1;will-change:transform,opacity;filter:drop-shadow(0 4px 8px rgba(0,0,0,.45));opacity:0}
+.fountain .f-flash{position:absolute;left:0;top:0;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--c) 70%,#fff 30%) 0%,var(--c) 35%,transparent 70%);opacity:0;mix-blend-mode:screen}
+.fountain .f-word{position:absolute;left:0;top:0;font-family:var(--display);font-size:34px;color:#fff;-webkit-text-stroke:1.5px rgba(0,0,0,.55);paint-order:stroke fill;white-space:nowrap;opacity:0;
+  text-shadow:0 0 18px var(--c),0 0 36px var(--c),0 3px 0 rgba(0,0,0,.45)}
+.foot .credit{display:inline-block;margin-top:4px;opacity:.85}
+.foot a{color:var(--mute);text-decoration:underline;text-decoration-color:rgba(255,255,255,.25)}
 [hidden]{display:none!important}
