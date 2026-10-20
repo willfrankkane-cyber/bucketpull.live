@@ -108,7 +108,8 @@ function apply(d,first){
   render();
   if(ep.golden_ticket_at&&ep.golden_ticket_at!==lastGT){lastGT=ep.golden_ticket_at;maybeGolden(ep)}
   else lastGT=ep.golden_ticket_at;
-  if(host.ok)renderHostState()}
+  if(host.ok)renderHostState();
+  if(window.BPLive&&BPLive.renderTicker)try{BPLive.renderTicker()}catch(e){}}
 
 function now(){return Date.now()+serverSkew}
 function curComic(){if(!ST)return null;const id=ST.episode.current_comic_id;return (ST.comics||[]).find(c=>c.id===id)||null}
@@ -116,7 +117,10 @@ function curComic(){if(!ST)return null;const id=ST.episode.current_comic_id;retu
 function renderNoEpisode(){epEl&&(epEl.innerHTML='<strong>No live episode yet</strong>The room opens when the host starts one');
   setComic(null);const lb=qs('.lb');if(lb)lb.innerHTML='<li class="empty">Scores show up here once the host puts comics on stage.</li>';
   const p=$('panel');if(p)p.innerHTML='<div class="empty">The panel appears when the episode starts.</div>';
-  window.BPLive&&BPLive.applyRemote({id:'none',yes:0,no:0,open:false,resolved:false,pick:null,conf:null});setPlayer(null)}
+  window.BPLive&&BPLive.applyRemote({id:'none',yes:0,no:0,open:false,resolved:false,pick:null,conf:null});setPlayer(null);
+  const pp=qs('.panelcard .pill');if(pp)pp.textContent='avg —';
+  const yt=qs('.yt-top>div:nth-child(2)');if(yt)yt.innerHTML=`Waiting for the premiere<small>Unofficial fan room · ${fmt(viewers)} watching</small>`;
+  if(window.BPLive&&BPLive.renderTicker)try{BPLive.renderTicker()}catch(e){}}
 
 function render(){const ep=ST.episode;
   if(epEl)epEl.innerHTML=`<strong>${esc(ep.title)}</strong>${ep.status==='live'?'Live · real fan votes':'Episode ended'}`;
@@ -213,7 +217,7 @@ function subscribe(epId){if(chan){sb.removeChannel(chan);chan=null}
 
 function joinPresence(){room=sb.channel('bp-room',{config:{presence:{key:me?me.id:'anon-'+Math.random().toString(36).slice(2)}}});
   const upd=()=>{viewers=Object.keys(room.presenceState()).length;if(vc)vc.textContent=fmt(viewers);const s=qs('.yt-top small');if(s)s.textContent=`Unofficial fan room · ${fmt(viewers)} watching`;
-    if(typeof window.renderTicker==='function')try{renderTicker()}catch(e){}};
+    if(window.BPLive&&BPLive.renderTicker)try{BPLive.renderTicker()}catch(e){}};
   room.on('presence',{event:'sync'},upd).subscribe(async s=>{if(s==='SUBSCRIBED')await room.track({at:new Date().toISOString()})})}
 
 /* ---------- chat ---------- */

@@ -84,10 +84,13 @@ function until(ms){const s=Math.max(0,ms/1000|0);const d=s/86400|0,h=(s%86400)/3
 function tickerItems(){const now=Date.now(),st=EP.start.getTime();const items=[];
   if(S.resolved==='yes')items.push({k:'gt',hot:true,t:`<i>🎟️ GOLDEN TICKET AWARDED</i>${esc(S.gtName||'Tonight\u2019s comic')}`});
   items.push(now<st?{k:'clock',t:`<i>NEXT PREMIERE</i>Mon 8:00 PM CT · starts in ${until(st-now)}`}:{k:'clock',t:`<i>ON AIR</i>${since(now-st)} since the premiere started`});
-  const comic=txt('.comic .who b'),num=txt('.comic .who small').split('·')[0].trim(),avg=(document.getElementById('avg')||{}).firstChild;
+  const RS=LIVE&&window.BPRealtime?window.BPRealtime.state:null;
+  if(LIVE&&!RS){items.push({k:'idle',t:`<i>FAN ROOM</i>Opens when the host starts the episode`});const vc0=txt('#vc');if(vc0)items.push({k:'viewers',t:`<i>WATCHING</i>${esc(vc0)} fans in the room`});return items}
+  const onStage=!LIVE||!!(RS&&RS.episode&&RS.episode.current_comic_id);
+  const comic=onStage?txt('.comic .who b'):'',num=txt('.comic .who small').split('·')[0].trim(),avg=(document.getElementById('avg')||{}).firstChild;
   if(comic)items.push({k:'stage',t:`<i>RATING NOW</i>${esc(num)} ${esc(comic)} · fan avg ${avg?esc(avg.textContent.trim()):'—'}/10`});
-  const top=document.querySelector('.lb li');if(top){const nm=top.querySelector('.nm').childNodes[0].textContent.trim(),sc=top.querySelector('.sc').textContent.trim();items.push({k:'top',t:`<i>TOP FAN-RATED SO FAR</i>${esc(nm)} · ${esc(sc)}`})}
-  const k=txt('.quick .kill small'),bm=txt('.quick .bomb small');if(k)items.push({k:'kb',t:`<i>KILL vs BOMB</i>${esc(k)} kill · ${esc(bm)} bomb (current set)`});
+  const top=document.querySelector('.lb li:not(.empty)');if(top&&top.querySelector('.nm')){const nm=top.querySelector('.nm').childNodes[0].textContent.trim(),sc=top.querySelector('.sc').textContent.trim();items.push({k:'top',t:`<i>TOP FAN-RATED SO FAR</i>${esc(nm)} · ${esc(sc)}`})}
+  const k=txt('.quick .kill small'),bm=txt('.quick .bomb small');if(k&&onStage)items.push({k:'kb',t:`<i>KILL vs BOMB</i>${esc(k)} kill · ${esc(bm)} bomb (current set)`});
   const pa=txt('.panelcard .pill');if(pa)items.push({k:'panel',t:`<i>PANEL</i>fan ${esc(pa.toLowerCase())}`});
   const t=tally(),py=Math.round(t.p*100);
   items.push({k:'bet',t:`<i>GOLDEN TICKET BET</i>YES ${py}% (${american(t.p)}) · NO ${100-py}% (${american(1-t.p)}) · ${S.resolved?'settled YES':S.closed?'betting closed':'betting open'}`});
@@ -183,5 +186,5 @@ function applyRemote(o){if(o.id&&o.id!==EP.id){EP={id:o.id,start:o.start||EP.sta
   S.closed=!o.open||!!o.resolved;S.closedBy=S.closed?(o.resolved?'golden':(EP.start&&Date.now()>=EP.start.getTime()+CLOSE_AFTER_MIN*6e4?'timer':'host')):null;
   renderBet()}
 window.triggerGoldenTicket=triggerGoldenTicket;
-const BPL=window.BPLive={triggerGoldenTicket,closeBetting,resetEpisode,applyRemote,onPick:null,live:LIVE,get state(){return JSON.parse(JSON.stringify(S))},get episode(){return {...EP}}};
+const BPL=window.BPLive={renderTicker:()=>renderTicker(),triggerGoldenTicket,closeBetting,resetEpisode,applyRemote,onPick:null,live:LIVE,get state(){return JSON.parse(JSON.stringify(S))},get episode(){return {...EP}}};
 })();
