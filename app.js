@@ -1,11 +1,7 @@
 // marquee bulbs
 (function(){const b=document.getElementById('bulbs');const m=b.parentElement;const W=m.offsetWidth+12,H=m.offsetHeight+12;const step=13;let pts=[];
 for(let x=4;x<W-4;x+=step){pts.push([x,0],[x,H-5])}for(let y=step;y<H-step/2;y+=step){pts.push([0,y],[W-5,y])}
-pts.forEach((p,i)=>{const e=document.createElement('i');e.style.left=p[0]+'px';e.style.top=p[1]+'px';e.style.animationDelay=(i%2?.6:0)+'s';b.appendChild(e)})})();
-
-// ticker
-const tk=['<i>NOW</i>Comic #4 Dusty Marrowbone on stage','<i>UP NEXT</i>Marcy Okonkwo-Bell','<i>TOP SET</i>Priya "Lowkey" Ramos · 8.8','<i>PANEL</i>Tony · Redban · Mo Vance · Jules Ortega','<i>FAN POLL</i>Golden ticket tonight? 61% yes','<i>RECORD</i>Most KILLs in a minute: 3,402','<i>REMINDER</i>New episodes premiere Mondays 8:00 PM CT'];
-const tr=document.getElementById('track');tr.innerHTML=[...tk,...tk].map(t=>`<span>${t}</span><span style="color:#5d5670">✦</span>`).join('');
+pts.forEach((p,i)=>{const e=document.createElement('i');e.style.left=p[0]+'px';e.style.top=p[1]+'px';b.appendChild(e)})})();
 
 // distribution
 const dist=[2,2,3,5,8,13,22,24,14,7];const dc=['#ff2d55','#ff3d5f','#ff5a4a','#ff7a33','#ff9f1c','#ffc23d','#ffd76a','#c6ff5a','#8cff5a','#5fe7a3'];

@@ -118,4 +118,6 @@ $('mLabel').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCa
 
 render();slots.forEach((_,i)=>resolve(i));
 window.__openSwap=openModal;
+// shared hook for other modules (golden ticket etc.)
+window.bpSound={play:(id,opts={})=>{const a=play(src(id));if(opts.volume!=null)a.volume=Math.min(1,opts.volume);return a},url:src};
 })();
