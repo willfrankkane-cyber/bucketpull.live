@@ -11,7 +11,7 @@ Project: `bucketpull-live` (ref `zwdogpkjxhpsrocqdnel`, us-east-2, free tier).
 * Host mode: open `/?host=1`, enter the host secret.
 
 ## Required dashboard setting
-Authentication -> Sign In / Providers -> **Allow anonymous sign-ins: ON**.
+Authentication -> Sign In / Providers -> **Allow anonymous sign-ins: ON** (enabled 2026-10-20).
 Without it fans can watch live totals/chat but cannot vote, bet or chat.
 
 ## Rotating the host secret

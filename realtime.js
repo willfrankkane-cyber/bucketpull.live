@@ -43,6 +43,7 @@ const css=document.createElement('style');css.textContent=`
 .bp-nick button{height:36px;padding:0 14px;border-radius:10px;font-weight:700}
 .bp-nick button[type=submit]{background:linear-gradient(90deg,#ff4fd8,#8b5cff);color:#fff}
 .host.live-host{width:300px;max-height:calc(100vh - 32px);overflow:auto}
+@media (min-width:1100px){.host.live-host{right:auto;left:16px}} /* keep the chat column (and its 🗑/🔇 moderation buttons) clear */
 .host .h-row{display:flex;gap:6px}.host .h-row>*{flex:1;min-width:0}
 .host select,.host .h-fld input[type=datetime-local]{height:34px;border-radius:9px;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--ink);padding:0 8px;font:600 12.5px var(--body)}
 .host .h-sec{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-top:6px}
