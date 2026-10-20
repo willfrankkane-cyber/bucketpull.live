@@ -6,6 +6,7 @@
 (function(){
 'use strict';
 let hostEl=null;
+const LIVE=!!window.BP_LIVE;   // live mode: realtime.js feeds shared state in through BPLive.applyRemote()
 const reduce=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $=id=>document.getElementById(id);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
@@ -27,13 +28,14 @@ let EP=currentEpisode();
 const KEY=()=> 'bp.bet.'+EP.id;
 
 /* ---------- bet state ---------- */
-const BASE={yes:3412,no:6634};
+const BASE=LIVE?{yes:0,no:0}:{yes:3412,no:6634};
+let R={yes:0,no:0};   // live mode: server totals (include this fan's own bet)
 const fresh=()=>({pick:null,conf:null,closed:false,closedBy:null,closedAt:null,resolved:null,drift:{yes:0,no:0}});
-let S=Object.assign(fresh(),LS.get(KEY(),{}));
-const save=()=>LS.set(KEY(),S);
+let S=Object.assign(fresh(),LIVE?{}:LS.get(KEY(),{}));
+const save=()=>{if(!LIVE)LS.set(KEY(),S)};
 const fmt=n=>n.toLocaleString('en-US');
 function american(p){p=Math.min(.99,Math.max(.01,p));return p<.5?'+'+Math.round(100*(1-p)/p):'-'+Math.round(100*p/(1-p))}
-function tally(){const y=BASE.yes+S.drift.yes+(S.pick==='yes'?1:0),n=BASE.no+S.drift.no+(S.pick==='no'?1:0);return {y,n,p:y/(y+n)}}
+function tally(){if(LIVE){const y=R.yes,n=R.no;return {y,n,p:(y+n)?y/(y+n):.5}}const y=BASE.yes+S.drift.yes+(S.pick==='yes'?1:0),n=BASE.no+S.drift.no+(S.pick==='no'?1:0);return {y,n,p:y/(y+n)}}
 const CONF={vibes:'🤷 Just vibes',sure:'😏 Pretty sure',lock:'🔒 Lock it in'};
 const bet=$('bet');
 function renderBet(){if(!bet)return;const t=tally();const py=Math.round(t.p*100);
@@ -60,17 +62,18 @@ function renderBet(){if(!bet)return;const t=tally();const py=Math.round(t.p*100)
   $('betMe').innerHTML=me;
   renderHost();if(typeof renderTicker==='function')try{renderTicker()}catch(e){}}
 if(bet){
-  bet.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',e=>{if(S.closed)return;const p=b.dataset.pick;S.pick=S.pick===p?null:p;if(!S.pick)S.conf=null;save();renderBet();
+  bet.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',e=>{if(S.closed)return;const p=b.dataset.pick;S.pick=S.pick===p?null:p;if(!S.pick)S.conf=null;save();renderBet();if(LIVE&&BPL.onPick)BPL.onPick(S.pick,S.conf);
     if(S.pick&&window.burst){const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,p==='yes'?'#ffc23d':'#8b9bb8',p==='yes'?['🎟️','✨','💰']:['🪣','🙅','💨'],p==='yes'?'YES!':'NO!')}}));
-  bet.querySelectorAll('#conf button').forEach(b=>b.addEventListener('click',()=>{if(S.closed||!S.pick)return;S.conf=S.conf===b.dataset.c?null:b.dataset.c;save();renderBet()}));
+  bet.querySelectorAll('#conf button').forEach(b=>b.addEventListener('click',()=>{if(S.closed||!S.pick)return;S.conf=S.conf===b.dataset.c?null:b.dataset.c;save();renderBet();if(LIVE&&BPL.onPick)BPL.onPick(S.pick,S.conf)}));
 }
 function closeBetting(by='host'){if(S.closed)return false;S.closed=true;S.closedBy=by;S.closedAt=Date.now();save();renderBet();return true}
 function resolveYes(name){S.closed=true;S.closedBy=S.closedBy||'golden';S.resolved='yes';if(name)S.gtName=name;save();renderBet()}
 function resetEpisode(){EP=currentEpisode();LS.del(KEY());S=fresh();save();renderBet()}
 // auto-close fallback + gentle live drift while open
-function tick(){const ep=currentEpisode();if(ep.id!==EP.id){EP=ep;S=Object.assign(fresh(),LS.get(KEY(),{}));}
+function tick(){if(LIVE){if(!S.closed&&EP.start&&Date.now()>=EP.start.getTime()+CLOSE_AFTER_MIN*6e4)closeBetting('timer');else renderBet();return}
+  const ep=currentEpisode();if(ep.id!==EP.id){EP=ep;S=Object.assign(fresh(),LS.get(KEY(),{}));}
   if(!S.closed&&Date.now()>=EP.start.getTime()+CLOSE_AFTER_MIN*6e4)closeBetting('timer');else renderBet()}
-if(!/static/.test(location.hash))setInterval(()=>{if(!S.closed){S.drift.yes+=Math.random()<.4?1+(Math.random()*3|0):0;S.drift.no+=Math.random()<.5?1+(Math.random()*4|0):0;save()}tick()},4000);
+if(LIVE)setInterval(tick,4000);else if(!/static/.test(location.hash))setInterval(()=>{if(!S.closed){S.drift.yes+=Math.random()<.4?1+(Math.random()*3|0):0;S.drift.no+=Math.random()<.5?1+(Math.random()*4|0):0;save()}tick()},4000);
 
 
 /* ---------- ticker: only facts the app itself knows (rebuilt from page state) ---------- */
@@ -170,8 +173,15 @@ function mountHost(){hostEl=document.createElement('aside');hostEl.className='ho
   hostEl.querySelector('#hClose').onclick=()=>closeBetting('host');
   hostEl.querySelector('#hReset').onclick=()=>{if(confirm('Reset the Golden Ticket bet for the next episode? This clears the bet on this device.'))resetEpisode()};
   renderHost()}
-if(LS.get('bp.host',false))mountHost();
+if(LS.get('bp.host',false)&&!LIVE)mountHost();   // live mode: realtime.js mounts the server-backed host panel
 
+/* live mode: realtime.js pushes the shared bet state in; BPL.onPick is set by realtime.js to save this fan's pick */
+function applyRemote(o){if(o.id&&o.id!==EP.id){EP={id:o.id,start:o.start||EP.start}}else if(o.start)EP.start=o.start;
+  if(o.yes!=null){R={yes:o.yes,no:o.no}}
+  if('pick' in o){S.pick=o.pick||null;S.conf=o.conf||null}
+  S.resolved=o.resolved?'yes':null;if(o.gtName)S.gtName=o.gtName;
+  S.closed=!o.open||!!o.resolved;S.closedBy=S.closed?(o.resolved?'golden':(EP.start&&Date.now()>=EP.start.getTime()+CLOSE_AFTER_MIN*6e4?'timer':'host')):null;
+  renderBet()}
 window.triggerGoldenTicket=triggerGoldenTicket;
-window.BPLive={triggerGoldenTicket,closeBetting,resetEpisode,get state(){return JSON.parse(JSON.stringify(S))},get episode(){return {...EP}}};
+const BPL=window.BPLive={triggerGoldenTicket,closeBetting,resetEpisode,applyRemote,onPick:null,live:LIVE,get state(){return JSON.parse(JSON.stringify(S))},get episode(){return {...EP}}};
 })();

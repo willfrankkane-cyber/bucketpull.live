@@ -16,14 +16,16 @@
   layout();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layout);
   if('ResizeObserver' in window)new ResizeObserver(layout).observe(sign);else addEventListener('resize',layout)})();
 
+// LIVE = Supabase configured (config.js). Demo sample data, fake chat and fake counters only run in demo mode.
+const LIVE=!!window.BP_LIVE;
 // distribution
-const dist=[2,2,3,5,8,13,22,24,14,7];const dc=['#ff2d55','#ff3d5f','#ff5a4a','#ff7a33','#ff9f1c','#ffc23d','#ffd76a','#c6ff5a','#8cff5a','#5fe7a3'];
+const dist=LIVE?[0,0,0,0,0,0,0,0,0,0]:[2,2,3,5,8,13,22,24,14,7];const dc=['#ff2d55','#ff3d5f','#ff5a4a','#ff7a33','#ff9f1c','#ffc23d','#ffd76a','#c6ff5a','#8cff5a','#5fe7a3'];
 const de=document.getElementById('dist');const mx=Math.max(...dist);
-dist.forEach((v,i)=>{const e=document.createElement('i');e.style.height=(v/mx*100)+'%';e.style.setProperty('--c',dc[i]);de.appendChild(e)});
+dist.forEach((v,i)=>{const e=document.createElement('i');e.style.height=(mx?v/mx*100:0)+'%';e.style.setProperty('--c',dc[i]);de.appendChild(e)});
 
 // rate buttons
 const words=['','yikes','rough','meh','eh','okay','decent','good','solid set','great','legendary'];
-const re=document.getElementById('rate');for(let i=1;i<=10;i++){const b=document.createElement('button');b.textContent=i;if(i===8)b.className='on';
+const re=document.getElementById('rate');for(let i=1;i<=10;i++){const b=document.createElement('button');b.textContent=i;if(i===8&&!LIVE)b.className='on';
 b.onclick=e=>{re.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('mine').textContent=i+' · '+words[i];burst(e.clientX,e.clientY,dc[i-1],i>=8?'🔥':i<=3?'💣':'👏',i>=8?'+'+i:'')};re.appendChild(b)}
 
 // panel
@@ -32,7 +34,7 @@ const panel=[
  {i:'R',n:'Redban',r:'Co-host · soundboard',g:'linear-gradient(135deg,#ff4fd8,#8b5cff)',rc:'#ff4fd8',s:5,a:'9.1',d:'+0.4'},
  {i:'MV',n:'Mo Vance',r:'Guest (fictional)',g:'linear-gradient(135deg,#22e4ff,#2b6bff)',rc:'#22e4ff',s:4,a:'7.8',d:'+0.1'},
  {i:'JO',n:'Jules Ortega',r:'Guest (fictional)',g:'linear-gradient(135deg,#b6ff3b,#14b86a)',rc:'#b6ff3b',s:3,a:'6.9',d:'-0.3'}];
-document.getElementById('panel').innerHTML=panel.map((p,k)=>`<div class="pm"><div class="av" style="--g:${p.g};--rc:${p.rc}">${p.i}</div>
+if(!LIVE)document.getElementById('panel').innerHTML=panel.map((p,k)=>`<div class="pm"><div class="av" style="--g:${p.g};--rc:${p.rc}">${p.i}</div>
 <div class="info"><b>${p.n}</b><small>${p.r}</small><div class="stars" data-k="${k}">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}">★</button>`).join('')}</div></div>
 <div class="avg">${p.a}<small><span class="d ${p.d[0]=='+'?'up':'down'}">${p.d[0]=='+'?'▲':'▼'} ${p.d.slice(1)}</span> live</small></div></div>`).join('');
 document.querySelectorAll('.stars').forEach(s=>s.addEventListener('click',e=>{const v=+e.target.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j<v));burst(e.clientX,e.clientY,'#ffc23d','⭐','')}));
@@ -44,10 +46,10 @@ const ms=document.getElementById('msgs');
 function addMsg(u,t){const[n,c,b]=u;const d=document.createElement('div');d.className='m';d.style.setProperty('--hc',c);
 d.innerHTML=`<div class="a">${n[0].toUpperCase()}</div><div>${b?`<span class="badge ${b}">${b.toUpperCase()}</span>`:''}<span class="u">${n}</span><span class="t">${t}</span></div>`;ms.appendChild(d);while(ms.children.length>16)ms.removeChild(ms.firstChild)}
 const seed=[[0,0],[1,1],[2,2],[3,3],[5,'Reminder: KILL / BOMB buttons are under the comic card 👈'],[4,12],[6,10],[7,4],[8,9],[9,5],[2,6]];
-seed.forEach(([u,l],i)=>{addMsg(users[u],typeof l=='number'?lines[l]:l);if(i===4){const s=document.createElement('div');s.className='m sys';s.innerHTML='<span>🪣 <b>Comic #4</b> pulled from the bucket</span>';ms.appendChild(s)}});
-document.getElementById('send').onclick=()=>{const i=document.getElementById('ci');if(!i.value.trim())return;addMsg(['you','#ffffff','sub'],i.value);i.value=''};
+if(!LIVE)seed.forEach(([u,l],i)=>{addMsg(users[u],typeof l=='number'?lines[l]:l);if(i===4){const s=document.createElement('div');s.className='m sys';s.innerHTML='<span>🪣 <b>Comic #4</b> pulled from the bucket</span>';ms.appendChild(s)}});
+if(!LIVE)document.getElementById('send').onclick=()=>{const i=document.getElementById('ci');if(!i.value.trim())return;addMsg(['you','#ffffff','sub'],i.value);i.value=''};
 document.getElementById('ci').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('send').click()});
-if(!/static/.test(location.hash)){
+if(!LIVE&&!/static/.test(location.hash)){
 setInterval(()=>addMsg(users[Math.random()*users.length|0],lines[Math.random()*lines.length|0]),2600);
 // viewers + timer
 let v=48213;setInterval(()=>{v+=(Math.random()*90-30)|0;document.getElementById('vc').textContent=v.toLocaleString()},1500);
