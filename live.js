@@ -51,7 +51,12 @@ function renderBet(){if(!bet)return;const t=tally();const py=Math.round(t.p*100)
     me=S.pick==='yes'?`<div class="verdict win">🎉 You called it!</div><div>Your pick: ${pickTxt}. Bragging rights unlocked.</div>`
       :S.pick==='no'?`<div class="verdict bust">💀 Busted</div><div>Your pick: ${pickTxt}. The bucket had other plans.</div>`
       :`<div class="verdict">No bet placed</div><div>A golden ticket was handed out. Next week, get on the board!</div>`;
-    $('betSub').textContent='The host announced a golden ticket winner, so the bet resolved YES.';}
+    $('betSub').textContent=S.gtName?`${S.final?'Final: ':''}${S.gtName} won the golden ticket, so the bet resolved YES.`:'The host announced a golden ticket winner, so the bet resolved YES.';}
+  else if(S.resolved==='no'){tx.textContent='Final: no golden ticket 🪣';
+    me=S.pick==='no'?`<div class="verdict win">🎉 You called it!</div><div>Your pick: ${pickTxt}. Nobody got the ticket this week.</div>`
+      :S.pick==='yes'?`<div class="verdict bust">💀 Busted</div><div>Your pick: ${pickTxt}. No golden ticket this week.</div>`
+      :`<div class="verdict">No bet placed</div><div>Betting reopens when the next episode goes live.</div>`;
+    $('betSub').textContent='The episode ended without a golden ticket, so the bet resolved NO. Final.';}
   else if(S.closed){tx.textContent='Betting closed — locked in after the opener';
     me=S.pick?`<div class="verdict lock">🔒 Locked in</div><div>Your pick: ${pickTxt}</div>`:`<div class="verdict">You sat this one out</div><div>Betting reopens next episode.</div>`;
     $('betSub').textContent=S.closedBy==='timer'?'Closed automatically 15 min after showtime.':'Closed by the host after the opener. Waiting on a golden ticket…';}
@@ -81,7 +86,25 @@ const track=$('track');
 const txt=sel=>{const e=document.querySelector(sel);return e?e.textContent.trim():''};
 function since(ms){const m=Math.floor(ms/6e4);return m<60?m+' min':Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m'}
 function until(ms){const s=Math.max(0,ms/1000|0);const d=s/86400|0,h=(s%86400)/3600|0,m=(s%3600)/60|0;return d?`${d}d ${h}h ${m}m`:h?`${h}h ${m}m`:`${m}m`}
+function nextPremiereTxt(){const cd=txt('#cd');return `<i>NEXT PREMIERE</i>Mon 8:00 PM CT${cd?' · in '+esc(cd):''}`}
+/* final results (episode ended): the week-long recap, built from the same page state */
+function finalItems(RS){const items=[],ep=RS.episode||{},cs=(RS.comics||[]);const avg=x=>x.avg==null?null:+x.avg;
+  items.push({k:'fin',hot:true,t:`<i>🏁 FINAL RESULTS</i>${esc(ep.title||'Last episode')}`});
+  const bp=cs.filter(c=>c.kind!=='regular'&&avg(c)!=null).sort((a,b)=>avg(b)-avg(a)||b.votes-a.votes);
+  if(bp[0])items.push({k:'top',t:`<i>🏆 TOP FAN-RATED</i>${esc(bp[0].name)} · ${avg(bp[0]).toFixed(1)}/10 · ${fmt(+bp[0].votes||0)} votes`});
+  items.push(ep.golden_ticket_name?{k:'gt',hot:true,t:`<i>🎟️ GOLDEN TICKET</i>${esc(ep.golden_ticket_name)}`}:{k:'gt',t:`<i>🎟️ GOLDEN TICKET</i>none this episode`});
+  const kb=cs.filter(c=>c.kind!=='regular'&&(+c.kills||0)+(+c.bombs||0)>0).map(c=>({c,p:c.kills/((+c.kills)+(+c.bombs))})).sort((a,b)=>b.p-a.p||b.c.kills-a.c.kills);
+  if(kb[0])items.push({k:'kill',t:`<i>🔥 BIGGEST KILL</i>${esc(kb[0].c.name)} · ${Math.round(kb[0].p*100)}% kill`});
+  const rg=cs.filter(c=>c.kind==='regular'&&avg(c)!=null).sort((a,b)=>avg(b)-avg(a));
+  if(rg[0])items.push({k:'reg',t:`<i>⭐ TOP REGULAR</i>${esc(rg[0].name)} · ${avg(rg[0]).toFixed(1)}/10`});
+  const pa=txt('.panelcard .pill');if(pa&&!/—/.test(pa))items.push({k:'panel',t:`<i>PANEL</i>fan ${esc(pa.toLowerCase())}`});
+  const t=tally();items.push({k:'bet',t:`<i>GOLDEN TICKET BET</i>settled ${S.resolved==='yes'?'YES':'NO'} · ${fmt(t.y)} said yes · ${fmt(t.n)} said no`});
+  items.push({k:'clock',t:nextPremiereTxt()});
+  items.push({k:'cl',t:`<i>VOTING</i>closed · results stay up until the next episode goes live`});
+  return items}
 function tickerItems(){const now=Date.now(),st=EP.start.getTime();const items=[];
+  const RS0=LIVE&&window.BPRealtime?window.BPRealtime.state:null;
+  if(RS0&&RS0.episode&&RS0.episode.status==='ended')return finalItems(RS0);
   if(S.resolved==='yes')items.push({k:'gt',hot:true,t:`<i>🎟️ GOLDEN TICKET AWARDED</i>${esc(S.gtName||'Tonight\u2019s comic')}`});
   items.push(now<st?{k:'clock',t:`<i>NEXT PREMIERE</i>Mon 8:00 PM CT · starts in ${until(st-now)}`}:{k:'clock',t:`<i>ON AIR</i>${since(now-st)} since the premiere started`});
   const RS=LIVE&&window.BPRealtime?window.BPRealtime.state:null;
@@ -182,7 +205,7 @@ if(LS.get('bp.host',false)&&!LIVE)mountHost();   // live mode: realtime.js mount
 function applyRemote(o){if(o.id&&o.id!==EP.id){EP={id:o.id,start:o.start||EP.start}}else if(o.start)EP.start=o.start;
   if(o.yes!=null){R={yes:o.yes,no:o.no}}
   if('pick' in o){S.pick=o.pick||null;S.conf=o.conf||null}
-  S.resolved=o.resolved?'yes':null;if(o.gtName)S.gtName=o.gtName;
+  S.final=!!o.final;S.resolved=o.resolved?'yes':S.final?'no':null;S.gtName=o.gtName||null;
   S.closed=!o.open||!!o.resolved;S.closedBy=S.closed?(o.resolved?'golden':(EP.start&&Date.now()>=EP.start.getTime()+CLOSE_AFTER_MIN*6e4?'timer':'host')):null;
   renderBet()}
 window.triggerGoldenTicket=triggerGoldenTicket;

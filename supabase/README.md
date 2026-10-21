@@ -18,8 +18,16 @@ Project: `bucketpull-live` (ref `zwdogpkjxhpsrocqdnel`, us-east-2, free tier).
   viewer count (`private.viewers`, unlogged), 2 s score cache (`private.poll_cache`), `meta_rev`
   triggers, Realtime publication trimmed to `autopilot_status`. Applied as migrations
   `bucketpull_v3_scale_regulars` + `bucketpull_v3_fix_new_episode`.
+* `final_results.sql` — the room keeps showing the last episode's **final results** until the next
+  one is created: `current_episode()` = newest live episode, else the newest episode (no 12 h limit);
+  `live_scores` sends every comic's distribution once ended; `live_meta.prev` (previous ended episode);
+  `episode_results(id)` (read-only final results of an ended episode, for "Last week"); 60 s score
+  cache when ended + trigger that refreshes the cache at the moment an episode ends. Applied as
+  migrations `bucketpull_final_results`, `bucketpull_final_results_cache`,
+  `bucketpull_final_results_newest`, `bucketpull_final_results_newest2` (the file is the final state).
   **Order matters:** run `schema.sql`, then `autopilot.sql`, then `autopilot_sync.sql`, then
-  `v3_scale_regulars.sql` (schema.sql alone would restore the pre-autopilot host functions and chat).
+  `v3_scale_regulars.sql`, then `final_results.sql` (schema.sql alone would restore the pre-autopilot
+  host functions and chat).
 * `config.js` (site root) holds the public URL + publishable key. Empty values => demo mode.
 * `?demo=1` forces demo mode in that browser, `?demo=0` clears it.
 * Host mode: open `/?host=1`, enter the host secret.
