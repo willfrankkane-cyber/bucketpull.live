@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Bucket Pull Live — Unofficial Kill Tony Fan Room</title>
-<meta name="description" content="An unofficial, fan-made live room for Kill Tony premieres (Mondays 8:00 PM CT): rate the comics and the panel, chat with fans, and hit the soundboard. Not affiliated with the show. Design mockup with sample data.">
+<meta name="description" content="An unofficial, fan-made live room for Kill Tony premieres (Mondays 8:00 PM CT): rate the comics, the regulars and the panel, and hit the soundboard. Not affiliated with the show. Design mockup with sample data.">
 <meta name="theme-color" content="#07060b">
 <meta name="color-scheme" content="dark">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Bucket Pull Live — Unofficial Kill Tony Fan Room">
-<meta property="og:description" content="Rate the comics, rate the panel, chat and hit the soundboard live during Monday premieres. Unofficial fan-made mockup.">
+<meta property="og:description" content="Rate the comics, the regulars and the panel and hit the soundboard live during Monday premieres. Unofficial fan-made mockup.">
 <meta property="og:url" content="https://bucketpull.live/">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🪣%3C/text%3E%3C/svg%3E">
@@ -67,7 +67,7 @@
       <div class="card lbcard">
         <div class="card-h"><h3><span class="ic" style="background:rgba(139,92,255,.2)">🏆</span>TONIGHT'S BOARD</h3><span class="pill">Live scores</span></div>
         <ol class="lb">
-          <li><span class="rk">1</span><span class="nm">Priya "Lowkey" Ramos <span class="tag gold">REGULAR</span><small>Comic #2 · 9,410 votes</small></span><span class="sc"><span class="mini"><i style="width:88%"></i></span>8.8</span></li>
+          <li><span class="rk">1</span><span class="nm">Priya "Lowkey" Ramos<small>Comic #2 · 9,410 votes</small></span><span class="sc"><span class="mini"><i style="width:88%"></i></span>8.8</span></li>
           <li><span class="rk">2</span><span class="nm">Gus Fettuccine<small>Comic #1 · 11,027 votes</small></span><span class="sc"><span class="mini"><i style="width:79%"></i></span>7.9</span></li>
           <li class="now"><span class="rk">3</span><span class="nm">Dusty Marrowbone <span class="tag live">LIVE</span><small>Comic #4 · 12,904 votes</small></span><span class="sc"><span class="mini"><i style="width:74%"></i></span>7.4</span></li>
           <li><span class="rk">4</span><span class="nm">Big Lenny Two-Shoes<small>Comic #3 · 10,118 votes</small></span><span class="sc"><span class="mini"><i style="width:52%"></i></span>5.2</span></li>
@@ -95,32 +95,25 @@
         </div>
       </div>
 
-      <div class="row2">
-        <div class="card panelcard">
-          <div class="card-h"><h3><span class="ic" style="background:rgba(34,228,255,.16)">🛋️</span>RATE THE PANEL</h3><span class="pill ok">avg 8.1</span></div>
-          <div class="panel-list" id="panel"></div>
-        </div>
-
-        <div class="card soundcard">
-          <div class="card-h"><h3><span class="ic" style="background:rgba(255,79,216,.18)">🎛️</span>SOUNDBOARD</h3>
-            <label class="vol" title="Soundboard volume"><span id="volIc">🔊</span><input type="range" id="vol" min="0" max="100" value="80"></label></div>
-          <div class="sb" id="sb"></div>
-          <div class="sb-note"><span>🎹</span><span>Real CC0 recordings from Freesound; swap in your own anytime. Keys <b>1–4</b> play, <b>⚙</b> swaps.</span></div>
-        </div>
+      <div class="card soundcard">
+        <div class="card-h"><h3><span class="ic" style="background:rgba(255,79,216,.18)">🎛️</span>SOUNDBOARD</h3>
+          <label class="vol" title="Soundboard volume"><span id="volIc">🔊</span><input type="range" id="vol" min="0" max="100" value="80"></label></div>
+        <div class="sb" id="sb"></div>
+        <div class="sb-note"><span>🎹</span><span>Real CC0 recordings from Freesound; swap in your own anytime. Keys <b>1–8</b> play, <b>⚙</b> swaps.</span></div>
       </div>
     </section>
 
     <!-- RIGHT -->
     <section class="col right">
-      <div class="card chat">
-        <div class="card-h"><h3><span class="ic" style="background:rgba(182,255,59,.15)">💬</span>FAN CHAT</h3><span class="pill">2.1k/min</span></div>
-        <div class="chat-tabs"><button class="on">Top chat</button><button>All</button><button>Mods</button></div>
-        <div class="pinned">📌 <b>Mod:</b> Be cool. Rate the set, not the person. Spam the soundboard responsibly 🙏</div>
-        <div class="msgs" id="msgs"></div>
-        <div class="chat-in">
-          <div class="emoji-row"><button>😂</button><button>🔥</button><button>💀</button><button>🪣</button><button>👏</button><button>💣</button><span class="slow">Slow mode · 3s</span></div>
-          <div class="input"><input id="ci" placeholder="Say something nice… or funny"><button class="send" id="send"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
-        </div>
+      <div class="card regcard">
+        <div class="card-h"><h3><span class="ic" style="background:rgba(255,194,61,.18)">⭐</span>KILL TONY REGULARS</h3><span class="pill" id="regPill">3 up tonight</span></div>
+        <div class="panel-list" id="regs"></div>
+        <div class="reg-note">Regulars join this list the moment they hit the stage (start, middle and end of the show) and stay all night. Rate any of them, anytime.</div>
+      </div>
+
+      <div class="card panelcard">
+        <div class="card-h"><h3><span class="ic" style="background:rgba(34,228,255,.16)">🛋️</span>RATE THE PANEL</h3><span class="pill ok">avg 8.1</span></div>
+        <div class="panel-list" id="panel"></div>
       </div>
     </section>
   </main>
@@ -155,7 +148,7 @@
       <div class="bet-me" id="betMe">Pick YES or NO to get on the board.</div>
     </div>
   </section>
-  <div class="foot">Unofficial fan-made design mockup · not affiliated with or endorsed by the show · all names, numbers and messages are fictional sample data<br><span class="credit">Sounds: CC0 recordings from <a href="https://freesound.org/" target="_blank" rel="noopener">Freesound</a> by michorvath, pfranzen, FunWithSound, Nuclearoid, DJczyszy, kirbydx, musicvision31, lchapman1980, Squidems &amp; more · <a href="https://github.com/willfrankkane-cyber/bucketpull.live/blob/main/CREDITS.md" target="_blank" rel="noopener">credits</a></span></div>
+  <div class="foot">Unofficial fan-made design mockup · not affiliated with or endorsed by the show · all names and numbers are fictional sample data<br><span class="credit">Sounds: CC0 recordings from <a href="https://freesound.org/" target="_blank" rel="noopener">Freesound</a> by michorvath, pfranzen, FunWithSound, Nuclearoid, DJczyszy, kirbydx, musicvision31, lchapman1980, Squidems &amp; more · <a href="https://github.com/willfrankkane-cyber/bucketpull.live/blob/main/CREDITS.md" target="_blank" rel="noopener">credits</a></span></div>
 </div>
 
 <!-- SWAP MODAL -->

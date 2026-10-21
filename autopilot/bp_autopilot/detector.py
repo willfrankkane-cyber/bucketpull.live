@@ -14,7 +14,7 @@ log = logging.getLogger("bp.detect")
 INTRO = [
     (r"next bucket pull,? (?:it'?s|it is|is|goes by the name of)", 0.85),
     (r"minute(?: long|-long)? set (?:from|for|by) ", 0.8),
-    (r"(?:i )?present to you (?:the great and powerful |the great |the one and only )?", 0.8),
+    (r"(?:i )?present to you (?:the )?(?:return of )?(?:the )?(?:great and powerful |great |one and only )?", 0.8),
     (r"(?:comedian|comic|name) (?:out of|from) the bucket(?:,| is| it'?s| goes by the name of)", 0.85),
     (r"goes by the name of", 0.85),
     (r"(?:sixty|60|one minute|a minute) (?:seconds? )?(?:\w+ )?(?:un)?interrupted (?:going to|for)", 0.85),
@@ -39,12 +39,27 @@ STOP = {"everybody", "everyone", "ladies", "gentlemen", "folks", "y'all", "guys"
         "it", "i", "we", "you", "they", "what", "there", "where", "why", "how", "when", "my", "your", "our", "his", "her", "not", "no", "yes", "all", "right", "okay", "oh"}
 COMEDY_CTX_RE = re.compile(r"comedian|comic|brand new minute|stand-up|standup|minute of|set from|first time")
 AFTER_NAME_RE = re.compile(r"^(?:everybody|everyone|ladies and gentlemen|folks)")
+# --- regular vs bucket pull: cues in the ~50 s before an intro, weighted by recency ---------------------
+REG_CUES = [(re.compile(p), w) for p, w in [
+    (r"\bregulars?\b", 1.0), (r"golden ticket (?:winner|holder)s?", 1.0), (r"legend of (?:the|this) show|absolute legend", 1.0),
+    (r"special (?:treat|return|guest)|someone special|very special", 0.9), (r"we all know", 0.6),
+    (r"every single week|every week", 0.9), (r"brand new minute|brand new set", 0.7), (r"started on this show|checks in", 0.8),
+    (r"final comed(?:ian|y act)|anchor to end|to end (?:this|the) show", 0.8), (r"\banomaly\b", 0.8),
+    (r"rising comedians?|been on (?:the )?panel|done sets", 0.8), (r"present to you", 0.6),
+    (r"waiting to get back|return of the great|long ?-? ?awaited return|the return of", 0.35)]]
+BKT_CUES = [(re.compile(p), w) for p, w in [
+    (r"bucket pull", 1.2), (r"(?<!pulled )out of the bucket", 1.0), (r"to the bucket we go|we go to the bucket|back to the bucket", 1.2),
+    (r"\bnew name\b|first name|going first|sign ?-?ups?", 0.8), (r"goes by the name of", 0.8),
+    (r"(?:60|sixty) seconds", 0.6), (r"doing a minute|a minute from", 0.6)]]
+REG_TAU, REG_MARGIN = 18.0, 0.25
 NOT_NAMES = {"tony hinchcliffe", "brian redban", "redban", "tony", "kill tony", "the band", "everybody", "the bucket"}
 
 class Detector:
     def __init__(self, roster=(), panel=(), threshold=0.75, crowd=None,
-                 crowd_db=5.0, crowd_run=6.0, crowd_secs=8.0):
+                 crowd_db=5.0, crowd_run=6.0, crowd_secs=8.0, regulars=(), likely_regulars=()):
         self.words = []                 # (t, raw, low)
+        self.regulars = list(regulars)              # known regulars (soft prior)
+        self.likely_regulars = list(likely_regulars)  # tonight's feed roster minus guests/crew (weaker prior)
         self.roster = list(roster)      # known names (description list)
         self.panel = [n.lower() for n in panel]
         self.threshold = threshold
@@ -293,8 +308,9 @@ class Detector:
         if self.current_t is not None and p["t"] - self.current_t < 45 and p["base"] < 0.8:
             log.info("too soon after last comic: %s at %.1f", display, p["t"]); return None
         key = known[0] if known else None
+        role, role_why = self.classify(p["t"], display, k_after)
         ev = {"kind": "comic", "t": p["t"], "name": known[1] if known else display, "heard": name, "conf": conf,
-              "match": key, "why": ",".join(why)}
+              "match": key, "why": ",".join(why), "role": role, "role_why": role_why}
         # optimistic local state; the caller replaces the key with the DB id
         if not key:
             key = "local:" + display
@@ -306,6 +322,36 @@ class Detector:
             self.set_end_sent = True
             return [ev, {"kind": "set_end", "t": p["t"] - 1, "why": "next comic"}]
         return ev
+
+    def classify(self, t0, name, k_after=None):
+        """'regular' or 'bucket' for an intro at t0: recency-weighted cue scores + known-name prior."""
+        hi = k_after if k_after is not None else len(self.words)
+        win = [(w[0], w[2].replace(",", "")) for w in self.words[:hi] if t0 - 50 <= w[0]]
+        text, starts, pos = [], [], 0
+        for t, tok in win:
+            starts.append((pos, t)); text.append(tok); pos += len(tok) + 1
+        text = " ".join(text)
+        def t_at(c):
+            last = t0
+            for p0, t in starts:
+                if p0 > c: break
+                last = t
+            return last
+        def score(cues):
+            sc, hits = 0.0, []
+            for rx, w in cues:
+                for m in rx.finditer(text):
+                    age = max(0.0, t0 - t_at(m.start()))
+                    v = w * pow(2.718281828, -age / REG_TAU); sc += v; hits.append(f"{m.group(0)}@{-age:.0f}s")
+            return sc, hits
+        r, rh = score(REG_CUES)
+        b, bh = score(BKT_CUES)
+        if self.regulars and best_match(name, [(x, x) for x in self.regulars], 0.92):
+            r += 1.0; rh.append("known-regular")
+        elif self.likely_regulars and best_match(name, [(x, x) for x in self.likely_regulars], 0.92):
+            r += 0.4; rh.append("feed-roster")
+        role = "regular" if r - b >= REG_MARGIN else "bucket"
+        return role, f"R={r:.2f}[{'; '.join(rh)}] B={b:.2f}[{'; '.join(bh)}]"
 
     def _judge_gt(self, g):
         t = g["t"]

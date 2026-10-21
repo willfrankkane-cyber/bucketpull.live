@@ -575,3 +575,26 @@ html.gt-on body{overflow:hidden}
 @media (max-width:1380px) and (min-width:641px){.tagline{display:none}}
 @media (max-width:1240px) and (min-width:641px){.ep{display:none}}
 @media (max-width:1100px) and (min-width:641px){.top{flex-wrap:wrap;height:auto;row-gap:10px}.top .spacer{flex-basis:0}}
+
+/* ===== v3: no fan chat, Kill Tony regulars card, 8-button soundboard ===== */
+.soundcard .sb{grid-template-columns:repeat(4,minmax(0,1fr))}
+.reg-note{margin-top:11px;font-size:11px;color:var(--dim);line-height:1.4}
+.panel-list .empty{padding:14px 10px;color:var(--dim);font-size:12.5px;text-align:center;line-height:1.45}
+.pm.reg{transition:background .2s,outline-color .2s}
+.pm.reg.now{outline:1px solid rgba(255,194,61,.5);background:rgba(255,194,61,.08)}
+.pm .info b .tag{font-size:9.5px;vertical-align:2px;margin-left:5px;padding:1px 6px;border-radius:6px}
+.comic .num.reg{background:radial-gradient(circle at 30% 25%,#d9c8ff,#8b5cff 55%,#4b23c9);color:#ffe08a;font-family:system-ui,sans-serif;font-size:28px;box-shadow:0 8px 24px rgba(139,92,255,.45),inset 0 -4px 0 rgba(0,0,0,.2);text-shadow:0 2px 0 rgba(0,0,0,.3)}
+@media (min-width:1101px){.col.right{position:sticky;top:14px}}
+@media (max-width:640px){
+  .regcard{order:4} .panelcard{order:5} .lbcard{order:6}
+  .soundcard .sb{gap:8px}
+  .snd{min-height:76px;border-radius:15px;padding:6px 7px 8px}
+  .snd .em{width:22px;height:22px;font-size:18px}
+  .snd,.snd b{overflow-wrap:normal;word-break:keep-all}
+  .snd b{font-size:10px;padding-right:0;line-height:1.12;letter-spacing:0;white-space:normal}
+  .snd.long b{font-size:8.6px}
+  .soundcard{padding-left:12px;padding-right:12px}
+  .snd small,.snd .k{display:none}
+  .swap{width:22px;height:22px;top:5px;right:5px}.swap svg{width:11px;height:11px}
+  .snd .eq{left:32px;top:11px}
+}

@@ -15,8 +15,9 @@ const LIB={
   'bell-ding':     {name:'Bell ding',       label:'BELL DING',        sub:'Service bell',     em:'🔔', burst:'DING!',         fx:['🔔','✨','⭐'], cr:{t:'Service bell louder',by:'Squidems',u:'https://freesound.org/people/Squidems/sounds/709925/'}},
   'synth-airhorn': {name:'Synth airhorn',   label:'SYNTH AIRHORN',    sub:'Bwaaamp (synth)',  em:'🔊', burst:'BWAAAMP!',      fx:['🔊','📢','🎉']}
 };
-const DEFAULTS=['gunshots','airhorn','fanfare','vader-breath'];
-const COLORS=['#ff2d55','#7b4dff','#ff9f1c','#00b8d9'];
+const DEFAULTS=['gunshots','airhorn','fanfare','vader-breath','rimshot','sad-trombone','crowd-ooh','record-scratch'];
+const N=DEFAULTS.length;   // 8 buttons, keys 1-8
+const COLORS=['#ff2d55','#7b4dff','#ff9f1c','#00b8d9','#14b86a','#ff4fd8','#e0a400','#4f6bff'];
 const KEY='bp.soundboard.v1';
 // Built-in sounds ship as base64 in sounds-data.js (text-only hosting); decode once to Blob URLs.
 const _blobUrls={};
@@ -26,7 +27,7 @@ function src(id){if(_blobUrls[id])return _blobUrls[id];const d=(window.BP_SOUNDS
 
 // ---------- storage ----------
 let slots=load();
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(s)&&s.length===4)return s}catch(e){}return DEFAULTS.map(defSlot)}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(s)&&s.length>=1){const out=s.slice(0,N);for(let i=out.length;i<N;i++)out.push(defSlot(DEFAULTS[i]));return out}}catch(e){}return DEFAULTS.map(defSlot)}  // older saves had 4 buttons: keep them, add 5-8
 function defSlot(id){return {sound:id,label:LIB[id].label,sub:LIB[id].sub}}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(slots))}catch(e){console.warn('localStorage unavailable',e)}}
 let dbP=null;
@@ -39,7 +40,7 @@ async function delClip(k){try{const d=await db();d.transaction('clips','readwrit
 const toDataURL=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
 
 // ---------- playback ----------
-const urls=[null,null,null,null];  // resolved src per slot
+const urls=new Array(N).fill(null);  // resolved src per slot
 let vol=+(localStorage.getItem(KEY+'.vol')||80)/100;
 async function resolve(i){const s=slots[i];urls[i]=s.sound==='upload'?(await getClip('slot'+i))||src(DEFAULTS[i]):src(s.sound);
   const pre=new Audio(urls[i]);pre.preload='auto'}
@@ -63,7 +64,7 @@ function trigger(i){const b=sb.querySelector(`.snd[data-i="${i}"]`);if(!b)return
 sb.addEventListener('click',e=>{const sw=e.target.closest('.swap');if(sw){openModal(+sw.dataset.i);return}const b=e.target.closest('.snd');if(b)trigger(+b.dataset.i)});
 addEventListener('keydown',e=>{if(!modal.hidden){if(e.key==='Escape')closeModal();return}
   const t=document.activeElement.tagName;if(t==='INPUT'||t==='TEXTAREA'||e.metaKey||e.ctrlKey||e.altKey||e.repeat)return;
-  const n=+e.key;if(n>=1&&n<=4){e.preventDefault();trigger(n-1)}});
+  const n=+e.key;if(n>=1&&n<=N){e.preventDefault();trigger(n-1)}});
 const volEl=document.getElementById('vol');volEl.value=vol*100;
 volEl.addEventListener('input',()=>{vol=volEl.value/100;live.forEach(a=>a.volume=vol);document.getElementById('volIc').textContent=vol==0?'🔇':vol<.4?'🔈':'🔊';localStorage.setItem(KEY+'.vol',volEl.value)});
 

@@ -34,6 +34,14 @@ Podcast MP3 (or YouTube live audio via yt-dlp in fallback) → ffmpeg 16 kHz mon
 detector → Supabase RPCs (`auto_*`, gated by the host secret read from
 `/workspace/bucketpull-host-secret.txt`; never logged). Never run two whisper processes at once on this box
 (parallel runs produced garbage transcripts).
+* **Regulars vs bucket pulls (v3):** every intro is classified `bucket` or `regular` from the words in the
+  50 s before it (recency-weighted, τ 18 s): bucket cues ("bucket pull", "out of the bucket", "new name",
+  "sign-ups", "goes by the name of", "60 seconds"…) vs regular cues ("regular", "golden ticket winner",
+  "legend of the show", "special treat/return", "every week", "brand new set", "final comedian",
+  "present to you", "the return of"…), regular if R − B ≥ 0.25. Priors: +1.0 for the known-regulars
+  list (`bp_autopilot/regulars.py`, fuzzy ≥ 0.92), +0.4 for roster names that look like regulars. The list is
+  a hint only; unknown regulars are found from cues. Written with `auto_comic(p_kind)`; the host can flip
+  it (⇄) in the panel. Validated offline on #789/#790 (see PROGRESS.md).
 * **Comic intros:** "next bucket pull…", "goes by the name of", "60 seconds uninterrupted",
   "make some noise for…", "this is…", "give it up for…" with boosts (bucket mentioned,
   name repeated, "…everybody", comedy context, roster match). Publish ≥ 0.75.

@@ -16,7 +16,7 @@
   layout();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layout);
   if('ResizeObserver' in window)new ResizeObserver(layout).observe(sign);else addEventListener('resize',layout)})();
 
-// LIVE = Supabase configured (config.js). Demo sample data, fake chat and fake counters only run in demo mode.
+// LIVE = Supabase configured (config.js). Demo sample data and fake counters only run in demo mode.
 const LIVE=!!window.BP_LIVE;
 // distribution
 const dist=LIVE?[0,0,0,0,0,0,0,0,0,0]:[2,2,3,5,8,13,22,24,14,7];const dc=['#ff2d55','#ff3d5f','#ff5a4a','#ff7a33','#ff9f1c','#ffc23d','#ffd76a','#c6ff5a','#8cff5a','#5fe7a3'];
@@ -39,18 +39,17 @@ if(!LIVE)document.getElementById('panel').innerHTML=panel.map((p,k)=>`<div class
 <div class="avg">${p.a}<small><span class="d ${p.d[0]=='+'?'up':'down'}">${p.d[0]=='+'?'▲':'▼'} ${p.d.slice(1)}</span> live</small></div></div>`).join('');
 document.querySelectorAll('.stars').forEach(s=>s.addEventListener('click',e=>{const v=+e.target.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j<v));burst(e.clientX,e.clientY,'#ffc23d','⭐','')}));
 
-// chat
-const users=[['bucketboi_99','#ffc23d','og'],['LaughTrackLarry','#22e4ff',''],['mic_drop_maria','#ff4fd8','sub'],['TulsaTornado','#b6ff3b',''],['heckler_hank','#ff7a33',''],['ModSquad_Kai','#22e4ff','mod'],['goldenticketgal','#ffd76a','sub'],['NoNotesNate','#a78bff',''],['crowdwork.carl','#5fe7a3',''],['spotlight_sue','#ff6b88','og']];
-const lines=['TULSA IN THE HOUSE 🌪️🌪️','that callback to the bucket 💀💀💀','kill kill kill 🔥','bro is SHAKING but it\'s working lol','Redban hit the button at the perfect time 😂','8 from me, the closer saved it','rating him a 9 purely for the shoes','minute goes by so fast 😭','PANEL IS COOKING tonight','who else voted KILL instantly 🙋','golden ticket energy fr 🎟️','the pause before the punchline 👌','ok that one bombed but I respect it 💣','first timers always the best','Tony\'s face lmaooo'];
-const ms=document.getElementById('msgs');
-function addMsg(u,t){const[n,c,b]=u;const d=document.createElement('div');d.className='m';d.style.setProperty('--hc',c);
-d.innerHTML=`<div class="a">${n[0].toUpperCase()}</div><div>${b?`<span class="badge ${b}">${b.toUpperCase()}</span>`:''}<span class="u">${n}</span><span class="t">${t}</span></div>`;ms.appendChild(d);while(ms.children.length>16)ms.removeChild(ms.firstChild)}
-const seed=[[0,0],[1,1],[2,2],[3,3],[5,'Reminder: KILL / BOMB buttons are under the comic card 👈'],[4,12],[6,10],[7,4],[8,9],[9,5],[2,6]];
-if(!LIVE)seed.forEach(([u,l],i)=>{addMsg(users[u],typeof l=='number'?lines[l]:l);if(i===4){const s=document.createElement('div');s.className='m sys';s.innerHTML='<span>🪣 <b>Comic #4</b> pulled from the bucket</span>';ms.appendChild(s)}});
-if(!LIVE)document.getElementById('send').onclick=()=>{const i=document.getElementById('ci');if(!i.value.trim())return;addMsg(['you','#ffffff','sub'],i.value);i.value=''};
-document.getElementById('ci').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('send').click()});
+// Kill Tony regulars (demo: fictional names). Live mode: realtime.js renders the real ones.
+const regs=[
+ {i:'MV',n:'Marlo "Big Spoon" Vega',r:'Regular · opened the show',g:'linear-gradient(135deg,#b6ff3b,#14b86a)',rc:'#b6ff3b',s:5,a:'8.8',v:'9,410'},
+ {i:'BT',n:'Big Tex Okafor',r:'Golden ticket winner',g:'linear-gradient(135deg,#ff7a33,#ff2d55)',rc:'#ff7a33',s:4,a:'8.1',v:'7,236'},
+ {i:'DW',n:'Dot Whitaker',r:'On stage now',g:'linear-gradient(135deg,#a78bff,#5b3cff)',rc:'#a78bff',s:0,a:'7.6',v:'2,048',now:1}];
+if(!LIVE)document.getElementById('regs').innerHTML=regs.map((p,k)=>`<div class="pm reg${p.now?' now':''}"><div class="av" style="--g:${p.g};--rc:${p.rc}">${p.i}</div>
+<div class="info"><b>${p.n}${p.now?' <span class="tag live">LIVE</span>':''}</b><small>${p.r}</small><div class="stars">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}">★</button>`).join('')}</div></div>
+<div class="avg">${p.a}<small>${p.v} votes</small></div></div>`).join('');
+document.querySelectorAll('#regs .stars').forEach(s=>s.addEventListener('click',e=>{const v=+e.target.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j<v));burst(e.clientX,e.clientY,'#ffc23d','⭐','')}));
+
 if(!LIVE&&!/static/.test(location.hash)){
-setInterval(()=>addMsg(users[Math.random()*users.length|0],lines[Math.random()*lines.length|0]),2600);
 // viewers + timer
 let v=48213;setInterval(()=>{v+=(Math.random()*90-30)|0;document.getElementById('vc').textContent=v.toLocaleString()},1500);
 let t=47;setInterval(()=>{t=t<=0?60:t-1;document.getElementById('tm').textContent='0:'+String(t).padStart(2,'0')},1000);

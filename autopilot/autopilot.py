@@ -20,6 +20,7 @@ from bp_autopilot.names import title_case
 from bp_autopilot import youtube as yt
 from bp_autopilot import podcast as pod
 from bp_autopilot.sync import SyncMap, caption_words
+from bp_autopilot.regulars import KNOWN as KNOWN_REGULARS, likely_from_roster
 
 SUPABASE_URL = "https://zwdogpkjxhpsrocqdnel.supabase.co"
 SUPABASE_KEY = "sb_publishable_3QWxRZ_v4fKh1w6dcCxkOQ_se7UJV4I"
@@ -48,7 +49,8 @@ class Pilot:
         self.supa, self.ep, self.mode = supa, episode, mode
         self.roster, self.panel = roster, panel
         self.crowd = CrowdMeter()
-        self.det = Detector(roster=roster, panel=panel, crowd=self.crowd)
+        self.det = Detector(roster=roster, panel=panel, crowd=self.crowd, regulars=KNOWN_REGULARS,
+                            likely_regulars=likely_from_roster(roster or [], panel or []))
         self.stt = RollingTranscriber(model=model, threads=6, prompt=self._prompt([]))
         self.hb_every, self.last_hb = hb_every, 0.0
         self.offset = 0.0; self.state = "listening"; self.last_event = None; self.events = []
@@ -88,7 +90,7 @@ class Pilot:
                 match = self.local_ids.get(match, match)
                 cid = match if match and not str(match).startswith("local:") else None
                 r = self.supa.rpc("auto_comic", p_episode=self.ep, p_name=e["name"], p_heard=e["heard"], p_offset=t,
-                                  p_conf=e["conf"], p_comic=cid)
+                                  p_conf=e["conf"], p_comic=cid, p_kind=e.get("role") or "bucket")
                 if r and r.get("ok") and r.get("comic"):
                     lk = "local:" + e["name"]
                     self.local_ids[lk] = r["comic"]
@@ -96,7 +98,8 @@ class Pilot:
                         if c["key"] == lk: c["key"] = r["comic"]
                     if self.det.current == lk: self.det.current = r["comic"]
                     self.stt.set_prompt(self._prompt([c["name"] for c in self.det.comics][-8:]))
-                msg = f"{hms(t)} comic {e['name']} ({e['conf']:.2f}, heard '{e['heard']}', {e.get('why')}) -> {r}"
+                msg = f"{hms(t)} {e.get('role') or 'bucket'} {e['name']} ({e['conf']:.2f}, heard '{e['heard']}', {e.get('why')}) -> {r}"
+                log.info("role %s for %s: %s", e.get("role"), e["name"], e.get("role_why"))
             elif e["kind"] == "set_end":
                 r = self.supa.rpc("auto_set_betting", p_episode=self.ep, p_open=False, p_offset=t, p_reason=f"opener done ({e['why']})")
                 msg = f"{hms(t)} opener done ({e['why']}): close betting -> {r}"
@@ -167,7 +170,9 @@ class PodPilot(Pilot):
             log.info("queued %s at podcast %s (video ~%s)%s", e["kind"], hms(e["t"]), hms(self.due(e)),
                      f" {e.get('name')}" if e.get("name") else "")
 
-    def release(self, lead=1.0):
+    def release(self, lead=5.0):
+        # events are written ~5 s (premiere clock) before they are due: fans' browsers poll every ~5 s and hold
+        # each auto event until their own player (or, with no player, created_at + 5 s) reaches it
         vt = self.video_now()
         while self.queue and self.due(self.queue[0]) <= vt + lead:
             e = self.queue.pop(0); d = self.due(e)

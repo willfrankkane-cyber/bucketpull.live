@@ -18,8 +18,9 @@ else:
     words = [Word(w['t'], w['e'], w['w'], w['p']) for w in json.load(open(src))]
 roster = (["Yung Gravy", "Erik Griffin"] + ["Pat O'Neill", "Dedrick Flynn", "Martin Phillips", "D Madness", "Michael A. Gonzales", "Jon Deas", "Matthew Muehling", "Joe White", "Troy Conrad", "Monica Colt", "Steve Glass"]) if "--790" in sys.argv else ["Tim Butterly", "Kirk Fox", "Pat O'Neill", "Dedrick Flynn", "Martin Phillips", "D Madness", "Michael A. Gonzales", "Jon Deas",
           "Matthew Muehling", "Joe White", "Troy Conrad", "Monica Colt", "Steve Glass"]
+from bp_autopilot.regulars import KNOWN, likely_from_roster
 cm = CrowdMeter()
-det = Detector(roster=roster, panel=(["Yung Gravy", "Erik Griffin"] if "--790" in sys.argv else ["Tim Butterly", "Kirk Fox"]) + ["Tony Hinchcliffe", "Brian Redban"], crowd=cm)
+det = Detector(regulars=KNOWN, likely_regulars=likely_from_roster(roster, roster[:2]), roster=roster, panel=(["Yung Gravy", "Erik Griffin"] if "--790" in sys.argv else ["Tim Butterly", "Kirk Fox"]) + ["Tony Hinchcliffe", "Brian Redban"], crowd=cm)
 f = sf.SoundFile(next((a.split('=',1)[1] for a in sys.argv if a.startswith('--wav=')), '/workspace/ktresearch/kt789.wav')); t = 0.0; i = 0; evs = []
 while True:
     a = f.read(SR * 7, dtype='float32')
@@ -32,4 +33,7 @@ while True:
 evs += det.feed(words[i:]) + det.tick(t + 60)
 hms = lambda s: f"{int(s)//3600}:{int(s)%3600//60:02d}:{int(s)%60:02d}"
 for e in evs:
-    print(hms(e['t']), e['kind'], e.get('name', ''), e.get('conf', ''), e.get('why', '') or e.get('evidence', ''), ('(re-stage)' if e.get('match') and not str(e.get('match')).startswith('local') else ''))
+    if '--roles' in sys.argv:
+        if e['kind'] == 'comic': print(hms(e['t']), (e.get('role') or '?').upper().ljust(7), e.get('name', '').ljust(22), e.get('role_why', ''))
+        continue
+    print(hms(e['t']), e['kind'], e.get('name', ''), e.get('conf', ''), e.get('why', '') or e.get('evidence', ''), e.get('role', ''), ('(re-stage)' if e.get('match') and not str(e.get('match')).startswith('local') else ''))
