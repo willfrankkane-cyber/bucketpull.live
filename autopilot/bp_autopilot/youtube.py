@@ -156,3 +156,49 @@ class AudioStream:
             except Exception:
                 pass
         self.alive = False
+
+# ---- light, usually-unblocked YouTube lookups (podcast-first mode) ----------------------------------
+CHANNEL_ID = "UCwzCMiicL-hBUzyjWiJaseg"
+
+def rss_find(ep_num=None, since_ts=0):
+    """Newest 'KT #<n>' entry in the channel's public RSS feed -> {'id','title','published_ts'} or None."""
+    import requests, email.utils, xml.etree.ElementTree as ET, datetime as _dt
+    try:
+        for i in range(4):          # this feed answers a random 404 now and then
+            r = requests.get(f"https://www.youtube.com/feeds/videos.xml?channel_id={CHANNEL_ID}", timeout=20)
+            if r.status_code == 200: break
+            time.sleep(2 + 2 * i)
+        if r.status_code != 200:
+            log.warning("youtube rss %s", r.status_code); return None
+        ns = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/schemas/2015"}
+        for e in ET.fromstring(r.content).findall("a:entry", ns):
+            title = e.findtext("a:title", "", ns); vid = e.findtext("yt:videoId", "", ns)
+            pub = _dt.datetime.fromisoformat(e.findtext("a:published", "", ns)).timestamp()
+            m = re.match(r"^\s*(?:KT|KILL TONY)\s*#\s*(\d+)", title, re.I)
+            if not m or "behind the tape" in title.lower():
+                continue
+            if (ep_num and m.group(1) == str(ep_num)) or (not ep_num and pub >= since_ts):
+                return {"id": vid, "title": title, "published_ts": pub}
+    except Exception as ex:
+        log.warning("youtube rss error: %s", ex)
+    return None
+
+def captions_json3(video_id, workdir="/tmp"):
+    """English auto-captions (json3) via yt-dlp, or None (not generated yet / blocked)."""
+    import glob, tempfile
+    d = tempfile.mkdtemp(dir=workdir, prefix="cap-")
+    try:
+        _run(["--skip-download", "--write-auto-subs", "--sub-langs", "en.*,en", "--sub-format", "json3",
+              "-o", os.path.join(d, "c"), f"https://www.youtube.com/watch?v={video_id}"], timeout=120)
+        fs = sorted(glob.glob(os.path.join(d, "*.json3")), key=lambda f: ("orig" in f, f))
+        for f in fs:
+            txt = open(f).read()
+            if len(txt) > 5000:
+                return txt
+    except RateLimited:
+        log.warning("captions: rate limited")
+    except Exception as ex:
+        log.warning("captions error: %s", ex)
+    finally:
+        subprocess.run(["rm", "-rf", d])
+    return None

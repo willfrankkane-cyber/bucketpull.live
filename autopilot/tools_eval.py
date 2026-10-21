@@ -16,11 +16,11 @@ if src.endswith('.json3'):
             if w and w != '\n': words.append(Word(t0 + sg.get('tOffsetMs', 0) / 1000, 0, ' ' + w, 1))
 else:
     words = [Word(w['t'], w['e'], w['w'], w['p']) for w in json.load(open(src))]
-roster = ["Tim Butterly", "Kirk Fox", "Pat O'Neill", "Dedrick Flynn", "Martin Phillips", "D Madness", "Michael A. Gonzales", "Jon Deas",
+roster = (["Yung Gravy", "Erik Griffin"] + ["Pat O'Neill", "Dedrick Flynn", "Martin Phillips", "D Madness", "Michael A. Gonzales", "Jon Deas", "Matthew Muehling", "Joe White", "Troy Conrad", "Monica Colt", "Steve Glass"]) if "--790" in sys.argv else ["Tim Butterly", "Kirk Fox", "Pat O'Neill", "Dedrick Flynn", "Martin Phillips", "D Madness", "Michael A. Gonzales", "Jon Deas",
           "Matthew Muehling", "Joe White", "Troy Conrad", "Monica Colt", "Steve Glass"]
 cm = CrowdMeter()
-det = Detector(roster=roster, panel=["Tim Butterly", "Kirk Fox", "Tony Hinchcliffe", "Brian Redban"], crowd=cm)
-f = sf.SoundFile('/workspace/ktresearch/kt789.wav'); t = 0.0; i = 0; evs = []
+det = Detector(roster=roster, panel=(["Yung Gravy", "Erik Griffin"] if "--790" in sys.argv else ["Tim Butterly", "Kirk Fox"]) + ["Tony Hinchcliffe", "Brian Redban"], crowd=cm)
+f = sf.SoundFile(next((a.split('=',1)[1] for a in sys.argv if a.startswith('--wav=')), '/workspace/ktresearch/kt789.wav')); t = 0.0; i = 0; evs = []
 while True:
     a = f.read(SR * 7, dtype='float32')
     if len(a) == 0: break

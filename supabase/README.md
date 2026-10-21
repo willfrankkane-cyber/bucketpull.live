@@ -9,8 +9,11 @@ Project: `bucketpull-live` (ref `zwdogpkjxhpsrocqdnel`, us-east-2, free tier).
 * `autopilot.sql` — autopilot layer (episode_events timeline, autopilot_status
   heartbeat, auto_* RPCs, host overrides: rename/delete/undo/auto toggles,
   cancel golden ticket). Applied as migration `bucketpull_autopilot`.
-  **Order matters:** run `schema.sql` then `autopilot.sql` (schema.sql alone
-  would restore the pre-autopilot host functions).
+* `autopilot_sync.sql` — podcast-source sync: `episodes.sync_adjust`, host
+  `host_sync_adjust` (±seconds nudge of auto events/comics), heartbeat returns
+  sync_adjust/starts_at/youtube_url. Applied as migration `bucketpull_autopilot_sync`.
+  **Order matters:** run `schema.sql`, then `autopilot.sql`, then `autopilot_sync.sql`
+  (schema.sql alone would restore the pre-autopilot host functions).
 * `config.js` (site root) holds the public URL + publishable key. Empty values => demo mode.
 * `?demo=1` forces demo mode in that browser, `?demo=0` clears it.
 * Host mode: open `/?host=1`, enter the host secret.

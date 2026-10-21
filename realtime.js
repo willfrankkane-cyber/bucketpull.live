@@ -57,7 +57,7 @@ const css=document.createElement('style');css.textContent=`
 .host .h-ap b{color:#fff}.host .h-ap .snip{display:block;margin-top:4px;color:var(--dim);font-style:italic;max-height:48px;overflow:hidden}
 .host .ap-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:#777;vertical-align:middle}
 .host .ap-dot.ok{background:#5fe7a3;box-shadow:0 0 8px #5fe7a3}.host .ap-dot.warn{background:#ffc23d}.host .ap-dot.bad{background:#ff4f6d}
-.host .h-tg{display:flex;gap:4px}.host .h-tg button{flex:1;height:28px;border-radius:8px;font-size:11px;font-weight:800;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--mute)}
+.host .h-sync span{align-self:center;font-size:12px;opacity:.7;padding:0 4px}.h-tg{display:flex;gap:4px}.host .h-tg button{flex:1;height:28px;border-radius:8px;font-size:11px;font-weight:800;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--mute)}
 .host .h-tg button.on{background:rgba(95,231,163,.16);border-color:rgba(95,231,163,.5);color:#d8ffe9}
 .host .h-list .cm{gap:4px}.host .h-list .cm span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .host .h-list .cm button{background:none;border:0;color:#fff;font-size:12px;padding:0 3px;cursor:pointer}
@@ -375,6 +375,7 @@ async function mountHost(){if(hostEl)hostEl.remove();hostEl=document.createEleme
     <div class="h-ap" id="hAP">Autopilot has not checked in yet.</div>
     <div class="h-tg"><button id="hAuto" title="Master switch: auto comics, golden ticket, betting">AUTO</button><button id="hAutoGT" title="Auto golden ticket">AUTO 🎟️</button><button id="hAutoBet" title="Auto close betting after the opener">AUTO BETS</button></div>
     <button class="h-btn" id="hUndo">↶ Undo last auto action</button>
+    <div class="h-tg h-sync" title="Shift every automatic event (already shown or still queued). Use when comics/golden ticket appear too late or too early against the video."><span>Sync</span><button data-d="-5">−5s</button><button data-d="-1">−1s</button><button data-d="1">+1s</button><button data-d="5">+5s</button></div>
     <div class="h-sec">Comics <small style="color:var(--dim);text-transform:none;letter-spacing:0">▶ stage · ✎ rename · 🗑 delete</small></div>
     <div class="h-list" id="hComics"></div>
     <div class="h-sec">On stage</div>
@@ -417,6 +418,7 @@ async function mountHost(){if(hostEl)hostEl.remove();hostEl=document.createEleme
   const flip=k=>{if(!EPID||!ST)return;const ep=ST.episode;const a={p_episode:EPID,p_enabled:null,p_gt:null,p_betting:null};
     if(k==='all')a.p_enabled=!ep.auto_enabled;if(k==='gt')a.p_gt=!ep.auto_gt;if(k==='bet')a.p_betting=!ep.auto_betting;hrpc('host_set_auto',a)};
   v('#hAuto').onclick=()=>flip('all');v('#hAutoGT').onclick=()=>flip('gt');v('#hAutoBet').onclick=()=>flip('bet');
+  hostEl.querySelectorAll('.h-sync button').forEach(b=>b.onclick=async()=>{if(!EPID)return;const d=+b.dataset.d;const r=await hrpc('host_sync_adjust',{p_episode:EPID,p_delta:d});if(!r.error&&r.data&&r.data.ok)toast(`Autopilot events ${d<0?'earlier':'later'} by ${Math.abs(d)}s (total ${r.data.sync_adjust>0?'+':''}${r.data.sync_adjust}s)`)});
   v('#hUndo').onclick=async()=>{if(!EPID)return;const r=await hrpc('host_undo_auto',{p_episode:EPID});if(!r.error)toast('Undo: '+r.data)};
   v('#hComics').onclick=e=>{const b=e.target.closest('button[data-act]');if(!b||!EPID)return;const id=b.closest('[data-cid]').dataset.cid,c=(ST.comics||[]).find(x=>x.id===id);if(!c)return;
     if(b.dataset.act==='stage')hrpc('host_set_current_comic',{p_episode:EPID,p_comic:id});
@@ -455,7 +457,13 @@ function renderAutopilot(){if(!hostEl||!host.ok)return;const el=hostEl.querySele
   const ago=age<90?Math.round(age)+'s ago':age<5400?Math.round(age/60)+' min ago':new Date(a.heartbeat_at).toLocaleString();
   const off=a.stream_offset!=null?` · stream ${Math.floor(a.stream_offset/3600)}:${String(Math.floor(a.stream_offset%3600/60)).padStart(2,'0')}:${String(Math.floor(a.stream_offset%60)).padStart(2,'0')}`:'';
   const other=a.episode_id&&EPID&&a.episode_id!==EPID?' <i>(other episode)</i>':'';
-  el.innerHTML=`<span class="ap-dot ${cls}"></span><b>${esc(a.state||'?')}</b>${other} · ${ago}${off}${a.last_confidence!=null?` · conf ${Math.round(a.last_confidence*100)}%`:''}`+
+  const inf=a.info||{},ep=ST&&ST.episode,hm=x=>x==null?'?':`${x<0?'-':''}${Math.floor(Math.abs(x)/3600)}:${String(Math.floor(Math.abs(x)%3600/60)).padStart(2,'0')}:${String(Math.floor(Math.abs(x)%60)).padStart(2,'0')}`;
+  const manual=age>=180||(ep&&ep.auto_enabled===false)||inf.source==='manual'||inf.source==='searching';
+  const src=manual?'Manual':inf.source==='podcast'?'Podcast':inf.source==='youtube'?'YouTube live':'?';
+  let sync='';if(inf.source==='podcast'&&inf.sync){const sy=inf.sync,m={captions:'exact (YouTube captions)',anchor:'intro anchor (±1s)',default:'not synced yet'}[sy.method]||sy.method;
+    sync=` · sync ${m}${sy.delta!=null?` ${sy.delta>=0?'+':''}${sy.delta}s`:''}${sy.adjust?`, host ${sy.adjust>0?'+':''}${sy.adjust}s`:''}`+
+      (inf.transcribed_to!=null?`<br>Transcribed to ${hm(inf.transcribed_to)} · ${inf.queued||0} queued${inf.next_in!=null?` · next in ${hm(inf.next_in)}`:''}`:'')}
+  el.innerHTML=`<span class="ap-dot ${cls}"></span>Source: <b>${src}</b>${sync}<br><b>${esc(a.state||'?')}</b>${other} · ${ago}${off.replace('stream','video')}${a.last_confidence!=null?` · conf ${Math.round(a.last_confidence*100)}%`:''}`+
     (a.last_event?`<br>Last: ${esc(a.last_event)}`:'')+(a.last_text?`<span class="snip">“…${esc(a.last_text.slice(-160))}”</span>`:'')}
 window.BPRealtime={__testPlayer(p){ytPlayer=p;timelineTick();if(ST)render()},get playerOffset(){return playerOffset()},get effectiveComicId(){return effectiveComicId()},get state(){return ST},get viewers(){return viewers},refresh:()=>fetchState(),get user(){return me}};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();

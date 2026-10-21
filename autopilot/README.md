@@ -7,21 +7,33 @@ Runs the live room by itself on Kill Tony night. Everything is box-local
 ## Schedule (crontab, box)
 | when (CST) | what |
 |---|---|
-| Mon 18:40 | `run.sh live` — find the premiere on @KillTony (re-check every ~3 min for up to 3 h), create the episode (title, panel = Tony + Redban + guests from the title, YouTube link, betting open), wait for it to go live, listen, end the episode when the stream ends. Hard stop = premiere start + 3h15 (and `timeout 5h`). |
+| Mon 18:40 | `run.sh live` — **podcast first**: poll the Kill Tony podcast RSS (conditional GET, every ~40-50 s) for up to 3 h. When the new main episode appears (Tue 01:00 UTC = 19:00 CST now, 20:00 CST from Nov 2): create the episode (title, guests from the title in proper case, YouTube link from the channel RSS if found, betting open), download the MP3 (~5 s), transcribe it in order (4-6x real time), and release each event when the premiere reaches it. YouTube live audio is only the fallback (no podcast 15 min after the premiere went live, or the podcast path crashed). |
 | daily 12:17 | `run.sh keepalive` — one `live_state` read so the free Supabase project never pauses. |
 | Tue+Fri 10:23 | GitHub Actions `supabase-keepalive.yml` — same, independent of the box. |
 
-Kill Tony premieres 8 PM Central = 19:00 CST now, 20:00 CST once the US leaves DST (Nov 1).
-The 18:40 start covers both.
-
 `cron` is not supervised on this box (no systemd). After a box restart run `sudo cron`.
 
+## Podcast -> video time
+Measured on #789 and #790 by cross-correlating the podcast with the YouTube audio: the podcast is the same
+program audio with a different head (#789: +6.95 s network pre-roll; #790: 11.5 s *shorter* than the video)
+and **no** mid-roll insertions, i.e. one constant per episode (drift < 0.15 s over 2 h).
+* **captions** (best): align the podcast transcript to YouTube auto-captions (unique word 4-grams, piecewise,
+  so inserted ads would be absorbed). Error 0.03-0.1 s. Fetched with yt-dlp every 5 min if reachable.
+* **intro anchor** (no YouTube needed): the video's intro says "...from the comedy MOTHERSHIP" at 38.4 s
+  (38.9 / 37.8 s on #789/#790); find that word in the podcast. Error 0.5-0.7 s.
+* Video 0:00 = YouTube `release_timestamp` + 120 s (premiere countdown; from the #789/#790 chat replays).
+* Host can nudge everything with **Sync −5/−1/+1/+5 s** in the panel.
+
+Events are kept in the autopilot's memory and only written to the DB when the premiere clock reaches them,
+so nothing (comic names, golden ticket, bet results) exists server-side before its moment; fans' browsers
+additionally hold each event until their own YouTube player reaches it.
+
 ## Pipeline
-yt-dlp (`--js-runtimes node`) → ffmpeg 16 kHz mono → faster-whisper `small.en`
+Podcast MP3 (or YouTube live audio via yt-dlp in fallback) → ffmpeg 16 kHz mono → faster-whisper `small.en`
 (int8, 14 s windows every 7 s, centre-commit, prompted with the episode roster) →
 detector → Supabase RPCs (`auto_*`, gated by the host secret read from
-`/workspace/bucketpull-host-secret.txt`; never logged).
-
+`/workspace/bucketpull-host-secret.txt`; never logged). Never run two whisper processes at once on this box
+(parallel runs produced garbage transcripts).
 * **Comic intros:** "next bucket pull…", "goes by the name of", "60 seconds uninterrupted",
   "make some noise for…", "this is…", "give it up for…" with boosts (bucket mentioned,
   name repeated, "…everybody", comedy context, roster match). Publish ≥ 0.75.
@@ -34,10 +46,11 @@ detector → Supabase RPCs (`auto_*`, gated by the host secret read from
   of crowd ≥ 5 dB over the 120 s rolling median within −5…+20 s.
 * Every action is an `episode_events` row with its offset from the premiere start, so
   fans' browsers apply it when *their* YouTube player reaches that point.
-* Heartbeat every 15 s → `autopilot_status` (host panel).
+* Heartbeat every 15 s → `autopilot_status` (host panel: source Podcast / YouTube live / Manual, sync method, how far ahead).
 
 ## Commands
-    /workspace/ktvenv/bin/python autopilot.py live
+    /workspace/ktvenv/bin/python autopilot.py live [--feed URL]
+    /workspace/ktvenv/bin/python autopilot.py podreplay 790 [--mp3 F] [--speed 6] [--no-youtube] [--captions F.json3]
     /workspace/ktvenv/bin/python autopilot.py replay WAV --title "TEST …" [--speed 0] [--roster …] [--guests …]
     /workspace/ktvenv/bin/python autopilot.py keepalive
 Logs: `logs/YYYY-MM-DD-live.log`, `logs/cron-live.log`, `logs/replay-*.json`.

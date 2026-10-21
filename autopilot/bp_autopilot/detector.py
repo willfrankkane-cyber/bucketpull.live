@@ -12,11 +12,13 @@ log = logging.getLogger("bp.detect")
 
 # --- comic intro patterns: (regex over normalised lowercase text, base confidence) -----------------
 INTRO = [
-    (r"next bucket pull,? (?:it'?s|is|goes by the name of)", 0.85),
+    (r"next bucket pull,? (?:it'?s|it is|is|goes by the name of)", 0.85),
+    (r"minute(?: long|-long)? set (?:from|for|by) ", 0.8),
+    (r"(?:i )?present to you (?:the great and powerful |the great |the one and only )?", 0.8),
     (r"(?:comedian|comic|name) (?:out of|from) the bucket(?:,| is| it'?s| goes by the name of)", 0.85),
     (r"goes by the name of", 0.85),
     (r"(?:sixty|60|one minute|a minute) (?:seconds? )?(?:\w+ )?(?:un)?interrupted (?:going to|for)", 0.85),
-    (r"make some noise for (?:the )?(?:(?:long ?-? ?awaited )?return of )?(?:your )?", 0.62),
+    (r"(?:make|take) some noise for (?:the )?(?:(?:long ?-? ?awaited )?return of )?(?:your )?", 0.62),
     (r"here comes", 0.62),
     (r"please welcome", 0.62),
     (r"give it up for", 0.6),
@@ -34,7 +36,7 @@ GT_AWARD_RE = re.compile(
 STOP = {"everybody", "everyone", "ladies", "gentlemen", "folks", "y'all", "guys", "the", "a", "an", "and", "he", "she",
         "here", "this", "that", "who", "with", "from", "on", "of", "to", "please", "now", "again", "back", "it's", "is",
         "make", "some", "noise", "one", "more", "time", "for", "uh", "um", "what's", "up", "comes", "just", "very", "so",
-        "it", "i", "we", "you", "they", "my", "your", "our", "his", "her", "not", "no", "yes", "all", "right", "okay", "oh"}
+        "it", "i", "we", "you", "they", "what", "there", "where", "why", "how", "when", "my", "your", "our", "his", "her", "not", "no", "yes", "all", "right", "okay", "oh"}
 COMEDY_CTX_RE = re.compile(r"comedian|comic|brand new minute|stand-up|standup|minute of|set from|first time")
 AFTER_NAME_RE = re.compile(r"^(?:everybody|everyone|ladies and gentlemen|folks)")
 NOT_NAMES = {"tony hinchcliffe", "brian redban", "redban", "tony", "kill tony", "the band", "everybody", "the bucket"}
@@ -147,11 +149,19 @@ class Detector:
             log.info("golden-ticket award phrase at %.1f: %r", t, m.group(0))
         return evs + self._resolve(self.words[-1][0] if self.words else 0)
 
-    def _name_after(self, k):
-        """Collect a name starting at word index k: capitalised tokens (or initials) until a stop word/punctuation."""
-        toks, raw = [], []
-        for j in range(k, min(k + 6, len(self.words))):
-            r = self.words[j][1].strip()
+    def _name_after(self, k, _retry=True):
+        """Collect a name starting at word index k: capitalised tokens (or initials) until a stop word/punctuation.
+        Whisper splits "O'Neill" -> "O", "'Neill" and "Danger-up-rus" -> "Danger", "-up", "-rus": glue those back.
+        If the host makes an aside first ("make some noise for, this sounds promising, Danger Russ"), skip to the
+        next comma once and try again."""
+        toks, raw = [], []; j = k
+        while j < min(k + 8, len(self.words)):
+            r = self.words[j][1].strip(); j += 1
+            if toks and re.match(r"^['’-][A-Za-z]", r):          # glue a split fragment onto the previous token
+                w0, c0 = toks[-1]; frag = re.sub(r"[^A-Za-z'’-]", "", r)
+                toks[-1] = (w0 + frag.replace("’", "'"), c0); raw.append(r)
+                if re.search(r"[,!?]$", r) or r.endswith("."): break
+                continue
             word = re.sub(r"[^A-Za-z'’.-]", "", r)
             lw = word.lower().strip(".")
             if not word:
@@ -168,11 +178,18 @@ class Detector:
             raw.append(r)
             if re.search(r"[,!?]$", r) or (r.endswith(".") and not re.fullmatch(r"[A-Za-z]\.", r)) or len(toks) >= 4:
                 break
+        caps = sum(1 for _, c in toks if c) / len(toks) if toks else 0
+        if _retry and not toks:
+            for jj in range(k, min(k + 7, len(self.words) - 1)):
+                if self.words[jj][1].strip().endswith(","):
+                    n2, c2, e2 = self._name_after(jj + 1, _retry=False)
+                    if n2 and c2 == 1:
+                        return n2, c2, e2
+                    break
         if not toks:
             return None, 0, k
-        caps = sum(1 for _, c in toks if c) / len(toks)
         name = " ".join(w for w, _ in toks)
-        return name, caps, k + len(toks)
+        return name, caps, j
 
     def _resolve(self, now_t):
         evs = []
@@ -254,11 +271,11 @@ class Detector:
            COMEDY_CTX_RE.search(" ".join(w[2] for w in self.words if p["t"] - 25 <= w[0] < p["t"])):
             conf += 0.1; why.append("comedy-context")
         if caps < 1:
-            conf -= 0.12; why.append("lowercase")
+            conf -= 0.3; why.append("lowercase")
         roster_hit = best_match(name, [(r, r) for r in self.roster], 0.86)
         display = title_case(roster_hit[1] if roster_hit else name)
         if roster_hit:
-            conf += 0.05; why.append("roster")
+            conf += 0.1; why.append("roster")
         conf = round(min(conf, 0.99), 2)
         self.last_conf = conf
         if norm(display) in self.blocked or norm(name) in self.blocked or low in self.blocked:
