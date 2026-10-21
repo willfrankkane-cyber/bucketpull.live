@@ -1,0 +1,4 @@
+# Bucket Pull Live autopilot (box time = CST, UTC-6). Monday 18:40: find the Kill Tony premiere and run the room.
+40 18 * * 1 /workspace/bucketpull-autopilot/run.sh live
+# keep the free Supabase project active (daily tiny read)
+17 12 * * * /workspace/bucketpull-autopilot/run.sh keepalive

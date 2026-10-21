@@ -51,7 +51,18 @@ const css=document.createElement('style');css.textContent=`
 .host .h-list{display:flex;flex-direction:column;gap:3px;font-size:12px}
 .host .h-list div{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.04);border-radius:8px;padding:3px 8px}
 .host .h-err{color:#ff9db0;font-size:11.5px;min-height:14px}
-.lb li.empty{display:block;font-size:12.5px;color:var(--mute);text-align:center;padding:14px 10px;line-height:1.4}`;
+.lb li.empty{display:block;font-size:12.5px;color:var(--mute);text-align:center;padding:14px 10px;line-height:1.4}
+.player .yt-embed>div{width:100%;height:100%}
+.host .h-ap{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:11.5px;line-height:1.45;color:var(--mute)}
+.host .h-ap b{color:#fff}.host .h-ap .snip{display:block;margin-top:4px;color:var(--dim);font-style:italic;max-height:48px;overflow:hidden}
+.host .ap-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:#777;vertical-align:middle}
+.host .ap-dot.ok{background:#5fe7a3;box-shadow:0 0 8px #5fe7a3}.host .ap-dot.warn{background:#ffc23d}.host .ap-dot.bad{background:#ff4f6d}
+.host .h-tg{display:flex;gap:4px}.host .h-tg button{flex:1;height:28px;border-radius:8px;font-size:11px;font-weight:800;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--mute)}
+.host .h-tg button.on{background:rgba(95,231,163,.16);border-color:rgba(95,231,163,.5);color:#d8ffe9}
+.host .h-list .cm{gap:4px}.host .h-list .cm span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.host .h-list .cm button{background:none;border:0;color:#fff;font-size:12px;padding:0 3px;cursor:pointer}
+.host .tag-auto{font-size:9.5px;font-weight:800;color:#22e4ff;margin-left:4px}.host .tag-lock{font-size:9.5px;margin-left:3px}
+.host .cm.now{outline:1px solid rgba(255,194,61,.5)}`;
 document.head.appendChild(css);
 const epEl=qs('.ep');if(epEl)epEl.innerHTML='<strong>Connecting…</strong>Live fan room';
 const foot=qs('.foot');if(foot&&foot.firstChild&&foot.firstChild.nodeType===3)foot.firstChild.textContent='Unofficial fan-made live room · not affiliated with or endorsed by the show · votes, chat and counts are from real fans in the room';
@@ -75,6 +86,9 @@ let sb,me=null,ST=null,EPID=null,chan=null,room=null,viewers=0,serverSkew=0,last
 const host={on:LS.get('bp.host',false),secret:LS.get('bp.host.secret',null),ok:false};
 const pending={bet:0};
 const hist=[];          // [{t,comic,avg}] for the "last 30s" delta
+/* timeline: fans see comic changes / golden ticket when THEIR player reaches the event offset */
+let ytPlayer=null,ytApiState='none',effCur=undefined,apStatus=null;
+const firedGT=new Set(LS.get('bp.gt.fired',[]));
 
 async function boot(){
   try{await loadLib()}catch(e){epEl&&(epEl.innerHTML='<strong>Offline</strong>Could not load the live room');toast('Live room unavailable right now');return}
@@ -106,14 +120,39 @@ function apply(d,first){
   if(!ep){ST=null;renderNoEpisode();if(EPID!==null||first){EPID=null;subscribe(null)}return}
   const changedEp=ep.id!==EPID;ST=d;
   if(changedEp){EPID=ep.id;subscribe(ep.id);loadChat();lastGT=ep.golden_ticket_at;hist.length=0}
-  render();
-  if(ep.golden_ticket_at&&ep.golden_ticket_at!==lastGT){lastGT=ep.golden_ticket_at;maybeGolden(ep)}
-  else lastGT=ep.golden_ticket_at;
+  if(changedEp){effCur=undefined;
+    // events already in the past when we join never replay the takeover
+    const po0=playerOffset();for(const e of d.events||[])if(e.kind==='golden_ticket'&&(e.source==='host'||e.offset==null||po0==null)&&now()-new Date(e.at).getTime()>60000)firedGT.add(e.id)}
+  render();lastGT=ep.golden_ticket_at;timelineTick();
   if(host.ok)renderHostState();
   if(window.BPLive&&BPLive.renderTicker)try{BPLive.renderTicker()}catch(e){}}
 
 function now(){return Date.now()+serverSkew}
-function curComic(){if(!ST)return null;const id=ST.episode.current_comic_id;return (ST.comics||[]).find(c=>c.id===id)||null}
+function curComic(){if(!ST)return null;const id=effectiveComicId();return (ST.comics||[]).find(c=>c.id===id)||null}
+/* where is this fan's YouTube player? null = unknown (no player / not playing) -> apply events immediately */
+function playerOffset(){try{if(!ytPlayer||typeof ytPlayer.getPlayerState!=='function')return null;const st=ytPlayer.getPlayerState();
+  if(st!==1&&st!==2&&st!==3)return null;const t=ytPlayer.getCurrentTime();return t>0&&t<6*3600?t:null}catch(e){return null}}
+function synced(){return playerOffset()!=null&&(ST&&ST.events||[]).some(e=>e.source==='auto'&&e.offset!=null)}
+function lastComicEvent(){if(!ST)return null;const po=playerOffset();let best=null;
+  for(const e of ST.events||[]){if(e.kind!=='comic'||e.cancelled)continue;
+    if(po!=null&&e.source==='auto'&&e.offset!=null&&e.offset>po)continue;
+    if(!best||e.id>best.id)best=e}return best}
+function effectiveComicId(){if(!ST)return null;const ep=ST.episode;if(playerOffset()==null)return ep.current_comic_id;
+  const e=lastComicEvent();if(!e)return null;
+  // the newest comic event (host or auto) wins; the DB current is the live truth once we are caught up
+  const newest=(ST.events||[]).filter(x=>x.kind==='comic'&&!x.cancelled).pop();
+  return newest&&e.id===newest.id?ep.current_comic_id:e.comic_id}
+function timelineTick(){if(!ST)return;const id=effectiveComicId();if(id!==effCur){const first=effCur===undefined;effCur=id;if(!first)render()}
+  const po=playerOffset();
+  for(const e of ST.events||[]){if(e.kind!=='golden_ticket'||e.cancelled||firedGT.has(e.id))continue;
+    if(!ST.episode.golden_ticket_at)continue;
+    let fire=false;
+    if(e.source==='host'||e.offset==null||po==null){fire=now()-new Date(e.at).getTime()<60000}
+    else if(po>=e.offset){fire=po-e.offset<90}
+    else continue;                                   // not reached yet on this player
+    firedGT.add(e.id);LS.set('bp.gt.fired',[...firedGT].slice(-20));
+    if(fire&&Date.now()>=localGTUntil)window.triggerGoldenTicket&&window.triggerGoldenTicket((e.data&&e.data.name)||ST.episode.golden_ticket_name||'');
+    renderBetState()}}
 
 function renderNoEpisode(){epEl&&(epEl.innerHTML='<strong>No live episode yet</strong>The room opens when the host starts one');
   setComic(null);const lb=qs('.lb');if(lb)lb.innerHTML='<li class="empty">Scores show up here once the host puts comics on stage.</li>';
@@ -124,7 +163,7 @@ function renderNoEpisode(){epEl&&(epEl.innerHTML='<strong>No live episode yet</s
   if(window.BPLive&&BPLive.renderTicker)try{BPLive.renderTicker()}catch(e){}}
 
 function render(){const ep=ST.episode;
-  if(epEl)epEl.innerHTML=`<strong>${esc(ep.title)}</strong>${ep.status==='live'?'Live · real fan votes':'Episode ended'}`;
+  if(epEl)epEl.innerHTML=`<strong>${esc(ep.title)}</strong>${ep.status==='live'?(synced()?'Live · synced to your player':'Live · real fan votes'):'Episode ended · final scores'}`;
   const yt=qs('.yt-top>div:nth-child(2)');if(yt)yt.innerHTML=`${esc(ep.title)}<small>Unofficial fan room · ${fmt(viewers)} watching</small>`;
   setComic(curComic());renderBoard();renderPanel();renderBetState();setPlayer(ep.youtube_url)}
 
@@ -156,10 +195,11 @@ function setKB(k,b){k=+k||0;b=+b||0;const tot=k+b,pk=tot?Math.round(k/tot*100):5
   qs('.killmeter .k').style.width=pk+'%';qs('.killmeter .b').style.width=(100-pk)+'%';
   const l=document.querySelectorAll('.km-l span');if(l[0]){l[0].textContent=fmt(k)+' say kill';l[1].textContent=fmt(b)+' say bomb'}}
 
-function renderBoard(){const lb=qs('.lb');if(!lb)return;const cs=(ST.comics||[]).slice();
+function renderBoard(){const lb=qs('.lb');if(!lb)return;const po=playerOffset(),cur=effectiveComicId();
+  const cs=(ST.comics||[]).filter(c=>po==null||c.source!=='auto'||c.start_offset==null||c.start_offset<=po+1);   // no spoilers for fans behind live
   if(!cs.length){lb.innerHTML='<li class="empty">No comics yet. Scores show up here as the bucket gets pulled.</li>';return}
   cs.sort((a,b)=>(b.avg==null?-1:+b.avg)-(a.avg==null?-1:+a.avg)||a.ord-b.ord);
-  lb.innerHTML=cs.map((c,i)=>{const now=c.id===ST.episode.current_comic_id,a=c.avg==null?null:+c.avg;
+  lb.innerHTML=cs.map((c,i)=>{const now=c.id===cur,a=c.avg==null?null:+c.avg;
     return `<li${now?' class="now"':''}><span class="rk">${i+1}</span><span class="nm">${esc(c.name)}${now?' <span class="tag live">LIVE</span>':''}<small>Comic #${c.ord} · ${fmt(c.votes)} vote${c.votes==1?'':'s'}</small></span><span class="sc"><span class="mini"><i style="width:${a==null?0:a*10}%"></i></span>${a==null?'—':a.toFixed(1)}</span></li>`}).join('')}
 
 function renderPanel(){const el=$('panel');if(!el)return;const ps=ST.panel||[];
@@ -172,7 +212,9 @@ function renderPanel(){const el=$('panel');if(!el)return;const ps=ST.panel||[];
   const rated=ps.filter(p=>p.avg!=null);qs('.panelcard .pill').textContent=rated.length?'avg '+(rated.reduce((s,p)=>s+ +p.avg,0)/rated.length).toFixed(1):'avg —'}
 
 function renderBetState(){if(!window.BPLive||!BPLive.applyRemote)return;const ep=ST.episode,b=ST.bet||{yes:0,no:0};
-  const o={id:ep.id,start:new Date(ep.starts_at),yes:+b.yes||0,no:+b.no||0,open:!!ep.betting_is_open,resolved:!!ep.golden_ticket_at,gtName:ep.golden_ticket_name};
+  const gtEv=(ST.events||[]).filter(e=>e.kind==='golden_ticket'&&!e.cancelled).pop(),po=playerOffset();
+  const gtReached=!!ep.golden_ticket_at&&(!gtEv||gtEv.source==='host'||gtEv.offset==null||po==null||po>=gtEv.offset);
+  const o={id:ep.id,start:new Date(ep.starts_at),yes:+b.yes||0,no:+b.no||0,open:!!ep.betting_is_open,resolved:gtReached,gtName:ep.golden_ticket_name};
   if(!pending.bet){const mb=ST.me&&ST.me.bet;o.pick=mb?mb.pick:null;o.conf=mb?mb.confidence:null}
   BPLive.applyRemote(o)}
 
@@ -182,10 +224,22 @@ function ytId(u){if(!u)return null;try{const x=new URL(u.trim());const h=x.hostn
   if(h==='youtu.be')return x.pathname.slice(1).split('/')[0]||null;
   if(/(^|\.)youtube(-nocookie)?\.com$/.test(h)){if(x.searchParams.get('v'))return x.searchParams.get('v');const m=x.pathname.match(/^\/(embed|live|shorts|v)\/([\w-]{6,})/);return m?m[2]:null}}catch(e){}
   return /^[\w-]{11}$/.test(u.trim())?u.trim():null}
+function loadYTApi(){if(ytApiState!=='none')return;ytApiState='loading';
+  const prev=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{ytApiState='ready';prev&&prev();if(ytCur){const c=ytCur;ytCur=null;setPlayer('https://youtu.be/'+c)}};
+  const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.async=true;s.onerror=()=>{ytApiState='failed';if(ytCur){const c=ytCur;ytCur=null;setPlayer('https://youtu.be/'+c)}};document.head.appendChild(s);
+  setTimeout(()=>{if(ytApiState==='loading'){ytApiState='failed';if(ytCur){const c=ytCur;ytCur=null;setPlayer('https://youtu.be/'+c)}}},8000)}
 function setPlayer(url){const pl=qs('.player');if(!pl)return;const id=ytId(url);if(id===ytCur)return;ytCur=id;
-  pl.querySelectorAll('.yt-embed,.yt-out').forEach(e=>e.remove());pl.classList.toggle('has-yt',!!id);if(!id)return;
+  pl.querySelectorAll('.yt-embed,.yt-out').forEach(e=>e.remove());pl.classList.toggle('has-yt',!!id);
+  if(ytPlayer){try{ytPlayer.destroy()}catch(e){}ytPlayer=null}
+  if(!id)return;
   const w=document.createElement('div');w.className='yt-embed';
-  w.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1" title="Kill Tony premiere on YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+  if(ytApiState==='none')loadYTApi();
+  if(ytApiState==='ready'&&window.YT&&YT.Player){
+    const holder=document.createElement('div');w.appendChild(holder);
+    ytPlayer=new YT.Player(holder,{host:'https://www.youtube-nocookie.com',videoId:id,
+      playerVars:{autoplay:1,mute:1,playsinline:1,rel:0,modestbranding:1},
+      events:{onStateChange:()=>timelineTick(),onError:e=>console.warn('youtube player error',e&&e.data)}});
+  }else w.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1" title="Kill Tony premiere on YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   const a=document.createElement('a');a.className='yt-out';a.href='https://www.youtube.com/watch?v='+encodeURIComponent(id);a.target='_blank';a.rel='noopener';
   a.textContent='Watch on YouTube ↗';a.title='If the video says embedding is disabled, open it on YouTube';pl.append(w,a)}
 
@@ -196,9 +250,10 @@ function maybeGolden(ep){const age=now()-new Date(ep.golden_ticket_at).getTime()
   window.triggerGoldenTicket&&window.triggerGoldenTicket(ep.golden_ticket_name||'')}
 
 /* ---------- clock on the comic card ---------- */
-function tickClock(){const tm=$('tm'),sm=qs('.comic .timer small');if(!tm)return;const ep=ST&&ST.episode;
+function tickClock(){timelineTick();const tm=$('tm'),sm=qs('.comic .timer small');if(!tm)return;const ep=ST&&ST.episode;
   if(!ep||!ep.current_comic_at||!curComic()){tm.textContent='–:––';if(sm)sm.textContent='ON STAGE';return}
-  const s=Math.max(0,(now()-new Date(ep.current_comic_at).getTime())/1000|0);tm.textContent=(s/60|0)+':'+String(s%60).padStart(2,'0');if(sm)sm.textContent='ON STAGE'}
+  const po=playerOffset(),le=po!=null?lastComicEvent():null;
+  const s=le&&le.offset!=null&&le.source==='auto'?Math.max(0,(po-le.offset)|0):Math.max(0,(now()-new Date(ep.current_comic_at).getTime())/1000|0);tm.textContent=(s/60|0)+':'+String(s%60).padStart(2,'0');if(sm)sm.textContent='ON STAGE'}
 
 /* ---------- realtime subscriptions ---------- */
 function subscribe(epId){if(chan){sb.removeChannel(chan);chan=null}
@@ -206,14 +261,16 @@ function subscribe(epId){if(chan){sb.removeChannel(chan);chan=null}
     .on('postgres_changes',{event:'*',schema:'public',table:'episodes'},p=>{const n=p.new||{};
       if(p.eventType==='INSERT'||!EPID||n.id!==EPID){scheduleRefresh(true);return}
       // fast path for host actions on the current episode
-      if(ST){Object.assign(ST.episode,n);if(n.golden_ticket_at&&n.golden_ticket_at!==lastGT){lastGT=n.golden_ticket_at;ST.episode.betting_is_open=false;maybeGolden(n)}render()}
+      if(ST){Object.assign(ST.episode,n);if(n.golden_ticket_at)ST.episode.betting_is_open=false;render()}
       scheduleRefresh(true)});
   if(epId){const f='episode_id=eq.'+epId;
     chan.on('postgres_changes',{event:'*',schema:'public',table:'live_ticks',filter:f},()=>scheduleRefresh())
       .on('postgres_changes',{event:'*',schema:'public',table:'comics',filter:f},()=>scheduleRefresh(true))
       .on('postgres_changes',{event:'*',schema:'public',table:'panelists',filter:f},()=>scheduleRefresh(true))
+      .on('postgres_changes',{event:'*',schema:'public',table:'episode_events',filter:f},()=>scheduleRefresh(true))
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:f},p=>addChat(p.new))
       .on('postgres_changes',{event:'UPDATE',schema:'public',table:'chat_messages',filter:f},p=>{if(p.new&&p.new.deleted)dropChat(p.new.id)})}
+  chan.on('system',{},m=>{if(m&&m.extension==='postgres_changes'&&m.status==='ok')scheduleRefresh(true)});
   chan.subscribe(s=>{if(s==='SUBSCRIBED')scheduleRefresh(true);if(s==='CHANNEL_ERROR'||s==='TIMED_OUT')console.warn('realtime',s)})}
 
 function joinPresence(){room=sb.channel('bp-room',{config:{presence:{key:me?me.id:'anon-'+Math.random().toString(36).slice(2)}}});
@@ -314,6 +371,12 @@ async function mountHost(){if(hostEl)hostEl.remove();hostEl=document.createEleme
   host.ok=true;
   hostEl.innerHTML=head+`<div class="h-body">
     <div class="h-state" id="hState" style="font-size:12px;color:var(--mute)"></div>
+    <div class="h-sec">Autopilot</div>
+    <div class="h-ap" id="hAP">Autopilot has not checked in yet.</div>
+    <div class="h-tg"><button id="hAuto" title="Master switch: auto comics, golden ticket, betting">AUTO</button><button id="hAutoGT" title="Auto golden ticket">AUTO 🎟️</button><button id="hAutoBet" title="Auto close betting after the opener">AUTO BETS</button></div>
+    <button class="h-btn" id="hUndo">↶ Undo last auto action</button>
+    <div class="h-sec">Comics <small style="color:var(--dim);text-transform:none;letter-spacing:0">▶ stage · ✎ rename · 🗑 delete</small></div>
+    <div class="h-list" id="hComics"></div>
     <div class="h-sec">On stage</div>
     <div class="h-row"><input id="hComic" maxlength="60" placeholder="Comic name" class="h-in"><button class="h-btn ok" id="hAdd" style="flex:none;padding:0 10px">Add + stage</button></div>
     <div class="h-row"><select id="hPick"></select><button class="h-btn" id="hSetCur" style="flex:none;padding:0 10px">Stage</button></div>
@@ -322,6 +385,7 @@ async function mountHost(){if(hostEl)hostEl.remove();hostEl=document.createEleme
     <div class="h-sec">Golden ticket</div>
     <label class="h-fld"><input id="hName" maxlength="60" placeholder="Winner name (default: comic on stage)"></label>
     <button class="h-gt" id="hGT">🎟️ GOLDEN TICKET!</button>
+    <button class="h-btn ghost" id="hGTx">✕ Cancel golden ticket</button>
     <button class="h-btn" id="hClose">🔒 Close betting</button>
     <div class="h-sec">Panel</div>
     <div class="h-list" id="hPanel"></div>
@@ -349,6 +413,16 @@ async function mountHost(){if(hostEl)hostEl.remove();hostEl=document.createEleme
   v('#hSave').onclick=()=>EPID&&hrpc('host_update_episode',{p_episode:EPID,p_title:v('#hTitle').value.trim()||null,p_starts_at:v('#hStart').value?new Date(v('#hStart').value).toISOString():null});
   v('#hNew').onclick=async()=>{if(!confirm('Start a NEW episode? The current one is marked ended and everyone moves to the new room.'))return;
     await hrpc('host_new_episode',{p_title:v('#hTitle').value.trim()||'Premiere Night',p_starts_at:v('#hStart').value?new Date(v('#hStart').value).toISOString():null,p_youtube_url:v('#hYT').value.trim()||null,p_panel:null})};
+  v('#hGTx').onclick=()=>{if(EPID&&confirm('Cancel the golden ticket? (Turns auto golden ticket off for this episode.)'))hrpc('host_cancel_golden_ticket',{p_episode:EPID})};
+  const flip=k=>{if(!EPID||!ST)return;const ep=ST.episode;const a={p_episode:EPID,p_enabled:null,p_gt:null,p_betting:null};
+    if(k==='all')a.p_enabled=!ep.auto_enabled;if(k==='gt')a.p_gt=!ep.auto_gt;if(k==='bet')a.p_betting=!ep.auto_betting;hrpc('host_set_auto',a)};
+  v('#hAuto').onclick=()=>flip('all');v('#hAutoGT').onclick=()=>flip('gt');v('#hAutoBet').onclick=()=>flip('bet');
+  v('#hUndo').onclick=async()=>{if(!EPID)return;const r=await hrpc('host_undo_auto',{p_episode:EPID});if(!r.error)toast('Undo: '+r.data)};
+  v('#hComics').onclick=e=>{const b=e.target.closest('button[data-act]');if(!b||!EPID)return;const id=b.closest('[data-cid]').dataset.cid,c=(ST.comics||[]).find(x=>x.id===id);if(!c)return;
+    if(b.dataset.act==='stage')hrpc('host_set_current_comic',{p_episode:EPID,p_comic:id});
+    if(b.dataset.act==='ren'){const n=prompt('Rename comic',c.name);if(n&&n.trim())hrpc('host_rename_comic',{p_comic:id,p_name:n.trim()})}
+    if(b.dataset.act==='del'&&confirm(`Delete "${c.name}"? Their votes go too, and autopilot won't add this name again tonight.`))hrpc('host_delete_comic',{p_comic:id})};
+  loadAutopilot();
   v('#hReset').onclick=()=>{if(EPID&&confirm('Delete ALL votes, bets and chat for this episode and reopen betting?'))hrpc('host_reset_episode',{p_episode:EPID})};
   v('#hOut').onclick=e=>{e.preventDefault();LS.del('bp.host.secret');host.secret=null;host.ok=false;mountHost()};
   if(ms)[...ms.children].forEach(()=>{});loadChat();renderHostState()}
@@ -363,8 +437,26 @@ function renderHostState(){if(!hostEl||!host.ok)return;const v=id=>hostEl.queryS
   if(document.activeElement!==v('#hYT'))v('#hYT').value=ep.youtube_url||'';
   if(document.activeElement!==v('#hTitle'))v('#hTitle').value=ep.title||'';
   if(document.activeElement!==v('#hStart')&&ep.starts_at)v('#hStart').value=toLocalInput(new Date(ep.starts_at));
+  const tg=(id,on,txt)=>{const b=v(id);b.classList.toggle('on',!!on);b.textContent=txt+(on?' ON':' OFF')};
+  tg('#hAuto',ep.auto_enabled,'AUTO');tg('#hAutoGT',ep.auto_gt,'🎟️');tg('#hAutoBet',ep.auto_betting,'BETS');
+  const lastAuto=(ST.events||[]).filter(e=>e.source==='auto'&&!e.cancelled).pop();const ub=v('#hUndo');ub.disabled=!lastAuto;
+  ub.textContent=lastAuto?`↶ Undo: ${lastAuto.kind==='comic'?'staged '+(((ST.comics||[]).find(c=>c.id===lastAuto.comic_id)||{}).name||'comic'):lastAuto.kind==='golden_ticket'?'golden ticket':lastAuto.kind==='betting'?'betting '+(lastAuto.data&&lastAuto.data.open?'opened':'closed'):lastAuto.kind}`:'↶ Undo last auto action';
+  v('#hComics').innerHTML=(ST.comics||[]).map(c=>`<div class="cm${c.id===ep.current_comic_id?' now':''}" data-cid="${c.id}"><span>#${c.ord} ${esc(c.name)}${c.source==='auto'?`<span class="tag-auto" title="heard as: ${esc(c.heard_as||'')}">AUTO ${c.confidence!=null?Math.round(c.confidence*100)+'%':''}</span>`:''}${c.locked?'<span class="tag-lock" title="edited by host: autopilot will not change it">🔒</span>':''}</span><button data-act="stage" title="Put on stage">▶</button><button data-act="ren" title="Rename">✎</button><button data-act="del" title="Delete">🗑</button></div>`).join('')||'<div><span style="color:var(--dim)">No comics yet</span></div>';
+  v('#hGTx').disabled=!ep.golden_ticket_at;renderAutopilot();
   const cl=v('#hClose');cl.disabled=!!ep.golden_ticket_at;cl.textContent=ep.golden_ticket_at?'✅ Bet settled (YES)':(ep.betting_open?'🔒 Close betting':'🔓 Reopen betting')}
 
-window.BPRealtime={get state(){return ST},get viewers(){return viewers},refresh:()=>fetchState(),get user(){return me}};
+let apChan=null;
+async function loadAutopilot(){const {data}=await sb.from('autopilot_status').select('*').eq('id',1).maybeSingle();apStatus=data;renderAutopilot();
+  if(!apChan)apChan=sb.channel('bp-autopilot').on('postgres_changes',{event:'*',schema:'public',table:'autopilot_status'},p=>{apStatus=p.new;renderAutopilot()}).subscribe();
+  if(!window.__apT)window.__apT=setInterval(renderAutopilot,5000)}
+function renderAutopilot(){if(!hostEl||!host.ok)return;const el=hostEl.querySelector('#hAP');if(!el)return;const a=apStatus;
+  if(!a||!a.heartbeat_at){el.innerHTML='<span class="ap-dot bad"></span>Autopilot has not checked in yet (it starts Mondays 18:40 CST).';return}
+  const age=(now()-new Date(a.heartbeat_at).getTime())/1000,cls=age<45?'ok':age<180?'warn':'bad';
+  const ago=age<90?Math.round(age)+'s ago':age<5400?Math.round(age/60)+' min ago':new Date(a.heartbeat_at).toLocaleString();
+  const off=a.stream_offset!=null?` · stream ${Math.floor(a.stream_offset/3600)}:${String(Math.floor(a.stream_offset%3600/60)).padStart(2,'0')}:${String(Math.floor(a.stream_offset%60)).padStart(2,'0')}`:'';
+  const other=a.episode_id&&EPID&&a.episode_id!==EPID?' <i>(other episode)</i>':'';
+  el.innerHTML=`<span class="ap-dot ${cls}"></span><b>${esc(a.state||'?')}</b>${other} · ${ago}${off}${a.last_confidence!=null?` · conf ${Math.round(a.last_confidence*100)}%`:''}`+
+    (a.last_event?`<br>Last: ${esc(a.last_event)}`:'')+(a.last_text?`<span class="snip">“…${esc(a.last_text.slice(-160))}”</span>`:'')}
+window.BPRealtime={__testPlayer(p){ytPlayer=p;timelineTick();if(ST)render()},get playerOffset(){return playerOffset()},get effectiveComicId(){return effectiveComicId()},get state(){return ST},get viewers(){return viewers},refresh:()=>fetchState(),get user(){return me}};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();

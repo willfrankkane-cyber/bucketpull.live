@@ -6,6 +6,11 @@ Project: `bucketpull-live` (ref `zwdogpkjxhpsrocqdnel`, us-east-2, free tier).
   host RPCs, Realtime publication). Applied as migrations
   `bucketpull_live_schema`, `bucketpull_live_private_impl_wrappers`,
   `bucketpull_live_tick_cascade_fix`.
+* `autopilot.sql` — autopilot layer (episode_events timeline, autopilot_status
+  heartbeat, auto_* RPCs, host overrides: rename/delete/undo/auto toggles,
+  cancel golden ticket). Applied as migration `bucketpull_autopilot`.
+  **Order matters:** run `schema.sql` then `autopilot.sql` (schema.sql alone
+  would restore the pre-autopilot host functions).
 * `config.js` (site root) holds the public URL + publishable key. Empty values => demo mode.
 * `?demo=1` forces demo mode in that browser, `?demo=0` clears it.
 * Host mode: open `/?host=1`, enter the host secret.

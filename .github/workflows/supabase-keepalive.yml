@@ -1,0 +1,19 @@
+name: Supabase keep-alive
+# Free Supabase projects pause after a week without activity. A tiny public read twice a week keeps
+# bucketpull-live awake even if the autopilot box is off. Uses only the public (publishable) key.
+on:
+  schedule:
+    - cron: "23 16 * * 2,5"   # Tue + Fri 16:23 UTC (10:23 CST)
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read live_state
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            "https://zwdogpkjxhpsrocqdnel.supabase.co/rest/v1/rpc/live_state" \
+            -H "apikey: sb_publishable_3QWxRZ_v4fKh1w6dcCxkOQ_se7UJV4I" \
+            -H "Content-Type: application/json" -d '{"p_episode":null}')
+          echo "HTTP $code"; test "$code" = "200"
