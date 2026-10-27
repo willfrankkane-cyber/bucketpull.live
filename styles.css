@@ -706,11 +706,11 @@ body{text-rendering:optimizeLegibility;letter-spacing:.005em}
     radial-gradient(60% 46% at 50% -6%,rgba(255,236,196,.17),rgba(255,236,196,.05) 45%,transparent 70%),
     radial-gradient(80% 60% at 50% 115%,rgba(106,47,201,.16),transparent 60%),
     linear-gradient(180deg,#0d0a0a 0%,#070606 55%,#040404 100%)}
-.stage-bg::before{opacity:.22;
+.stage-bg::before{opacity:.10;
   background-image:
-    linear-gradient(rgba(0,0,0,.18) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,0,0,.14) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,0,0,.14) 1px,transparent 1px),
+    linear-gradient(rgba(0,0,0,.10) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,0,0,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,0,0,.08) 1px,transparent 1px),
     linear-gradient(180deg,rgba(120,34,28,.14),rgba(70,20,18,.08));
   background-size:100% 34px,80px 68px,80px 68px,100% 100%;background-position:0 0,0 0,40px 34px,0 0;
   mask-image:radial-gradient(ellipse 70% 60% at 50% 28%,#000 18%,transparent 78%);-webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 28%,#000 18%,transparent 78%)}
