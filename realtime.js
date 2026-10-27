@@ -308,7 +308,7 @@ function loadYTApi(){if(ytApiState!=='none')return;ytApiState='loading';
   const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.async=true;s.onerror=()=>{ytApiState='failed';if(ytCur){const c=ytCur;ytCur=null;setPlayer('https://youtu.be/'+c)}};document.head.appendChild(s);
   setTimeout(()=>{if(ytApiState==='loading'){ytApiState='failed';if(ytCur){const c=ytCur;ytCur=null;setPlayer('https://youtu.be/'+c)}}},8000)}
 function setPlayer(url){const pl=qs('.player');if(!pl)return;const id=ytId(url);if(id===ytCur)return;ytCur=id;
-  pl.querySelectorAll('.yt-embed,.yt-out').forEach(e=>e.remove());pl.classList.toggle('has-yt',!!id);
+  pl.querySelectorAll('.yt-embed,.yt-out,.yt-unmute').forEach(e=>e.remove());pl.classList.toggle('has-yt',!!id);
   if(ytPlayer){try{ytPlayer.destroy()}catch(e){}ytPlayer=null}
   if(!id)return;
   const w=document.createElement('div');w.className='yt-embed';
@@ -320,7 +320,13 @@ function setPlayer(url){const pl=qs('.player');if(!pl)return;const id=ytId(url);
       events:{onStateChange:()=>timelineTick(),onError:e=>console.warn('youtube player error',e&&e.data)}});
   }else w.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1" title="Kill Tony premiere on YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   const a=document.createElement('a');a.className='yt-out';a.href='https://www.youtube.com/watch?v='+encodeURIComponent(id);a.target='_blank';a.rel='noopener';
-  a.textContent='Watch on YouTube ↗';a.title='If the video says embedding is disabled, open it on YouTube';pl.append(w,a)}
+  a.textContent='Watch on YouTube ↗';a.title='If the video says embedding is disabled, open it on YouTube';
+  const u=document.createElement('button');u.className='yt-unmute';u.type='button';u.textContent='🔊 Tap for sound';
+  u.style.cssText='position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;padding:9px 16px;border-radius:999px;border:0;background:#ffd23f;color:#111;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+  u.onclick=()=>{if(ytPlayer&&ytPlayer.unMute){try{ytPlayer.unMute();ytPlayer.setVolume(100);ytPlayer.playVideo()}catch(e){}}
+    else{const f=w.querySelector('iframe');if(f)f.src=f.src.replace('&mute=1','&mute=0')}u.remove()};
+  if(getComputedStyle(pl).position==='static')pl.style.position='relative';
+  pl.append(w,a,u)}
 
 
 /* ---------- clock on the comic card ---------- */
