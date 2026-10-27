@@ -26,7 +26,7 @@ Project: `bucketpull-live` (ref `zwdogpkjxhpsrocqdnel`, us-east-2, free tier).
   migrations `bucketpull_final_results`, `bucketpull_final_results_cache`,
   `bucketpull_final_results_newest`, `bucketpull_final_results_newest2` (the file is the final state).
   **Order matters:** run `schema.sql`, then `autopilot.sql`, then `autopilot_sync.sql`, then
-  `v3_scale_regulars.sql`, then `final_results.sql` (schema.sql alone would restore the pre-autopilot
+  `v3_scale_regulars.sql`, then `final_results.sql`, then `archive_replay.sql` (schema.sql alone would restore the pre-autopilot
   host functions and chat).
 * `config.js` (site root) holds the public URL + publishable key. Empty values => demo mode.
 * `?demo=1` forces demo mode in that browser, `?demo=0` clears it.
@@ -55,3 +55,12 @@ Run in the SQL editor (never from the browser; anon/authenticated cannot call it
   `meta_rev` changed. Votes are `vote()` RPC upserts (one row per fan per target), debounced 350 ms.
   The host panel polls `autopilot_status` every 5 s. Free-tier limits (200 Realtime connections,
   100 msg/s, 20 presence/s) no longer apply to the audience.
+
+## Archive + replay (archive_replay.sql, 2026-10-26)
+* Episodes stay votable after they end (`episode_is_votable`: status live or ended), so replays keep averaging.
+* `episode_archive()` lists #791 and later (ep_num, title, date, comics, votes, top comic, red-o-meter avg).
+* `live_poll(..., p_want)` opens one episode by number or uuid (`?ep=791`); `d.live` says if another episode is live.
+* `request_episode(p_input, p_client)` takes a pasted YouTube link or `#N`: `ready` if already built, `too_old`
+  before #791, `invalid` otherwise, else queues a row in `episode_requests` (pending -> processing -> done/rejected)
+  that `autopilot/archive_job.py` builds. `request_status(p_id)` polls it.
+* `vote('red', <episode id>, 0-100)` is the "How red is Tony?" thermometer (one vote per device, changeable).

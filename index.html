@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Bucket Pull Live — Unofficial Kill Tony Fan Room</title>
 <meta name="description" content="An unofficial, fan-made live room for Kill Tony premieres (Mondays 8:00 PM CT): rate the comics, the regulars and the panel, and hit the soundboard. Not affiliated with the show. Design mockup with sample data.">
-<meta name="theme-color" content="#07060b">
+<meta name="theme-color" content="#050505">
 <meta name="color-scheme" content="dark">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Bucket Pull Live — Unofficial Kill Tony Fan Room">
@@ -13,7 +13,7 @@
 <meta property="og:url" content="https://bucketpull.live/">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🪣%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=club1">
 </head>
 <body>
 <div class="stage-bg"><div class="beam b1"></div><div class="beam b2"></div><div class="grain"></div></div>
@@ -28,6 +28,7 @@
     <div class="spacer"></div>
     <div class="ep"><strong>Ep. #000 · Premiere Night</strong>Sample data · fan-made mockup</div>
     <div class="chip live"><span class="dot"></span>LIVE</div>
+    <button class="chip arch" id="archBtn" type="button" title="Past episodes: replay and vote"><span>📚</span><span class="hide-m">Archive</span></button>
     <div class="chips">
       <div class="chip viewers"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><b id="vc">48,213</b><span class="hide-m">watching</span></div>
       <div class="chip countdown"><span class="lbl">⏱ <span class="hide-m">Next premiere </span>Mon 8:00 PM CT</span><span class="t" id="cd">6d 22:28:41</span></div>
@@ -56,16 +57,10 @@
         <div class="dist-l"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
         <div class="rate-lbl"><span>Your rating</span><b id="mine">8 · solid set</b></div>
         <div class="rate" id="rate"></div>
-        <div class="quick">
-          <button class="kill" data-burst="KILL!" data-c="#9dff3b">🔥 KILL <small>68%</small></button>
-          <button class="bomb" data-burst="BOMB!" data-c="#ff2d55">💣 BOMB <small>32%</small></button>
-        </div>
-        <div class="killmeter"><div class="k" style="width:68%"></div><div class="b" style="width:32%"></div></div>
-        <div class="km-l"><span>8,775 say kill</span><span>4,129 say bomb</span></div>
       </div>
 
       <div class="card lbcard">
-        <div class="card-h"><h3><span class="ic" style="background:rgba(139,92,255,.2)">🏆</span>TONIGHT'S BOARD</h3><span class="pill">Live scores</span></div>
+        <div class="card-h"><h3><span class="ic" style="background:rgba(74,85,232,.2)">🏆</span>TONIGHT'S BOARD</h3><span class="pill">Live scores</span></div>
         <ol class="lb">
           <li><span class="rk">1</span><span class="nm">Priya "Lowkey" Ramos<small>Comic #2 · 9,410 votes</small></span><span class="sc"><span class="mini"><i style="width:88%"></i></span>8.8</span></li>
           <li><span class="rk">2</span><span class="nm">Gus Fettuccine<small>Comic #1 · 11,027 votes</small></span><span class="sc"><span class="mini"><i style="width:79%"></i></span>7.9</span></li>
@@ -78,6 +73,7 @@
 
     <!-- CENTER -->
     <section class="col center">
+      <div class="stage-row">
       <div class="player">
         <div class="curtain l"></div><div class="curtain r"></div>
         <div class="spot"></div>
@@ -94,9 +90,33 @@
             <span class="r"><span class="hide-m">CC</span><span>⚙</span><span class="hide-m">▭</span><span>⛶</span></span></div>
         </div>
       </div>
+      <aside class="card redcard" id="redcard" aria-label="How red is Tony? Fan thermometer">
+        <div class="rc-h"><b>HOW RED IS TONY?</b><small>🌡️ fan thermometer</small></div>
+        <div class="rc-body">
+          <div class="thermo" role="slider" tabindex="0" aria-label="How red is Tony, 0 to 100" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="tube"><div class="scale" aria-hidden="true"><i>🦞</i><i>🍅</i><i>🥵</i><i>😊</i><i>😐</i></div><div class="merc"></div><div class="you" hidden>YOU</div></div>
+            <div class="bulb" aria-hidden="true"></div>
+          </div>
+          <div class="rc-read"><b class="rc-avg">—</b><span class="rc-word">Be the first</span><small class="rc-n">0 votes</small><small class="rc-hint">Tap or drag the tube</small></div>
+        </div>
+      </aside>
+      </div>
+
+      <div class="card kbcard">
+        <div class="card-h"><h3><span class="ic" style="background:rgba(242,201,76,.14)">⚖️</span>KILL OR BOMB?</h3><span class="pill kb-who" id="kbWho">Pick a side</span></div>
+        <div class="quick kb3">
+          <div class="kbframe kf"><button class="kill" data-burst="KILL!" data-c="#f2c94c"><span class="e">🔥</span>KILL <small>68%</small></button></div>
+          <div class="kb-mid">
+            <div class="kb-vs">VS</div>
+            <div class="killmeter"><div class="k" style="width:68%"></div><div class="b" style="width:32%"></div></div>
+            <div class="km-l"><span>8,775 say kill</span><span>4,129 say bomb</span></div>
+          </div>
+          <div class="kbframe bf"><button class="bomb" data-burst="BOMB!" data-c="#e0182d"><span class="e">💣</span>BOMB <small>32%</small></button></div>
+        </div>
+      </div>
 
       <div class="card soundcard">
-        <div class="card-h"><h3><span class="ic" style="background:rgba(255,79,216,.18)">🎛️</span>SOUNDBOARD</h3>
+        <div class="card-h"><h3><span class="ic" style="background:rgba(123,63,228,.18)">🎛️</span>SOUNDBOARD</h3>
           <label class="vol" title="Soundboard volume"><span id="volIc">🔊</span><input type="range" id="vol" min="0" max="100" value="80"></label></div>
         <div class="sb" id="sb"></div>
         <div class="sb-note"><span>🎹</span><span>Real CC0 recordings from Freesound; swap in your own anytime. Keys <b>1–8</b> play, <b>⚙</b> swaps.</span></div>
@@ -112,7 +132,7 @@
       </div>
 
       <div class="card panelcard">
-        <div class="card-h"><h3><span class="ic" style="background:rgba(34,228,255,.16)">🛋️</span>RATE THE PANEL</h3><span class="pill ok">avg 8.1</span></div>
+        <div class="card-h"><h3><span class="ic" style="background:rgba(201,204,214,.16)">🛋️</span>RATE THE PANEL</h3><span class="pill ok">avg 8.1</span></div>
         <div class="panel-list" id="panel"></div>
       </div>
     </section>
@@ -183,10 +203,11 @@
   </div>
 </div>
 <script src="config.js"></script>
-<script src="app.js"></script>
+<script src="app.js?v=club1"></script>
 <script src="sounds-data.js"></script>
-<script src="soundboard.js"></script>
-<script src="live.js"></script>
-<script src="realtime.js?v=reg2"></script>
+<script src="soundboard.js?v=club1"></script>
+<script src="live.js?v=club1"></script>
+<script src="red.js?v=club1"></script>
+<script src="realtime.js?v=club1"></script>
 </body>
 </html>

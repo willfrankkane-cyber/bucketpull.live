@@ -79,3 +79,9 @@ for live/upcoming status, and shows **"YouTube bot check: audio blocked"** in th
 Run the room by hand when that happens (all host controls keep working).
 Optional fix: put a Netscape-format `cookies.txt` (export from a throwaway YouTube login) in
 this folder; it is used automatically if present.
+
+## Fan-requested past episodes (archive_job.py)
+`run.sh archive` runs from cron every 10 minutes. It takes pending `episode_requests` (a pasted Kill Tony YouTube
+link or `#N`, #791 or later), finds the podcast item, transcribes it (~30 min), builds the lineup, maps podcast time
+to video time and creates an ENDED, votable episode with comic timestamps. It skips Mon 15:00 - Tue 03:00 (box
+time) and whenever the live run holds `autopilot.lock`, so it never competes with a premiere.

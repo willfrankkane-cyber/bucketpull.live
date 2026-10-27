@@ -18,7 +18,7 @@ const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.par
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('en-US');
 const WORDS=['','yikes','rough','meh','eh','okay','decent','good','solid set','great','legendary'];
-const GRAD=[['#ffc23d','#ff6a00'],['#ff4fd8','#8b5cff'],['#22e4ff','#2b6bff'],['#b6ff3b','#14b86a'],['#ff7a33','#ff2d55'],['#a78bff','#5b3cff']];
+const GRAD=[['#ffc23d','#b8860b'],['#7b3fe4','#4a55e8'],['#c9ccd6','#3a3fd0'],['#f2c94c','#8a6516'],['#f0263b','#8e0b1a'],['#8f63e8','#3a3fd0']];
 const initials=n=>(String(n).trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2)||'?').toUpperCase();
 const HOLD=5000;          // ms an auto event waits (no player) before it shows; the autopilot writes events 5 s early
 
@@ -38,7 +38,7 @@ const css=document.createElement('style');css.textContent=`
 .host .h-row{display:flex;gap:6px}.host .h-row>*{flex:1;min-width:0}
 .host select,.host .h-fld input[type=datetime-local]{height:34px;border-radius:9px;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--ink);padding:0 8px;font:600 12.5px var(--body)}
 .host .h-sec{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-top:6px}
-.host .h-btn.ok{background:rgba(182,255,59,.12);border-color:rgba(182,255,59,.35);color:#e6ffc4}
+.host .h-btn.ok{background:rgba(242,201,76,.12);border-color:rgba(242,201,76,.35);color:#e6ffc4}
 .host .h-list{display:flex;flex-direction:column;gap:3px;font-size:12px}
 .host .h-list div{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.04);border-radius:8px;padding:3px 8px}
 .host .h-err{color:#ff9db0;font-size:11.5px;min-height:14px}
@@ -52,25 +52,41 @@ const css=document.createElement('style');css.textContent=`
 .host .h-tg button.on{background:rgba(95,231,163,.16);border-color:rgba(95,231,163,.5);color:#d8ffe9}
 .host .h-list .cm{gap:4px}.host .h-list .cm span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .host .h-list .cm button{background:none;border:0;color:#fff;font-size:12px;padding:0 3px;cursor:pointer}
-.host .tag-auto{font-size:9.5px;font-weight:800;color:#22e4ff;margin-left:4px}.host .tag-lock{font-size:9.5px;margin-left:3px}
+.host .tag-auto{font-size:9.5px;font-weight:800;color:#c9ccd6;margin-left:4px}.host .tag-lock{font-size:9.5px;margin-left:3px}
 .host .cm.now{outline:1px solid rgba(255,194,61,.5)}
 .host .tag-reg{font-size:9.5px;font-weight:800;color:var(--gold);margin-left:4px}
 .host .h-row select{flex:none;width:96px}
 .chip.live.final{background:linear-gradient(180deg,#ffc23d,#e8a317);color:#1a1205}.chip.live.final .dot{background:#1a1205;box-shadow:none;animation:none}
 .lb.final li{cursor:pointer}.lb.final li.sel{outline:1px solid rgba(255,194,61,.55);background:rgba(255,194,61,.08)}
-.lb .kbs{display:inline-block;margin-left:6px;font-weight:700;color:var(--mute)}.lb .kbs b{color:#b6ff3b;font-weight:800}.lb .kbs em{font-style:normal;color:#ff6d8a;font-weight:800}
+.lb .kbs{display:inline-block;margin-left:6px;font-weight:700;color:var(--mute)}.lb .kbs b{color:#f2c94c;font-weight:800}.lb .kbs em{font-style:normal;color:#ff6d8a;font-weight:800}
 .onstage .pill.final,.lbcard .pill.final,#regPill.final{background:rgba(255,194,61,.16);color:#ffd66e;border-color:rgba(255,194,61,.45)}
 .lastwk{font:800 11px var(--body);letter-spacing:.02em;color:#ffd66e;background:rgba(255,194,61,.1);border:1px solid rgba(255,194,61,.4);border-radius:999px;padding:4px 9px;cursor:pointer;white-space:nowrap}
 .lbcard .card-h{gap:6px}.lbcard .card-h .lastwk{margin-left:auto}
-.bp-res{position:fixed;inset:0;z-index:130;background:rgba(5,3,10,.78);display:flex;align-items:flex-start;justify-content:center;padding:4vh 12px;overflow:auto}
-.bp-res .box{width:min(560px,100%);background:#15101f;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:18px 18px 14px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.bp-res{position:fixed;inset:0;z-index:130;background:rgba(4,4,6,.78);display:flex;align-items:flex-start;justify-content:center;padding:4vh 12px;overflow:auto}
+.bp-res .box{width:min(560px,100%);background:#0f0f12;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:18px 18px 14px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .bp-res h2{margin:0 0 2px;font:400 24px var(--display);letter-spacing:.03em;color:#fff}.bp-res .sub{color:var(--mute);font-size:12.5px;margin-bottom:12px}
 .bp-res h4{margin:14px 0 6px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
 .bp-res .row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:9px;background:rgba(255,255,255,.04);margin-bottom:4px;font-size:13px}
 .bp-res .row .n{flex:1;min-width:0}.bp-res .row .n small{display:block;color:var(--dim);font-size:11px}.bp-res .row .a{font-weight:800;font-size:15px}
 .bp-res .gt{padding:8px 10px;border-radius:10px;background:rgba(255,194,61,.1);border:1px solid rgba(255,194,61,.35);font-size:13px}
 .bp-res .x{float:right;background:none;border:0;color:#fff;font-size:22px;cursor:pointer;line-height:1}
-.bp-res a{color:#ffd66e}`;
+.bp-res a{color:#ffd66e}
+.chip.live.replay{background:linear-gradient(180deg,#4a55e8,#5b3cff);color:#fff}.chip.live.replay .dot{background:#fff;box-shadow:none;animation:none}
+.bp-livebar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;padding:9px 14px;border-radius:14px;background:linear-gradient(90deg,rgba(224,24,45,.22),rgba(224,24,45,.08));border:1px solid rgba(224,24,45,.5);font-size:13.5px;font-weight:700}
+.bp-livebar button,.bp-livebar a{background:#e0182d;color:#fff;border-radius:999px;padding:6px 13px;font-weight:800;font-size:12.5px;text-decoration:none}
+.bp-livebar.back{background:linear-gradient(90deg,rgba(74,85,232,.2),rgba(74,85,232,.06));border-color:rgba(74,85,232,.45)}.bp-livebar.back button{background:#4a55e8}
+.bp-res .paste{display:flex;gap:8px;margin:4px 0 6px}.bp-res .paste input{flex:1;min-width:0;height:42px;border-radius:11px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:#fff;padding:0 12px;font:600 14px var(--body);outline:0}
+.bp-res .paste input:focus{border-color:#ffd66e}.bp-res .paste button{flex:none;height:42px;padding:0 16px;border-radius:11px;background:linear-gradient(180deg,#ffc23d,#e8a317);color:#1a1205;font-weight:800}
+.bp-res .pmsg{min-height:18px;font-size:12.5px;color:var(--mute);line-height:1.45}.bp-res .pmsg.ok{color:#f2c94c}.bp-res .pmsg.warn{color:#ffd66e}.bp-res .pmsg.bad{color:#ff9db0}
+.bp-res .pmsg .spin{display:inline-block;width:11px;height:11px;border:2px solid #ffd66e;border-right-color:transparent;border-radius:50%;animation:bpspin .8s linear infinite;vertical-align:-1px;margin-right:6px}
+@keyframes bpspin{to{transform:rotate(360deg)}}
+.bp-res .arow{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 10px;border-radius:12px;background:rgba(255,255,255,.04);margin-bottom:6px;cursor:pointer;border:1px solid transparent;text-align:left;width:100%;color:#fff}
+.bp-res .arow:hover,.bp-res .arow.cur{border-color:rgba(255,194,61,.45);background:rgba(255,194,61,.07)}
+.bp-res .arow .no{font:400 20px var(--display);color:#ffd66e;text-align:center}.bp-res .arow .t{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bp-res .arow .t small{display:block;font-weight:500;color:var(--dim);font-size:11px;white-space:normal}.bp-res .arow .rd{text-align:right;font-size:12px;font-weight:800;color:#ffd3da;white-space:nowrap}
+.bp-res .arow .rd small{display:block;color:var(--dim);font-weight:600;font-size:10.5px}.bp-res .arow .lv{color:#e0182d;font-weight:800}
+.lb.final li .seek{font-size:10.5px;color:#ffd66e;font-weight:700;margin-left:6px}
+.pm.reg.seekable{cursor:pointer}`;
 document.head.appendChild(css);
 
 const epEl=qs('.ep');if(epEl)epEl.innerHTML='<strong>Connecting…</strong>Live fan room';
@@ -89,6 +105,8 @@ let finalSel=null,stageH=null;
 const FINAL=()=>!!(ST&&ST.episode&&ST.episode.status==='ended');
 let sb,me=null,ST=null,EPID=null,MV=-1,META=null,SCORES=null,MINE=null,BO=false,viewers=0,serverSkew=0,localGTUntil=0,lastFetch=0;
 const DIST={};            // last distribution seen per comic (the poll only carries the 3 most recent)
+/* ?ep=791 (or an episode id) opens that episode as a replay; null = whatever is live / latest */
+let WANT=(()=>{const v=new URLSearchParams(location.search).get('ep');return v&&/^(\d{1,6}|[0-9a-f-]{36})$/i.test(v.trim())?v.trim():null})(),LIVEOTHER=null,finalAt=0;
 const CID=(()=>{let c=LS.get('bp.cid',null);if(!c||c.length<8){c='c'+Math.random().toString(36).slice(2,12)+Date.now().toString(36);LS.set('bp.cid',c)}return c})();
 const host={on:LS.get('bp.host',false),secret:LS.get('bp.host.secret',null),ok:false};
 const pending={bet:0};
@@ -126,7 +144,7 @@ function premiereWindow(){const p=Object.fromEntries(chiWH.formatToParts(new Dat
 function nextDelay(){const vis=document.visibilityState!=='hidden';const live=ST&&ST.episode&&ST.episode.status==='live';
   const fin=FINAL();const base=!vis?(fin?120000:30000):live?5000:fin?(premiereWindow()?15000:60000):15000;return base*(0.75+Math.random()*0.5)*Math.pow(2,Math.min(failN,3))}
 async function poll(){if(inflight){soon(1500);return}inflight=true;lastFetch=Date.now();clearTimeout(pollT);pollT=null;
-  try{const {data,error}=await sb.rpc('live_poll',{p_known_ep:EPID,p_meta:MV,p_client:CID});if(error)throw error;failN=0;applyPoll(data)}
+  try{const {data,error}=await sb.rpc('live_poll',WANT?{p_known_ep:EPID,p_meta:MV,p_client:CID,p_want:WANT}:{p_known_ep:EPID,p_meta:MV,p_client:CID});if(error)throw error;failN=0;applyPoll(data)}
   catch(e){failN++;console.warn('live_poll',e&&e.message||e);if(!ST&&failN===1)toast('Could not reach the live room, retrying…')}
   finally{inflight=false;schedule(nextDelay())}}
 async function loadMine(){const ep=EPID;if(!me||!ep)return;const {data,error}=await sb.rpc('my_state',{p_episode:ep});
@@ -137,6 +155,9 @@ async function loadMine(){const ep=EPID;if(!me||!ep)return;const {data,error}=aw
 function applyPoll(d){
   if(d&&d.t)serverSkew=new Date(d.t).getTime()-Date.now();
   viewers=+d.v||0;paintViewers();
+  if(d&&WANT&&d.want==='missing'){const w=WANT;WANT=null;setUrl(null);toast(/^\d+$/.test(w)?`Episode #${w} isn't in the room yet: paste its YouTube link in the archive`:'That episode link is not available');
+    if(/^\d+$/.test(w)&&+w>=791)setTimeout(()=>openArchive(w),400)}
+  LIVEOTHER=d&&d.live||null;paintLiveBar();
   if(!d||!d.ep){const was=EPID;EPID=null;MV=-1;META=null;SCORES=null;ST=null;if(was!==null||!renderNoEpisode.done){renderNoEpisode();renderNoEpisode.done=true}if(host.ok)renderHostState();return}
   renderNoEpisode.done=false;
   const changedEp=d.ep!==EPID;
@@ -148,7 +169,7 @@ function applyPoll(d){
   build();
   if(changedEp){// events already in the past when we join never replay the takeover
     for(const e of ST.events||[])if(e.kind==='golden_ticket'&&now()-new Date(e.at).getTime()>60000+HOLD)firedGT.add(e.id)}
-  render();timelineTick();
+  render();timelineTick();paintLiveBar();
   if(host.ok)renderHostState();
   if(window.BPLive&&BPLive.renderTicker)try{BPLive.renderTicker()}catch(e){}}
 
@@ -157,7 +178,7 @@ function build(){if(!META){ST=null;return}
   ST={episode:Object.assign({},META.episode,{betting_is_open:BO}),events:META.events||[],
     comics:(META.comics||[]).map(x=>{const v=c[x.id]||[0,null,0,0];return Object.assign({},x,{votes:v[0],avg:v[1],kills:v[2],bombs:v[3],dist:DIST[x.id]||null})}),
     panel:(META.panel||[]).map(x=>{const v=p[x.id]||[0,null];return Object.assign({},x,{votes:v[0],avg:v[1]})}),
-    bet:{yes:(s.b||[0,0])[0],no:(s.b||[0,0])[1]},me:MINE}}
+    bet:{yes:(s.b||[0,0])[0],no:(s.b||[0,0])[1]},red:s.r||[0,null],me:MINE}}
 
 function now(){return Date.now()+serverSkew}
 /* where is this fan's YouTube player? null = unknown (no player / not playing) */
@@ -175,8 +196,8 @@ function effectiveComicId(){if(!ST)return null;const ep=ST.episode,evs=comicEven
 function visibleComicIds(){const po=playerOffset(),vis=new Set(),seen=new Set();
   for(const e of comicEvents()){if(!e.comic_id)continue;seen.add(e.comic_id);if(evVisible(e,po))vis.add(e.comic_id)}
   for(const c of ST.comics||[])if(c.source!=='auto'||!seen.has(c.id))vis.add(c.id);return vis}
-function curComic(){if(!ST)return null;const id=effectiveComicId();return (ST.comics||[]).find(c=>c.id===id)||null}
-function timelineTick(){if(!ST)return;const id=effectiveComicId();const sig=[...visibleComicIds()].join(',');
+function curComic(){if(!ST)return null;if(FINAL())return finalComic();const id=effectiveComicId();return (ST.comics||[]).find(c=>c.id===id)||null}
+function timelineTick(){if(!ST)return;const id=FINAL()?(finalComic()||{}).id||null:effectiveComicId();const sig=[...visibleComicIds()].join(',');
   if(id!==effCur||sig!==visSig){const first=effCur===undefined;effCur=id;visSig=sig;if(!first)render()}
   const po=playerOffset();
   for(const e of ST.events||[]){if(e.kind!=='golden_ticket'||e.cancelled||firedGT.has(e.id))continue;
@@ -198,44 +219,61 @@ function renderNoEpisode(){renderChrome(false);epEl&&(epEl.innerHTML='<strong>No
   const r=$('regs');if(r)r.innerHTML='<div class="empty">Regulars and golden ticket winners appear here the moment they hit the stage and stay all night.</div>';
   const rp=$('regPill');if(rp)rp.textContent='0 up';
   window.BPLive&&BPLive.applyRemote({id:'none',yes:0,no:0,open:false,resolved:false,pick:null,conf:null});setPlayer(null);
-  const pp=qs('.panelcard .pill');if(pp)pp.textContent='avg —';
+  const pp=qs('.panelcard .pill');if(pp)pp.textContent='avg —';paintRed();
   const yt=qs('.yt-top>div:nth-child(2)');if(yt)yt.innerHTML=`Waiting for the premiere<small>Unofficial fan room · ${fmt(viewers)} watching</small>`;
   if(window.BPLive&&BPLive.renderTicker)try{BPLive.renderTicker()}catch(e){}}
 
 function render(){if(!ST)return;const ep=ST.episode,fin=FINAL();
-  if(epEl)epEl.innerHTML=`<strong>${esc(ep.title)}</strong>${ep.status==='live'?(synced()?'Live · synced to your player':'Live · real fan votes'):fin?'Final results · voting closed':'Starting soon'}`;
-  const yt=qs('.yt-top>div:nth-child(2)');if(yt)yt.innerHTML=`${esc(ep.title)}<small>${fin?'Final results · replay on YouTube':'Unofficial fan room · '+fmt(viewers)+' watching'}</small>`;
+  if(epEl)epEl.innerHTML=`<strong>${esc(ep.title)}</strong>${ep.status==='live'?(synced()?'Live · synced to your player':'Live · real fan votes'):fin?'Replay · voting stays open':'Starting soon'}`;
+  const yt=qs('.yt-top>div:nth-child(2)');if(yt)yt.innerHTML=`${esc(ep.title)}<small>${fin?'Replay · tap a comic on the board to jump to their set':'Unofficial fan room · '+fmt(viewers)+' watching'}</small>`;
   renderChrome(fin);
-  setComic(fin?finalComic():curComic());renderBoard();renderRegs();renderPanel();renderBetState();setPlayer(ep.youtube_url)}
+  setComic(curComic());renderBoard();renderRegs();renderPanel();renderBetState();setPlayer(ep.youtube_url);paintRed()}
+function epNum(){const n=ST&&ST.episode&&ST.episode.ep_num;return n?'#'+n:''}
+/* "How red is Tony?": room average + this fan's own level, open whenever the episode is votable */
+function paintRed(){if(!window.BPRed)return;if(!ST){BPRed.set({avg:null,n:0,mine:null,enabled:false,why:'Opens with the episode'});return}
+  const r=ST.red||[0,null],st=ST.episode.status;
+  BPRed.set({avg:r[1]==null?null:+r[1],n:+r[0]||0,mine:ST.me&&ST.me.red!=null?+ST.me.red:null,enabled:st==='live'||st==='ended',why:'Opens when the episode starts'})}
 /* final-results mode: header chip, card titles, pills, the "Last week" link */
 function renderChrome(fin){const chip=qs('header .chip.live');
-  if(chip){chip.classList.toggle('final',fin);chip.innerHTML=fin?'<span class="dot"></span>FINAL':'<span class="dot"></span>LIVE';chip.title=fin?'This episode has ended: final fan results until the next one goes live':''}
+  if(chip){chip.classList.toggle('final',fin);chip.classList.toggle('replay',fin);chip.innerHTML=fin?`<span class="dot"></span>REPLAY ${epNum()}`:'<span class="dot"></span>LIVE';chip.title=fin?'Replay: votes stay open, rate along with the video':''}
   const h=qs('.onstage .card-h h3');if(h){if(stageH==null)stageH=h.innerHTML;
-    const want=fin?'<span class="ic" style="background:rgba(255,194,61,.18)">🏁</span>FINAL RESULTS':stageH;if(h.innerHTML!==want)h.innerHTML=want}
-  const lp=qs('.lbcard .pill');if(lp){lp.textContent=fin?'Final':'Live scores';lp.classList.toggle('final',fin)}
-  const lh=qs('.lbcard .card-h h3');if(lh)lh.lastChild.textContent=fin?'FINAL BOARD':"TONIGHT'S BOARD";
+    const want=fin?'<span class="ic" style="background:rgba(74,85,232,.22)">🎬</span>REPLAY · RATE ALONG':stageH;if(h.innerHTML!==want)h.innerHTML=want}
+  const lp=qs('.lbcard .pill');if(lp){lp.textContent=fin?'Replay':'Live scores';lp.classList.toggle('final',fin)}
+  const lh=qs('.lbcard .card-h h3');if(lh)lh.lastChild.textContent=fin?'EPISODE BOARD':"TONIGHT'S BOARD";
   const pv=META&&META.prev,lh2=qs('.lbcard .card-h');let a=qs('.lbcard .lastwk');
-  if(pv&&!fin&&lh2){if(!a){a=document.createElement('button');a.className='lastwk';a.type='button';a.textContent='↩ Last week';lh2.insertBefore(a,lp||null)}
+  if(pv&&!fin&&!WANT&&lh2){if(!a){a=document.createElement('button');a.className='lastwk';a.type='button';a.textContent='↩ Last week';lh2.insertBefore(a,lp||null)}
     a.title='Final results: '+(pv.title||'previous episode');a.onclick=()=>openResults(pv.id)}else if(a)a.remove()}
 function bucketPulls(){return (ST&&ST.comics||[]).filter(c=>c.kind!=='regular')}
 function topComic(){const cs=bucketPulls().filter(c=>c.avg!=null);cs.sort((a,b)=>+b.avg-+a.avg||b.votes-a.votes||a.ord-b.ord);return cs[0]||null}
-function finalComic(){const all=ST&&ST.comics||[];return (finalSel&&all.find(c=>c.id===finalSel))||topComic()||bucketPulls()[0]||all[0]||null}
+/* replay: the comic whose set the fan's video is in (a fresh click wins for a few seconds while the player seeks) */
+function videoComic(){const po=playerOffset();if(po==null)return null;let best=null;
+  for(const c of ST&&ST.comics||[])if(c.start_offset!=null&&+c.start_offset<=po+4&&(!best||+c.start_offset>+best.start_offset))best=c;return best}
+function finalComic(){const all=ST&&ST.comics||[],sel=finalSel&&all.find(c=>c.id===finalSel);
+  if(sel&&Date.now()-finalAt<5000)return sel;return videoComic()||sel||topComic()||bucketPulls()[0]||all[0]||null}
+function seekTo(sec){if(sec==null||!isFinite(sec))return false;const t=Math.max(0,Math.floor(+sec-3));
+  if(ytPlayer&&typeof ytPlayer.seekTo==='function'){try{ytPlayer.seekTo(t,true);ytPlayer.playVideo()}catch(e){return false}}
+  else{const f=qs('.yt-embed iframe');if(!f)return false;f.src=f.src.replace(/&start=\d+/,'').replace('autoplay=0','autoplay=1')+'&start='+t}
+  const pl=qs('.player');if(pl){const r=pl.getBoundingClientRect();if(r.bottom<60||r.top>innerHeight-80)pl.scrollIntoView({behavior:'smooth',block:'start'})}return true}
+function pickReplay(id){if(!FINAL()||!ST)return;const c=(ST.comics||[]).find(x=>x.id===id);if(!c)return;finalSel=id;finalAt=Date.now();
+  const ok=seekTo(c.start_offset);render();if(c.start_offset==null)toast(`${c.name}: no video timestamp for this set`);else if(!ok)toast('Video is still loading, try again in a second')}
+const mmss=t=>{t=Math.max(0,t|0);const h=t/3600|0,m=(t%3600)/60|0,s2=t%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(s2).padStart(2,'0')}
 
 function setComic(c){
   const num=qs('.comic .num'),who=qs('.comic .who'),pill=qs('.onstage .pill');
   const live=ST&&ST.episode.status==='live',fin=FINAL();
-  document.querySelectorAll('#rate button,.quick button').forEach(b=>b.disabled=!c||!live);
+  document.querySelectorAll('#rate button,.quick button').forEach(b=>b.disabled=!c||!(live||fin));
+  const kw=$('kbWho');if(kw){kw.textContent=c?c.name:'Pick a side';kw.title=c?'Kill or bomb: '+c.name:''}
   if(pill)pill.classList.toggle('final',fin);
   if(!c){if(num)num.textContent='–';if(who)who.innerHTML='<small>Waiting for the bucket</small><b>No comic on stage</b><span>Ratings open when the next comic is up</span>';
-    if(pill){pill.textContent=fin?'Final':'Waiting';pill.classList.remove('hot')}
-    if(fin&&who)who.innerHTML='<small>Final results</small><b>No bucket pulls rated</b><span>Voting is closed for this episode</span>';
+    if(pill){pill.textContent=fin?'Replay':'Waiting';pill.classList.remove('hot')}
+    if(fin&&who)who.innerHTML='<small>Replay</small><b>No comics in this episode yet</b><span>The lineup appears here once it is processed</span>';
     $('avg').innerHTML='—<small>/10</small>';$('votes').textContent='0';setDist([0,0,0,0,0,0,0,0,0,0]);setKB(0,0);$('mine').textContent='—';
     document.querySelectorAll('#rate button').forEach(b=>b.classList.remove('on'));const m=qs('.avg-meta b');if(m)m.textContent='';return}
   const reg=c.kind==='regular';
   if(num){num.textContent=reg?'★':c.ord;num.classList.toggle('reg',reg)}
   if(fin){const top=topComic(),isTop=top&&top.id===c.id,rk=isTop?1:null;
-    if(who)who.innerHTML=`<small>${isTop?'🏆 Top fan-rated set · ':''}${reg?'Kill Tony regular':'Comic #'+c.ord+' · Bucket Pull'}</small><b>${esc(c.name)}</b><span>Final · ${fmt(c.votes)} vote${c.votes==1?'':'s'} · tap the board to compare</span>`;
-    if(pill){pill.textContent='Final';pill.title='Voting is closed for this episode';pill.classList.remove('hot')}}
+    if(who)who.innerHTML=`<small>${isTop?'🏆 Top fan-rated set · ':''}${reg?'Kill Tony regular':'Comic #'+c.ord+' · Bucket Pull'}</small><b>${esc(c.name)}</b><span>${videoComic()&&videoComic().id===c.id?'On stage in your video':'Replay'} · ${fmt(c.votes)} vote${c.votes==1?'':'s'} · rate along</span>`;
+    if(pill){pill.textContent='● Replay voting';pill.title='Votes stay open on past episodes';pill.classList.add('hot')}}
   else{
   if(who)who.innerHTML=reg?`<small>Kill Tony regular</small><b>${esc(c.name)}</b><span>On stage now · rate the set</span>`:`<small>Comic #${c.ord} · Bucket Pull</small><b>${esc(c.name)}</b><span>On stage now</span>`;
   if(pill){pill.textContent=live?'● Rating open':'Rating closed';pill.classList.toggle('hot',live)}}
@@ -243,12 +281,12 @@ function setComic(c){
   $('avg').innerHTML=`${avg==null?'—':avg.toFixed(1)}<small>/10</small>`;$('votes').textContent=fmt(c.votes);
   const t=Date.now();if(avg!=null)hist.push({t,comic:c.id,avg});while(hist.length&&t-hist[0].t>40000)hist.shift();
   const old=hist.find(h=>h.comic===c.id&&t-h.t>=25000);const m=qs('.avg-meta b');
-  const ns=m&&m.nextSibling;if(ns&&ns.nodeType===3)ns.textContent=fin?' results':' last 30s';
-  if(m&&fin)m.textContent='Final';else if(m){if(old&&avg!=null){const dd=avg-old.avg;m.textContent=(dd>=0?'▲ ':'▼ ')+Math.abs(dd).toFixed(1)}else m.textContent='Live'}
+  const ns=m&&m.nextSibling;if(ns&&ns.nodeType===3)ns.textContent=fin?' all-time':' last 30s';
+  if(m&&fin)m.textContent='Replay';else if(m){if(old&&avg!=null){const dd=avg-old.avg;m.textContent=(dd>=0?'▲ ':'▼ ')+Math.abs(dd).toFixed(1)}else m.textContent='Live'}
   setDist(c.dist||[]);setKB(c.kills,c.bombs);
   const mine=ST.me&&ST.me.votes?ST.me.votes[c.id]:null;
   document.querySelectorAll('#rate button').forEach((b,i)=>b.classList.toggle('on',mine===i+1));
-  $('mine').textContent=fin?(mine?'you gave '+mine+' · final':'final · voting closed'):mine?mine+' · '+WORDS[mine]:'tap a number';
+  $('mine').textContent=mine?mine+' · '+WORDS[mine]:'tap a number';
   const kb=ST.me&&ST.me.kb?ST.me.kb[c.id]:null;qs('.quick .kill').classList.toggle('picked',kb==='kill');qs('.quick .bomb').classList.toggle('picked',kb==='bomb')}
 
 function setDist(d){const bars=[...document.querySelectorAll('#dist i')];const mx=Math.max(0,...d);bars.forEach((b,i)=>{b.style.height=(mx?(d[i]||0)/mx*100:0)+'%';b.title=`${fmt(d[i]||0)} × ${i+1}`})}
@@ -259,26 +297,26 @@ function setKB(k,b){k=+k||0;b=+b||0;const tot=k+b,pk=tot?Math.round(k/tot*100):5
 
 function renderBoard(){const lb=qs('.lb');if(!lb)return;const fin=FINAL(),cur=fin?null:effectiveComicId(),vis=visibleComicIds(),sel=fin?(finalComic()||{}).id:null;
   lb.classList.toggle('final',fin);
-  if(fin&&!lb.dataset.fw){lb.dataset.fw=1;lb.addEventListener('click',e=>{if(!FINAL())return;const li=e.target.closest('li[data-id]');if(!li)return;finalSel=li.dataset.id;render()})}
+  if(fin&&!lb.dataset.fw){lb.dataset.fw=1;lb.addEventListener('click',e=>{if(!FINAL())return;const li=e.target.closest('li[data-id]');if(!li)return;pickReplay(li.dataset.id)})}
   const cs=(ST.comics||[]).filter(c=>c.kind!=='regular'&&vis.has(c.id));   // no spoilers for fans behind live
   if(!cs.length){lb.innerHTML='<li class="empty">No bucket pulls yet. Scores show up here as the bucket gets pulled.</li>';return}
   cs.sort((a,b)=>(b.avg==null?-1:+b.avg)-(a.avg==null?-1:+a.avg)||a.ord-b.ord);
   lb.innerHTML=cs.map((c,i)=>{const now=c.id===cur,a=c.avg==null?null:+c.avg;
     const kt=(+c.kills||0)+(+c.bombs||0),kp=kt?Math.round(c.kills/kt*100):null;
     const kbs=fin&&kp!=null?` <span class="kbs" title="${fmt(c.kills)} kill · ${fmt(c.bombs)} bomb"><b>🔥${kp}%</b> / <em>💣${100-kp}%</em></span>`:'';
-    return `<li data-id="${c.id}" class="${now?'now':''}${c.id===sel?' sel':''}"><span class="rk">${i+1}</span><span class="nm">${esc(c.name)}${now?' <span class="tag live">LIVE</span>':''}<small>Comic #${c.ord} · ${fmt(c.votes)} vote${c.votes==1?'':'s'}${kbs}</small></span><span class="sc"><span class="mini"><i style="width:${a==null?0:a*10}%"></i></span>${a==null?'—':a.toFixed(1)}</span></li>`}).join('')}
+    return `<li data-id="${c.id}"${fin?` title="${c.start_offset!=null?'Jump the video to '+esc(c.name)+'\'s set':esc(c.name)}"`:''} class="${now?'now':''}${c.id===sel?' sel':''}"><span class="rk">${i+1}</span><span class="nm">${esc(c.name)}${now?' <span class="tag live">LIVE</span>':''}<small>Comic #${c.ord} · ${fmt(c.votes)} vote${c.votes==1?'':'s'}${kbs}${fin&&c.start_offset!=null?`<span class="seek">▶ ${mmss(c.start_offset)}</span>`:''}</small></span><span class="sc"><span class="mini"><i style="width:${a==null?0:a*10}%"></i></span>${a==null?'—':a.toFixed(1)}</span></li>`}).join('')}
 
 function starRow(id,name,score){const my=score?Math.round(score/2):0;
   return `<div class="stars" data-id="${id}">${[1,2,3,4,5].map(j=>`<button class="${j<=my?'on':''}" data-v="${j}" aria-label="${j} star${j>1?'s':''} for ${esc(name)}">★</button>`).join('')}</div>`}
-function renderRegs(){const el=$('regs');if(!el)return;const fin=FINAL(),cur=fin?null:effectiveComicId(),vis=visibleComicIds();
+function renderRegs(){const el=$('regs');if(!el)return;const fin=FINAL(),cur=fin?(finalComic()||{}).id:effectiveComicId(),vis=visibleComicIds();
   const rs=(ST.comics||[]).filter(c=>c.kind==='regular'&&vis.has(c.id)).sort((a,b)=>a.ord-b.ord);
-  const pill=$('regPill');if(pill){pill.textContent=rs.length?(fin?`${rs.length} up · final`:`${rs.length} up tonight`):(fin?'final':'0 up');pill.classList.toggle('final',fin)}
-  if(!rs.length&&fin){el.innerHTML='<div class="empty">No regulars were rated this episode.</div>';return}
+  const pill=$('regPill');if(pill){pill.textContent=rs.length?(fin?`${rs.length} up · replay`:`${rs.length} up tonight`):(fin?'replay':'0 up');pill.classList.toggle('final',fin)}
+  if(!rs.length&&fin){el.innerHTML='<div class="empty">No regulars in this episode\'s lineup.</div>';return}
   if(!rs.length){el.innerHTML='<div class="empty">Regulars and golden ticket winners appear here the moment they hit the stage (start, middle and end of the show) and stay all night.</div>';return}
   const mine=ST.me&&ST.me.votes||{},live=ST.episode.status==='live';
   el.innerHTML=rs.map((r,k)=>{const g=GRAD[(k+2)%GRAD.length],a=r.avg==null?null:+r.avg,now=r.id===cur;
-    return `<div class="pm reg${now?' now':''}" data-id="${r.id}"><div class="av" style="--g:linear-gradient(135deg,${g[0]},${g[1]});--rc:${g[0]}">${esc(initials(r.name))}</div>
-<div class="info"><b>${esc(r.name)}${now?' <span class="tag live">LIVE</span>':''}</b><small>${now?'On stage now':'Regular · set #'+r.ord}</small>${live?starRow(r.id,r.name,mine[r.id]):''}</div>
+    return `<div class="pm reg${now?' now':''}${fin&&r.start_offset!=null?' seekable':''}" data-id="${r.id}"${fin&&r.start_offset!=null?` title="Jump the video to ${esc(r.name)}"`:''}><div class="av" style="--g:linear-gradient(135deg,${g[0]},${g[1]});--rc:${g[0]}">${esc(initials(r.name))}</div>
+<div class="info"><b>${esc(r.name)}${now&&!fin?' <span class="tag live">LIVE</span>':''}</b><small>${now?(fin?'On stage in your video':'On stage now'):'Regular · set #'+r.ord}${fin&&r.start_offset!=null?' · ▶ '+mmss(r.start_offset):''}</small>${live||fin?starRow(r.id,r.name,mine[r.id]):''}</div>
 <div class="avg">${a==null?'—':a.toFixed(1)}<small>${fmt(r.votes)} vote${r.votes==1?'':'s'}</small></div></div>`}).join('')}
 
 function renderPanel(){const el=$('panel');if(!el)return;const ps=ST.panel||[];
@@ -286,9 +324,9 @@ function renderPanel(){const el=$('panel');if(!el)return;const ps=ST.panel||[];
   const mine=ST.me&&ST.me.panel||{};
   el.innerHTML=ps.map((p,k)=>{const g=GRAD[k%GRAD.length],a=p.avg==null?null:+p.avg;
     return `<div class="pm" data-id="${p.id}"><div class="av" style="--g:linear-gradient(135deg,${g[0]},${g[1]});--rc:${g[0]}">${esc(initials(p.name))}</div>
-<div class="info"><b>${esc(p.name)}</b><small>${esc(p.role)}</small>${FINAL()?'':starRow(p.id,p.name,mine[p.id])}</div>
+<div class="info"><b>${esc(p.name)}</b><small>${esc(p.role)}</small>${starRow(p.id,p.name,mine[p.id])}</div>
 <div class="avg">${a==null?'—':a.toFixed(1)}<small>${fmt(p.votes)} vote${p.votes==1?'':'s'}</small></div></div>`}).join('');
-  const rated=ps.filter(p=>p.avg!=null);qs('.panelcard .pill').textContent=(rated.length?'avg '+(rated.reduce((s,p)=>s+ +p.avg,0)/rated.length).toFixed(1):'avg —')+(FINAL()?' · final':'')}
+  const rated=ps.filter(p=>p.avg!=null);qs('.panelcard .pill').textContent=(rated.length?'avg '+(rated.reduce((s,p)=>s+ +p.avg,0)/rated.length).toFixed(1):'avg —')+(FINAL()?' · replay':'')}
 
 function renderBetState(){if(!window.BPLive||!BPLive.applyRemote||!ST)return;const ep=ST.episode,b=ST.bet||{yes:0,no:0};
   const gtEv=(ST.events||[]).filter(e=>e.kind==='golden_ticket'&&!e.cancelled).pop();
@@ -316,22 +354,36 @@ function setPlayer(url){const pl=qs('.player');if(!pl)return;const id=ytId(url);
   if(ytApiState==='ready'&&window.YT&&YT.Player){
     const holder=document.createElement('div');w.appendChild(holder);
     ytPlayer=new YT.Player(holder,{host:'https://www.youtube-nocookie.com',videoId:id,
-      playerVars:{autoplay:1,mute:1,playsinline:1,rel:0,modestbranding:1},
-      events:{onStateChange:()=>timelineTick(),onError:e=>console.warn('youtube player error',e&&e.data)}});
-  }else w.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1" title="Kill Tony premiere on YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+      playerVars:{autoplay:1,mute:0,playsinline:1,rel:0,modestbranding:1},
+      events:{onReady:ev=>soundOn(ev.target),onStateChange:()=>timelineTick(),onError:e=>console.warn('youtube player error',e&&e.data)}});
+  }else w.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1" title="Kill Tony premiere on YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   const a=document.createElement('a');a.className='yt-out';a.href='https://www.youtube.com/watch?v='+encodeURIComponent(id);a.target='_blank';a.rel='noopener';
   a.textContent='Watch on YouTube ↗';a.title='If the video says embedding is disabled, open it on YouTube';
   const u=document.createElement('button');u.className='yt-unmute';u.type='button';u.textContent='🔊 Tap for sound';
   u.style.cssText='position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;padding:9px 16px;border-radius:999px;border:0;background:#ffd23f;color:#111;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.45)';
-  u.onclick=()=>{if(ytPlayer&&ytPlayer.unMute){try{ytPlayer.unMute();ytPlayer.setVolume(100);ytPlayer.playVideo()}catch(e){}}
-    else{const f=w.querySelector('iframe');if(f)f.src=f.src.replace('&mute=1','&mute=0')}u.remove()};
+  u.onclick=e=>{e.stopPropagation();if(ytPlayer&&ytPlayer.unMute){try{ytPlayer.unMute();ytPlayer.setVolume(100);ytPlayer.playVideo()}catch(x){}}
+    else{const f=w.querySelector('iframe');if(f&&/&mute=1/.test(f.src))f.src=f.src.replace('&mute=1','&mute=0')}u.remove();sound.on=true};
   if(getComputedStyle(pl).position==='static')pl.style.position='relative';
   pl.append(w,a,u)}
 
 
+/* sound on by default: try unmuted autoplay; if the browser blocks it, play muted and unmute on the first tap/click/key anywhere */
+const sound={on:false,armed:false};
+function soundOn(p){if(p!==ytPlayer)return;try{p.unMute();p.setVolume(100);p.playVideo()}catch(e){}
+  setTimeout(()=>{if(p!==ytPlayer)return;let st=-1,muted=true;try{st=p.getPlayerState();muted=p.isMuted()}catch(e){}
+    if(st===1&&!muted){sound.on=true;qs('.yt-unmute')&&qs('.yt-unmute').remove();return}
+    try{p.mute();p.playVideo()}catch(e){}armUnmute()},2500)}
+function armUnmute(){if(sound.armed)return;sound.armed=true;
+  const go=e=>{if(e.target&&e.target.closest&&e.target.closest('input,textarea,select,.bp-res'))return;
+    document.removeEventListener('pointerdown',go,true);document.removeEventListener('keydown',go,true);sound.armed=false;
+    const p=ytPlayer;if(!p||!p.unMute)return;try{p.unMute();p.setVolume(100);if(p.getPlayerState()!==1)p.playVideo()}catch(x){}
+    sound.on=true;const u=qs('.yt-unmute');if(u)u.remove()};
+  document.addEventListener('pointerdown',go,true);document.addEventListener('keydown',go,true)}
+
 /* ---------- clock on the comic card ---------- */
 function tickClock(){timelineTick();const tm=$('tm'),sm=qs('.comic .timer small');if(!tm)return;const ep=ST&&ST.episode;
-  if(FINAL()){if(tm.textContent!=='🏁')tm.textContent='🏁';if(sm)sm.textContent='FINAL';return}
+  if(FINAL()){const c=curComic(),po=playerOffset();const t=c&&c.start_offset!=null&&po!=null&&po>=+c.start_offset?mmss(po-c.start_offset):'🎬';
+    if(tm.textContent!==t)tm.textContent=t;if(sm)sm.textContent=t==='🎬'?'REPLAY':'INTO SET';return}
   if(!ep||!ep.current_comic_at||!curComic()){tm.textContent='–:––';if(sm)sm.textContent='ON STAGE';return}
   const po=playerOffset(),le=lastComicEvent();
   const s=le&&le.offset!=null&&le.source==='auto'&&po!=null?Math.max(0,(po-le.offset)|0):
@@ -361,6 +413,12 @@ function wireInputs(){
     if(kind!=='panel'){const c=curComic();if(c&&c.id===id)setComic(c)}
     sendVote(kind,id,v*2)});
   stars($('panel'),'panel');stars($('regs'),'comic');
+  const rg=$('regs');if(rg)rg.addEventListener('click',e=>{if(!FINAL()||e.target.closest('.stars'))return;const r=e.target.closest('.pm.reg[data-id]');if(r)pickReplay(r.dataset.id)});
+  // how red is Tony (0-100, one per fan per episode, change any time)
+  if(window.BPRed)BPRed.onPick=v=>{if(!EPID||!ST)return;const st=ST.episode.status;if(st!=='live'&&st!=='ended'){toast('The thermometer opens when the episode starts');return}
+    mineObj().red=v;sendVote('red',EPID,v)};
+  const ab=$('archBtn');if(ab)ab.addEventListener('click',()=>openArchive());
+  window.addEventListener('popstate',()=>{const v=new URLSearchParams(location.search).get('ep');goEp(v||null,true)});
   // golden ticket bet (live.js owns the UI and calls this)
   if(window.BPLive)BPLive.onPick=async(pick,conf)=>{if(!EPID)return;if(!(await ensureSession()))return;pending.bet++;
     try{const q=pick?sb.from('bets').upsert({episode_id:EPID,voter_id:me.id,pick,confidence:conf||null},{onConflict:'episode_id,voter_id'})
@@ -512,12 +570,73 @@ async function openResults(id){if(!id||!sb)return;let d;try{const r=await sb.rpc
   el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2>${esc(ep.title||'Previous episode')}</h2>
 <div class="sub">Final fan results${ended?' · ended '+esc(ended):''}${yt?` · <a href="https://www.youtube.com/watch?v=${encodeURIComponent(yt)}" target="_blank" rel="noopener">Watch on YouTube ↗</a>`:''}</div>
 <div class="gt">${gt} (${fmt(b[0])} yes · ${fmt(b[1])} no)</div>
+${(()=>{const r=s.r||[0,null];return r[1]==null?'':`<div class="gt">🌡️ How red was Tony? <b>${Math.round(+r[1])}°</b> ${window.BPRed?BPRed.word(Math.round(+r[1])).slice(1).reverse().join(' '):''} (${vs(+r[0]||0)})</div>`})()}
+${ep.ep_num?`<div class="sub" style="margin-top:8px"><a href="?ep=${ep.ep_num}" data-go="${ep.ep_num}">🎬 Replay #${ep.ep_num} and keep voting →</a></div>`:''}
 <h4>Bucket pulls</h4>${bp.length?bp.map((x,i)=>row(Object.assign({},x,{name:(i+1)+'. '+x.name}),'Comic #'+x.ord+' · '+vs(x.votes)+kbt(x))).join(''):'<div class="row">No bucket pulls</div>'}
 ${rg.length?'<h4>Regulars and Golden ticket winners</h4>'+rg.map(x=>row(x,vs(x.votes)+kbt(x))).join(''):''}
 ${pn.length?'<h4>Panel</h4>'+pn.map(x=>row(x,esc(x.role||'')+' · '+vs(x.votes))).join(''):''}</div>`;
   const close=()=>{el.remove();document.removeEventListener('keydown',kd)},kd=e=>{if(e.key==='Escape')close()};
-  el.addEventListener('click',e=>{if(e.target===el||e.target.closest('.x'))close()});document.addEventListener('keydown',kd);document.body.appendChild(el)}
+  el.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){e.preventDefault();close();goEp(g.dataset.go);return}if(e.target===el||e.target.closest('.x'))close()});document.addEventListener('keydown',kd);document.body.appendChild(el)}
 
-window.BPRealtime={openResults,get final(){return FINAL()},__testPlayer(p){ytPlayer=p;timelineTick();if(ST)render()},get playerOffset(){return playerOffset()},get effectiveComicId(){return effectiveComicId()},get state(){return ST},get viewers(){return viewers},refresh:()=>poll(),get user(){return me},get polls(){return lastFetch},clientId:CID};
+/* ---------- episode switching (?ep=791) ---------- */
+function setUrl(v){const u=new URL(location.href);if(v)u.searchParams.set('ep',v);else u.searchParams.delete('ep');
+  if(u.href!==location.href)history.pushState(null,'',u.pathname+u.search+u.hash)}
+function goEp(v,fromPop){v=v==null?null:String(v).replace(/^#/,'').trim()||null;WANT=v;if(!fromPop)setUrl(v);
+  MV=-1;EPID=null;META=null;SCORES=null;ST=null;effCur=undefined;finalSel=null;
+  const lb=qs('.lb');if(lb)delete lb.dataset.fw;schedule(0);window.scrollTo({top:0,behavior:'smooth'})}
+function paintLiveBar(){let bar=$('bpLiveBar');const wantLive=LIVEOTHER&&LIVEOTHER.id!==EPID,back=!!WANT&&!wantLive&&!!ST&&ST.episode.status!=='live';
+  if(!wantLive&&!back){if(bar)bar.remove();return}
+  if(!bar){bar=document.createElement('div');bar.id='bpLiveBar';const m=qs('main');if(m)m.parentNode.insertBefore(bar,m);else document.body.prepend(bar)}
+  const sig=wantLive?'L'+LIVEOTHER.id:'B';if(bar.dataset.sig===sig)return;bar.dataset.sig=sig;
+  bar.className='bp-livebar'+(wantLive?'':' back');
+  bar.innerHTML=wantLive?`<span>🔴 ${esc(LIVEOTHER.ep_num?'#'+LIVEOTHER.ep_num:LIVEOTHER.title||'A new episode')} is LIVE now</span><button type="button">Join the live room →</button>`
+    :`<span>🎬 You're watching a replay. Votes still count.</span><button type="button">Back to the live room</button>`;
+  bar.querySelector('button').onclick=()=>goEp(null)}
+
+/* ---------- archive: every episode by show number + paste a YouTube link ---------- */
+let archEl=null,reqT=null;
+function parsePaste(t){t=(t||'').trim();if(!t)return null;const id=ytId(t);if(id&&/^[\w-]{11}$/.test(id)&&!/^\d+$/.test(t))return {video:id};
+  const m=t.match(/^#?\s*(\d{1,5})$/)||t.match(/(?:episode|ep\.?|#)\s*(\d{1,5})\b/i);return m?{num:+m[1]}:id?{video:id}:{bad:true}}
+async function openArchive(prefill){if(!sb)return;if(archEl)archEl.remove();clearTimeout(reqT);
+  const el=archEl=document.createElement('div');el.className='bp-res';el.setAttribute('role','dialog');el.setAttribute('aria-label','Episode archive');
+  el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2>📚 Episode archive</h2>
+<div class="sub">Every Kill Tony from #791 on. Votes never close: replay any episode, rate the sets, and the averages keep updating.</div>
+<h4>Paste an episode</h4>
+<form class="paste"><input type="text" inputmode="url" autocomplete="off" placeholder="Kill Tony YouTube link or #number" aria-label="Kill Tony YouTube link or episode number" value="${prefill?esc(String(prefill)):''}"><button type="submit">Open</button></form>
+<div class="pmsg" aria-live="polite">Episodes after #791 that aren't here yet get processed automatically (about 30 to 45 min).</div>
+<h4>Episodes</h4><div class="alist"><div class="row">Loading…</div></div></div>`;
+  const close=()=>{clearTimeout(reqT);el.remove();if(archEl===el)archEl=null;document.removeEventListener('keydown',kd)},kd=e=>{if(e.key==='Escape')close()};
+  el.addEventListener('click',e=>{const a=e.target.closest('.arow');if(a){close();goEp(a.dataset.go);return}const g=e.target.closest('[data-go]');if(g){e.preventDefault();close();goEp(g.dataset.go);return}
+    if(e.target===el||e.target.closest('.x'))close()});
+  document.addEventListener('keydown',kd);document.body.appendChild(el);
+  const inp=el.querySelector('input'),msg=el.querySelector('.pmsg');
+  const say=(h,cls)=>{msg.className='pmsg'+(cls?' '+cls:'');msg.innerHTML=h};
+  el.querySelector('form').addEventListener('submit',async e=>{e.preventDefault();clearTimeout(reqT);const q=parsePaste(inp.value);
+    if(!q){inp.focus();return}if(q.bad){say('That doesn\'t look like a YouTube link or an episode number.','bad');return}
+    if(q.num!=null&&q.num<791){say(`Bucket Pull Live starts with <b>#791</b>, so #${q.num} isn't in the room.`,'warn');return}
+    say('<span class="spin"></span>Checking…');
+    const {data,error}=await sb.rpc('request_episode',{p_video:q.video||null,p_num:q.num!=null?q.num:null,p_client:CID});
+    if(error){say('Could not reach the archive: '+esc(error.message),'bad');return}handleReq(data,q)});
+  function handleReq(d,q){if(!el.isConnected)return;const st=d&&d.status,n=d&&d.ep_num?'#'+d.ep_num:q&&q.num?'#'+q.num:'that episode';
+    if(st==='ready'||st==='done'){say(`✅ ${esc(n)} is ready. Opening…`,'ok');setTimeout(()=>{close();goEp(d.ep_num||d.episode_id)},500);return}
+    if(st==='too_old'){say(`Bucket Pull Live starts with <b>#${d.min||791}</b>. Earlier episodes aren't in the room.`,'warn');return}
+    if(st==='invalid'){say('That doesn\'t look like a Kill Tony YouTube link or episode number.','bad');return}
+    if(st==='busy'){say('Lots of episodes are already being processed. Try again in a few minutes.','warn');return}
+    if(st==='rejected'){const r=String(d.reason||'');
+      say(/too_old/.test(r)?'Bucket Pull Live starts with <b>#791</b>. Earlier episodes aren\'t in the room.':/not.*kill tony|not_kill|not a kill/i.test(r)?'That link isn\'t a Kill Tony episode.':`Couldn't add ${esc(n)}: ${esc(r.replace(/^\w+:\s*/,'')||'unknown reason')}`,'bad');return}
+    if(st==='pending'||st==='processing'){const w=String(d.reason||'');
+      const why=/waiting/.test(w)?`${esc(n)} isn't out as a podcast yet, so we'll build it as soon as it is.`:/paused/.test(w)?'Paused while the live premiere runs; it resumes after the show.':st==='processing'?'Transcribing and lining up the comics now.':`In the queue${d.position>1?` (position ${d.position})`:''}.`;
+      say(`<span class="spin"></span><b>Processing ${esc(n)}…</b> ${why} Usually 30 to 45 min. Leave this open or come back later; it'll be in the list below.`,'warn');
+      reqT=setTimeout(async()=>{const r=await sb.rpc('request_status',{p_id:d.id});if(!r.error&&r.data)handleReq(r.data,q);else reqT=setTimeout(()=>handleReq(d,q),20000)},20000);return}
+    say('Unexpected answer from the archive. Try again in a bit.','bad')}
+  if(prefill)el.querySelector('form').requestSubmit();
+  let rows=[];try{const r=await sb.rpc('episode_archive');if(r.error)throw r.error;rows=r.data||[]}catch(e){el.querySelector('.alist').innerHTML='<div class="row">Could not load the archive.</div>';return}
+  const day=t=>t?new Date(t).toLocaleDateString('en-US',{timeZone:'America/Chicago',month:'short',day:'numeric',year:'numeric'}):'';
+  el.querySelector('.alist').innerHTML=rows.length?rows.map(x=>{const red=x.red&&x.red[1]!=null?Math.round(+x.red[1]):null;
+    return `<button type="button" class="arow${x.id===EPID?' cur':''}" data-go="${x.ep_num}"><span class="no">#${x.ep_num}</span>
+<span class="t">${esc(x.title||'Episode #'+x.ep_num)}<small>${esc(day(x.starts_at))} · ${fmt(x.comics||0)} comics · ${fmt(x.votes||0)} votes${x.top&&x.top.name?` · 🏆 ${esc(x.top.name)} ${(+x.top.avg).toFixed(1)}`:''}</small></span>
+<span class="rd">${x.status==='live'?'<span class="lv">● LIVE</span>':red!=null?'🌡️ '+red+'°':'🌡️ —'}<small>${x.status==='live'?'now':red!=null?window.BPRed?BPRed.word(red)[1]:'':'how red?'}</small></span></button>`}).join(''):'<div class="row">No episodes yet.</div>'}
+
+window.BPRealtime={openArchive,goEp,get player(){return ytPlayer},get sound(){return sound.on},openResults,get final(){return FINAL()},__testPlayer(p){ytPlayer=p;timelineTick();if(ST)render()},get playerOffset(){return playerOffset()},get effectiveComicId(){return effectiveComicId()},get state(){return ST},get viewers(){return viewers},refresh:()=>poll(),get user(){return me},get polls(){return lastFetch},clientId:CID};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();

@@ -17,7 +17,7 @@ const LIB={
 };
 const DEFAULTS=['gunshots','airhorn','fanfare','vader-breath','rimshot','sad-trombone','crowd-ooh','record-scratch'];
 const N=DEFAULTS.length;   // 8 buttons, keys 1-8
-const COLORS=['#ff2d55','#7b4dff','#ff9f1c','#00b8d9','#14b86a','#ff4fd8','#e0a400','#4f6bff'];
+const COLORS=['#e0182d','#6a2fc9','#d4a21f','#3a3fd0','#7d828f','#4b1f94','#b8860b','#2c3fb8'];
 const KEY='bp.soundboard.v1';
 // Built-in sounds ship as base64 in sounds-data.js (text-only hosting); decode once to Blob URLs.
 const _blobUrls={};

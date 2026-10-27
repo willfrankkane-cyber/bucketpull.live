@@ -1,4 +1,8 @@
-# Bucket Pull Live autopilot (box time = CST, UTC-6). Monday 18:40: find the Kill Tony premiere and run the room.
+# Bucket Pull Live autopilot (box time = America/El_Salvador, UTC-6, no DST).
+# Kill Tony premieres Monday 8:00 PM Central = 7:00 PM box time during US daylight time (Mar-Nov), 8:00 PM box time in winter.
+# 18:40 + --find-hours 3 (polls until 21:40) covers both; the run itself stops at the episode end (6 h hard timeout).
 40 18 * * 1 /workspace/bucketpull-autopilot/run.sh live
+# fan-requested past episodes (pasted links / episode numbers): every 10 min, skips Mon 15:00 - Tue 03:00 and while live runs
+*/10 * * * * /workspace/bucketpull-autopilot/run.sh archive
 # keep the free Supabase project active (daily tiny read)
 17 12 * * * /workspace/bucketpull-autopilot/run.sh keepalive

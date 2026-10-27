@@ -19,7 +19,7 @@
 // LIVE = Supabase configured (config.js). Demo sample data and fake counters only run in demo mode.
 const LIVE=!!window.BP_LIVE;
 // distribution
-const dist=LIVE?[0,0,0,0,0,0,0,0,0,0]:[2,2,3,5,8,13,22,24,14,7];const dc=['#ff2d55','#ff3d5f','#ff5a4a','#ff7a33','#ff9f1c','#ffc23d','#ffd76a','#c6ff5a','#8cff5a','#5fe7a3'];
+const dist=LIVE?[0,0,0,0,0,0,0,0,0,0]:[2,2,3,5,8,13,22,24,14,7];const dc=['#8e0b1a','#b80f22','#e0182d','#e8402a','#d9702a','#c9962c','#dcae38','#f0c14b','#f7d77a','#fff1c4'];
 const de=document.getElementById('dist');const mx=Math.max(...dist);
 dist.forEach((v,i)=>{const e=document.createElement('i');e.style.height=(mx?v/mx*100:0)+'%';e.style.setProperty('--c',dc[i]);de.appendChild(e)});
 
@@ -30,10 +30,10 @@ b.onclick=e=>{re.querySelectorAll('button').forEach(x=>x.classList.remove('on'))
 
 // panel
 const panel=[
- {i:'T',n:'Tony',r:'Host',g:'linear-gradient(135deg,#ffc23d,#ff6a00)',rc:'#ffc23d',s:4,a:'8.6',d:'+0.2'},
- {i:'R',n:'Redban',r:'Co-host · soundboard',g:'linear-gradient(135deg,#ff4fd8,#8b5cff)',rc:'#ff4fd8',s:5,a:'9.1',d:'+0.4'},
- {i:'MV',n:'Mo Vance',r:'Guest (fictional)',g:'linear-gradient(135deg,#22e4ff,#2b6bff)',rc:'#22e4ff',s:4,a:'7.8',d:'+0.1'},
- {i:'JO',n:'Jules Ortega',r:'Guest (fictional)',g:'linear-gradient(135deg,#b6ff3b,#14b86a)',rc:'#b6ff3b',s:3,a:'6.9',d:'-0.3'}];
+ {i:'T',n:'Tony',r:'Host',g:'linear-gradient(135deg,#ffc23d,#b8860b)',rc:'#ffc23d',s:4,a:'8.6',d:'+0.2'},
+ {i:'R',n:'Redban',r:'Co-host · soundboard',g:'linear-gradient(135deg,#7b3fe4,#4a55e8)',rc:'#7b3fe4',s:5,a:'9.1',d:'+0.4'},
+ {i:'MV',n:'Mo Vance',r:'Guest (fictional)',g:'linear-gradient(135deg,#c9ccd6,#3a3fd0)',rc:'#c9ccd6',s:4,a:'7.8',d:'+0.1'},
+ {i:'JO',n:'Jules Ortega',r:'Guest (fictional)',g:'linear-gradient(135deg,#f2c94c,#8a6516)',rc:'#f2c94c',s:3,a:'6.9',d:'-0.3'}];
 if(!LIVE)document.getElementById('panel').innerHTML=panel.map((p,k)=>`<div class="pm"><div class="av" style="--g:${p.g};--rc:${p.rc}">${p.i}</div>
 <div class="info"><b>${p.n}</b><small>${p.r}</small><div class="stars" data-k="${k}">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}">★</button>`).join('')}</div></div>
 <div class="avg">${p.a}<small><span class="d ${p.d[0]=='+'?'up':'down'}">${p.d[0]=='+'?'▲':'▼'} ${p.d.slice(1)}</span> live</small></div></div>`).join('');
@@ -41,9 +41,9 @@ document.querySelectorAll('.stars').forEach(s=>s.addEventListener('click',e=>{co
 
 // Kill Tony regulars (demo: fictional names). Live mode: realtime.js renders the real ones.
 const regs=[
- {i:'MV',n:'Marlo "Big Spoon" Vega',r:'Regular · opened the show',g:'linear-gradient(135deg,#b6ff3b,#14b86a)',rc:'#b6ff3b',s:5,a:'8.8',v:'9,410'},
- {i:'BT',n:'Big Tex Okafor',r:'Golden ticket winner',g:'linear-gradient(135deg,#ff7a33,#ff2d55)',rc:'#ff7a33',s:4,a:'8.1',v:'7,236'},
- {i:'DW',n:'Dot Whitaker',r:'On stage now',g:'linear-gradient(135deg,#a78bff,#5b3cff)',rc:'#a78bff',s:0,a:'7.6',v:'2,048',now:1}];
+ {i:'MV',n:'Marlo "Big Spoon" Vega',r:'Regular · opened the show',g:'linear-gradient(135deg,#f2c94c,#8a6516)',rc:'#f2c94c',s:5,a:'8.8',v:'9,410'},
+ {i:'BT',n:'Big Tex Okafor',r:'Golden ticket winner',g:'linear-gradient(135deg,#f0263b,#e0182d)',rc:'#f0263b',s:4,a:'8.1',v:'7,236'},
+ {i:'DW',n:'Dot Whitaker',r:'On stage now',g:'linear-gradient(135deg,#8f63e8,#3a3fd0)',rc:'#8f63e8',s:0,a:'7.6',v:'2,048',now:1}];
 if(!LIVE)document.getElementById('regs').innerHTML=regs.map((p,k)=>`<div class="pm reg${p.now?' now':''}"><div class="av" style="--g:${p.g};--rc:${p.rc}">${p.i}</div>
 <div class="info"><b>${p.n}${p.now?' <span class="tag live">LIVE</span>':''}</b><small>${p.r}</small><div class="stars">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}">★</button>`).join('')}</div></div>
 <div class="avg">${p.a}<small>${p.v} votes</small></div></div>`).join('');
@@ -73,7 +73,7 @@ function burst(x,y,c,emo,word){const b=document.createElement('div');b.className
  let h='<div class="ring"></div>';const set=Array.isArray(emo)?emo:[emo];for(let i=0;i<10;i++){const a=Math.PI*2*i/10+Math.random()*.4,r=60+Math.random()*50;h+=`<span style="--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px;--r:${(Math.random()*80-40)|0}deg">${set[i%set.length]}</span>`}
  if(word)h+=`<div class="word">${word}</div>`;b.innerHTML=h;document.body.appendChild(b);setTimeout(()=>b.remove(),1000)}
 // KILL / BOMB emoji fountains (Web Animations API, pointer-events:none, works on touch)
-const FOUNTAIN={kill:{set:['🔪','❤️','💖','🗡️','❤️','🔪','💘'],word:'KILL!',c:'#9dff3b'},bomb:{set:['💣','💀','😭','☠️','😢','💣','💀'],word:'BOMB!',c:'#ff2d55'}};
+const FOUNTAIN={kill:{set:['🔪','❤️','💖','🗡️','❤️','🔪','💘'],word:'KILL!',c:'#f2c94c'},bomb:{set:['💣','💀','😭','☠️','😢','💣','💀'],word:'BOMB!',c:'#e0182d'}};
 function fountain(btn,kind){const cfg=FOUNTAIN[kind];const r=btn.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;const n=reduce?8:22;
   const layer=document.createElement('div');layer.className='fountain';layer.style.left=cx+'px';layer.style.top=cy+'px';layer.style.setProperty('--c',cfg.c);document.body.appendChild(layer);

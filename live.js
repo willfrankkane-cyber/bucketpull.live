@@ -128,7 +128,7 @@ tick();renderTicker();
 /* ---------- confetti (canvas) ---------- */
 function confetti(canvas,{count,duration}){const ctx=canvas.getContext('2d');const dpr=Math.min(2,devicePixelRatio||1);
   const W=canvas.width=innerWidth*dpr,H=canvas.height=innerHeight*dpr;canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';
-  const pal=['#ffd700','#ffc23d','#fff1a8','#e8a317','#ffe680','#b8860b','#ffffff','#ffd700','#ff4fd8'];const P=[];
+  const pal=['#ffd700','#ffc23d','#fff1a8','#e8a317','#ffe680','#b8860b','#ffffff','#ffd700','#7b3fe4'];const P=[];
   const spawn=(x,y,vx,vy,d=0)=>P.push({x,y,vx,vy,d,w:(6+Math.random()*8)*dpr,h:(9+Math.random()*12)*dpr,r:Math.random()*6.28,vr:(Math.random()-.5)*.35,c:pal[Math.random()*pal.length|0],shape:Math.random()<.2?'c':Math.random()<.35?'s':'r',tilt:Math.random()*6.28,vt:.05+Math.random()*.12});
   const sp=1.0*dpr;
   const corner=(x,dir,n,delay)=>{for(let i=0;i<n;i++){const a=(dir>0?(-58-Math.random()*30):(-122+Math.random()*30))*Math.PI/180,v=(24+Math.random()*22)*sp;spawn(x,H*.95,Math.cos(a)*v,Math.sin(a)*v,delay+Math.random()*8)}};
