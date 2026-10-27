@@ -195,7 +195,7 @@ function paintViewers(){if(vc)vc.textContent=fmt(viewers);const s=qs('.yt-top sm
 function renderNoEpisode(){renderChrome(false);epEl&&(epEl.innerHTML='<strong>No live episode yet</strong>The room opens when the host starts one');
   setComic(null);const lb=qs('.lb');if(lb)lb.innerHTML='<li class="empty">Scores show up here once the host puts comics on stage.</li>';
   const p=$('panel');if(p)p.innerHTML='<div class="empty">The panel appears when the episode starts.</div>';
-  const r=$('regs');if(r)r.innerHTML='<div class="empty">Kill Tony regulars appear here the moment they hit the stage and stay all night.</div>';
+  const r=$('regs');if(r)r.innerHTML='<div class="empty">Regulars and golden ticket winners appear here the moment they hit the stage and stay all night.</div>';
   const rp=$('regPill');if(rp)rp.textContent='0 up';
   window.BPLive&&BPLive.applyRemote({id:'none',yes:0,no:0,open:false,resolved:false,pick:null,conf:null});setPlayer(null);
   const pp=qs('.panelcard .pill');if(pp)pp.textContent='avg —';
@@ -274,7 +274,7 @@ function renderRegs(){const el=$('regs');if(!el)return;const fin=FINAL(),cur=fin
   const rs=(ST.comics||[]).filter(c=>c.kind==='regular'&&vis.has(c.id)).sort((a,b)=>a.ord-b.ord);
   const pill=$('regPill');if(pill){pill.textContent=rs.length?(fin?`${rs.length} up · final`:`${rs.length} up tonight`):(fin?'final':'0 up');pill.classList.toggle('final',fin)}
   if(!rs.length&&fin){el.innerHTML='<div class="empty">No regulars were rated this episode.</div>';return}
-  if(!rs.length){el.innerHTML='<div class="empty">Kill Tony regulars appear here the moment they hit the stage (start, middle and end of the show) and stay all night.</div>';return}
+  if(!rs.length){el.innerHTML='<div class="empty">Regulars and golden ticket winners appear here the moment they hit the stage (start, middle and end of the show) and stay all night.</div>';return}
   const mine=ST.me&&ST.me.votes||{},live=ST.episode.status==='live';
   el.innerHTML=rs.map((r,k)=>{const g=GRAD[(k+2)%GRAD.length],a=r.avg==null?null:+r.avg,now=r.id===cur;
     return `<div class="pm reg${now?' now':''}" data-id="${r.id}"><div class="av" style="--g:linear-gradient(135deg,${g[0]},${g[1]});--rc:${g[0]}">${esc(initials(r.name))}</div>
@@ -513,7 +513,7 @@ async function openResults(id){if(!id||!sb)return;let d;try{const r=await sb.rpc
 <div class="sub">Final fan results${ended?' · ended '+esc(ended):''}${yt?` · <a href="https://www.youtube.com/watch?v=${encodeURIComponent(yt)}" target="_blank" rel="noopener">Watch on YouTube ↗</a>`:''}</div>
 <div class="gt">${gt} (${fmt(b[0])} yes · ${fmt(b[1])} no)</div>
 <h4>Bucket pulls</h4>${bp.length?bp.map((x,i)=>row(Object.assign({},x,{name:(i+1)+'. '+x.name}),'Comic #'+x.ord+' · '+vs(x.votes)+kbt(x))).join(''):'<div class="row">No bucket pulls</div>'}
-${rg.length?'<h4>Regulars</h4>'+rg.map(x=>row(x,vs(x.votes)+kbt(x))).join(''):''}
+${rg.length?'<h4>Regulars and Golden ticket winners</h4>'+rg.map(x=>row(x,vs(x.votes)+kbt(x))).join(''):''}
 ${pn.length?'<h4>Panel</h4>'+pn.map(x=>row(x,esc(x.role||'')+' · '+vs(x.votes))).join(''):''}</div>`;
   const close=()=>{el.remove();document.removeEventListener('keydown',kd)},kd=e=>{if(e.key==='Escape')close()};
   el.addEventListener('click',e=>{if(e.target===el||e.target.closest('.x'))close()});document.addEventListener('keydown',kd);document.body.appendChild(el)}
