@@ -18,8 +18,9 @@ const panel=[
  {i:'R',n:'Redban',r:'Co-host · soundboard',g:'linear-gradient(135deg,#7b3fe4,#4a55e8)',rc:'#7b3fe4',s:5,a:'9.1',d:'+0.4'},
  {i:'MV',n:'Mo Vance',r:'Guest (fictional)',g:'linear-gradient(135deg,#c9ccd6,#3a3fd0)',rc:'#c9ccd6',s:4,a:'7.8',d:'+0.1'},
  {i:'JO',n:'Jules Ortega',r:'Guest (fictional)',g:'linear-gradient(135deg,#f2c94c,#8a6516)',rc:'#f2c94c',s:3,a:'6.9',d:'-0.3'}];
-if(!LIVE)document.getElementById('panel').innerHTML=panel.map((p,k)=>`<div class="pm"><div class="av" style="--g:${p.g};--rc:${p.rc}">${p.i}</div>
-<div class="info"><b>${p.n}</b><small>${p.r}</small><div class="stars" data-k="${k}">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}">★</button>`).join('')}</div></div>
+const PIMG=['img/panel/tony-hinchcliffe.webp','img/panel/brian-redban.webp'],PIC=['🎤','🥪'];
+if(!LIVE)document.getElementById('panel').innerHTML=panel.map((p,k)=>`<div class="pm"><div class="av" style="--g:${p.g};--rc:${p.rc}">${PIMG[k]?`<img src="${PIMG[k]}" alt="" onerror="this.parentNode.textContent='${p.i}'">`:p.i}</div>
+<div class="info"><b>${p.n}</b><small>${p.r}</small><div class="stars${PIC[k]?' emo':''}" data-k="${k}">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}">${PIC[k]||'★'}</button>`).join('')}</div></div>
 <div class="avg">${p.a}<small><span class="d ${p.d[0]=='+'?'up':'down'}">${p.d[0]=='+'?'▲':'▼'} ${p.d.slice(1)}</span> live</small></div></div>`).join('');
 document.querySelectorAll('.stars').forEach(s=>s.addEventListener('click',e=>{const v=+e.target.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j<v));burst(e.clientX,e.clientY,'#ffc23d','⭐','')}));
 

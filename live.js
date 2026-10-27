@@ -94,7 +94,7 @@ function finalItems(RS){const items=[],ep=RS.episode||{},cs=(RS.comics||[]);cons
   if(bp[0])items.push({k:'top',t:`<i>🏆 TOP FAN-RATED</i>${esc(bp[0].name)} · ${avg(bp[0]).toFixed(1)}/10 · ${fmt(+bp[0].votes||0)} votes`});
   items.push(ep.golden_ticket_name?{k:'gt',hot:true,t:`<i>🎟️ GOLDEN TICKET</i>${esc(ep.golden_ticket_name)}`}:{k:'gt',t:`<i>🎟️ GOLDEN TICKET</i>none this episode`});
   const kb=cs.filter(c=>c.kind!=='regular'&&(+c.kills||0)+(+c.bombs||0)>0).map(c=>({c,p:c.kills/((+c.kills)+(+c.bombs))})).sort((a,b)=>b.p-a.p||b.c.kills-a.c.kills);
-  if(kb[0])items.push({k:'kill',t:`<i>🔥 BIGGEST KILL</i>${esc(kb[0].c.name)} · ${Math.round(kb[0].p*100)}% kill`});
+  if(kb[0])items.push({k:'kill',t:`<i>🔪 BIGGEST KILL</i>${esc(kb[0].c.name)} · ${Math.round(kb[0].p*100)}% kill`});
   const rg=cs.filter(c=>c.kind==='regular'&&avg(c)!=null).sort((a,b)=>avg(b)-avg(a));
   if(rg[0])items.push({k:'reg',t:`<i>⭐ TOP REGULAR</i>${esc(rg[0].name)} · ${avg(rg[0]).toFixed(1)}/10`});
   const pa=txt('.panelcard .pill');if(pa&&!/—/.test(pa))items.push({k:'panel',t:`<i>PANEL</i>fan ${esc(pa.toLowerCase())}`});

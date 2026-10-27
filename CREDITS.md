@@ -70,7 +70,6 @@ Shown only beside regulars and golden ticket winners (never new bucket pulls). C
 - **Casey Rocket** (`img/comics/casey-rocket.webp`): ticketmaster · [https://killtonyhq.com/comedian/casey-rocket](https://killtonyhq.com/comedian/casey-rocket) · Casey Rocket · artist promo headshot (Ticketmaster)
 - **Dedrick Flynn** (`img/comics/dedrick-flynn.webp`): ticketmaster · [https://killtonyhq.com/comedian/dedrick-flynn](https://killtonyhq.com/comedian/dedrick-flynn) · Dedrick Flynn · artist promo headshot (Ticketmaster)
 - **Pat O'Neill** (`img/comics/pat-oneill.webp`): x · [https://x.com/patoneillcomedy](https://x.com/patoneillcomedy) · @patoneillcomedy · profile photo (X)
-- **Brent Reed** (`img/comics/brent-reed.webp`): x · [https://x.com/brentreedcomedy](https://x.com/brentreedcomedy) · @brentreedcomedy · profile photo (X)
 - **Heather McMahan** (`img/comics/heather-mcmahan.webp`): commons · [https://commons.wikimedia.org/wiki/File:Heather_McMahan_2019_01.png](https://commons.wikimedia.org/wiki/File:Heather_McMahan_2019_01.png) · Adam Rippon · [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
 - **Kimberly Congdon** (`img/comics/kimberly-congdon.webp`): youtube · [https://killtonyhq.com/comedian/kimberly-congdon](https://killtonyhq.com/comedian/kimberly-congdon) · Kimberly Congdon · YouTube channel avatar
 - **Sara Weinshenk** (`img/comics/sara-weinshenk.webp`): x · [https://x.com/princessshenk](https://x.com/princessshenk) · @princessshenk · profile photo (X)
@@ -94,3 +93,22 @@ Shown only beside regulars and golden ticket winners (never new bucket pulls). C
 - **Carlos Lopez** (`img/comics/carlos-lopez.webp`): youtube · [https://killtonyhq.com/comedian/carlos-lopez](https://killtonyhq.com/comedian/carlos-lopez) · Carlos Lopez · YouTube channel avatar
 - **Charlie Mac** (`img/comics/charlie-mac.webp`): x · [https://x.com/funnycharliemac](https://x.com/funnycharliemac) · @funnycharliemac · profile photo (X)
 - **Jeremiah Watkins** (`img/comics/jeremiah-watkins.webp`): x · [https://x.com/jeremiahstandup](https://x.com/jeremiahstandup) · @jeremiahstandup · profile photo (X)
+
+Brent Reed has no photo on purpose (the earlier X avatar was a different Brent Reed); he shows initials.
+
+### Panel photos (`img/panel/`)
+
+Shown in Rate the Panel. All from Wikimedia Commons under the licences below.
+
+- **Tony Hinchcliffe** (`img/panel/tony-hinchcliffe.webp`): Wikimedia Commons · [File:Tony Hinchcliffe on The Comedy Store podcast (cropped).jpg](https://commons.wikimedia.org/wiki/File:Tony_Hinchcliffe_on_The_Comedy_Store_podcast_(cropped).jpg) · The Comedy Store · [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) · cropped to a 96 px face thumbnail
+- **Brian Redban** (`img/panel/brian-redban.webp`): Wikimedia Commons · [File:Brian Redban.png](https://commons.wikimedia.org/wiki/File:Brian_Redban.png) · The Joe Rogan Experience · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) · cropped to a 96 px face thumbnail
+- **Jim Norton** (`img/panel/jim-norton.webp`): Wikimedia Commons · [File:Jim Norton photo by Josh Alder.jpg](https://commons.wikimedia.org/wiki/File:Jim_Norton_photo_by_Josh_Alder.jpg) · BoboMejor (Josh Alder) · [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) · cropped to a 96 px face thumbnail
+- **Anthony Cumia** (`img/panel/anthony-cumia.webp`): Wikimedia Commons · [File:Anthony Cumia in October 2021.png](https://commons.wikimedia.org/wiki/File:Anthony_Cumia_in_October_2021.png) · UnorthodoxyAC · [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) · cropped to a 96 px face thumbnail
+- **Shane Gillis** (`img/panel/shane-gillis.webp`): Wikimedia Commons · [File:Shane Gillis (cropped) (cropped).jpg](https://commons.wikimedia.org/wiki/File:Shane_Gillis_(cropped)_(cropped).jpg) · Quintin Soloviev · [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) · cropped to a 96 px face thumbnail
+- **Joe Rogan** (`img/panel/joe-rogan.webp`): Wikimedia Commons · [File:Joe Rogan.png](https://commons.wikimedia.org/wiki/File:Joe_Rogan.png) · Steven Crowder · [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) · cropped to a 96 px face thumbnail
+- **Theo Von** (`img/panel/theo-von.webp`): Wikimedia Commons · [File:Theo Von Comedian (cropped).jpg](https://commons.wikimedia.org/wiki/File:Theo_Von_Comedian_(cropped).jpg) · Lisa Gansky · [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) · cropped to a 96 px face thumbnail
+- **Adam Ray** (`img/panel/adam-ray.webp`): Wikimedia Commons · [File:Adam Ray in Japan, 2018 (cropped).jpg](https://commons.wikimedia.org/wiki/File:Adam_Ray_in_Japan,_2018_(cropped).jpg) · Pfc. Nicole Rogge (U.S. Marine Corps) · [Public domain](https://en.wikipedia.org/wiki/Public_domain) · cropped to a 96 px face thumbnail
+- **Bert Kreischer** (`img/panel/bert-kreischer.webp`): Wikimedia Commons · [File:Bert kreischer (52703154941) (cropped).jpg](https://commons.wikimedia.org/wiki/File:Bert_kreischer_(52703154941)_(cropped).jpg) · Zach Catanzareti Photo · [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/) · cropped to a 96 px face thumbnail
+- **Ari Shaffir** (`img/panel/ari-shaffir.webp`): Wikimedia Commons · [File:Ari Shaffir 2016.jpg](https://commons.wikimedia.org/wiki/File:Ari_Shaffir_2016.jpg) · Lisa Gansky · [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) · cropped to a 96 px face thumbnail
+
+Guests not in this map: the page looks up the guest's English Wikipedia article once (REST page summary), and uses its lead image only if the article is a regular page whose description mentions comedy, podcasting, radio, TV, acting or music. and only when that image is hosted on Wikimedia Commons (free licences only; locally hosted non-free files are skipped). The avatar's tooltip and link credit Wikipedia / Wikimedia Commons; otherwise the guest shows initials.

@@ -904,3 +904,14 @@ input,textarea,select{font-family:var(--body)}
 
 /* v6 credit line */
 .foot .credit{display:inline-block;margin-top:4px;font-size:10.5px;opacity:.7}.foot .credit a{color:inherit;text-decoration:underline}
+/* panel rating icons: Tony 🎤, Redban 🥪 (guests keep ★). Unselected = greyscale + dim, selected = full colour + glow */
+.stars.emo button{font-size:22px;color:inherit;text-shadow:none;filter:grayscale(1) brightness(.85);opacity:.34;transition:transform .15s,opacity .15s,filter .15s}
+.stars.emo button.on{opacity:1;filter:drop-shadow(0 0 6px rgba(255,194,61,.85)) drop-shadow(0 0 2px rgba(255,255,255,.35))}
+.stars.emo button:hover{opacity:.75}
+.stars.emo button.on:hover{opacity:1}
+.bp-res .row .ricons{display:flex;gap:1px;font-size:13px;line-height:1;white-space:nowrap}
+.bp-res .row .ricons i{font-style:normal;color:rgba(255,255,255,.2)}
+.bp-res .row .ricons i.on{color:var(--gold);text-shadow:0 0 8px rgba(255,194,61,.55)}
+.bp-res .row .ricons.emo i{filter:grayscale(1);opacity:.3}
+.bp-res .row .ricons.emo i.on{filter:drop-shadow(0 0 4px rgba(255,194,61,.8));opacity:1;text-shadow:none}
+@media (max-width:640px){.stars.emo button{font-size:21px}.bp-res .row .ricons{font-size:11px}}
