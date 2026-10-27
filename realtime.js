@@ -61,14 +61,12 @@ const css=document.createElement('style');css.textContent=`
   padding:9px 14px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .3s}
 .player .yt-embed{position:absolute;inset:0;z-index:3;background:#000}
 .player .yt-embed iframe{width:100%;height:100%;border:0;display:block}
-.player .yt-out{position:absolute;right:10px;top:10px;z-index:4;font-size:11.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.6);padding:5px 9px;border-radius:8px;text-decoration:none}
 .player.has-yt .play,.player.has-yt .mic,.player.has-yt .bar,.player.has-yt .yt-top{display:none}
 .player.has-yt{aspect-ratio:auto;overflow:visible;display:flex;flex-direction:column;gap:0;background:transparent;border-color:transparent;box-shadow:none}
 .player.has-yt .curtain,.player.has-yt .spot{display:none}
 .player.has-yt .yt-stage{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;border:1px solid rgba(240,193,75,.28);
   box-shadow:0 0 0 1px #000,0 24px 50px -20px #000,0 -30px 80px -40px rgba(255,236,196,.35);background:#000}
 .player.has-yt .yt-embed{position:absolute;inset:0;z-index:1;border-radius:inherit}
-.player.has-yt .yt-out{z-index:3}
 .player.has-yt .yt-unmute{z-index:5}
 .player .yt-ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;padding:8px 10px;border-radius:12px;
   background:rgba(12,10,16,.92);border:1px solid rgba(240,193,75,.28);box-shadow:0 8px 24px rgba(0,0,0,.45)}
@@ -449,14 +447,12 @@ function setPlayer(url){const pl=qs('.player');if(!pl)return;const id=ytId(url);
       playerVars:Object.assign({},YT_VARS),
       events:{onReady:ev=>{soundOn(ev.target);syncYtCtl()},onStateChange:()=>{timelineTick();syncYtCtl()},onError:e=>console.warn('youtube player error',e&&e.data)}});
   }else w.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?${YT_QS}" title="Kill Tony premiere on YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
-  const a=document.createElement('a');a.className='yt-out';a.href='https://www.youtube.com/watch?v='+encodeURIComponent(id);a.target='_blank';a.rel='noopener';
-  a.textContent='Watch on YouTube ↗';a.title='If the video says embedding is disabled, open it on YouTube';
   const u=document.createElement('button');u.className='yt-unmute';u.type='button';u.textContent='🔊 Tap for sound';
   u.style.cssText='position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;padding:9px 16px;border-radius:999px;border:0;background:#ffd23f;color:#111;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.45)';
   u.onclick=e=>{e.stopPropagation();if(ytPlayer&&ytPlayer.unMute){try{ytPlayer.unMute();ytPlayer.setVolume(100);ytPlayer.playVideo()}catch(x){}}
     else{const f=w.querySelector('iframe');if(f&&/[&?]mute=1/.test(f.src))f.src=f.src.replace(/([&?])mute=1/,'$1mute=0')}u.remove();sound.on=true;syncYtCtl()};
   if(getComputedStyle(pl).position==='static')pl.style.position='relative';
-  stage.append(w,a,u);pl.appendChild(stage);buildYtCtl(pl,stage)}
+  stage.append(w,u);pl.appendChild(stage);buildYtCtl(pl,stage)}
 
 
 /* sound on by default: try unmuted autoplay; if the browser blocks it, play muted and unmute on the first tap/click/key anywhere */
@@ -660,7 +656,7 @@ async function openResults(id){if(!id||!sb)return;let d;try{const r=await sb.rpc
   const gt=ep.golden_ticket_name?`🎟️ Golden ticket: <b>${esc(ep.golden_ticket_name)}</b> · the bet settled <b>YES</b>`:'No golden ticket · the bet settled <b>NO</b>';
   const el=document.createElement('div');el.className='bp-res';el.setAttribute('role','dialog');el.setAttribute('aria-label','Last week\u2019s final results');
   el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2>${esc(ep.title||'Previous episode')}</h2>
-<div class="sub">Final fan results${ended?' · ended '+esc(ended):''}${yt?` · <a href="https://www.youtube.com/watch?v=${encodeURIComponent(yt)}" target="_blank" rel="noopener">Watch on YouTube ↗</a>`:''}</div>
+<div class="sub">Final fan results${ended?' · ended '+esc(ended):''}</div>
 <div class="gt">${gt} (${fmt(b[0])} yes · ${fmt(b[1])} no)</div>
 ${(()=>{const r=s.r||[0,null];return r[1]==null?'':`<div class="gt">🌡️ How red was Tony? <b>${Math.round(+r[1])}°</b> ${window.BPRed?BPRed.word(Math.round(+r[1])).slice(1).reverse().join(' '):''} (${vs(+r[0]||0)})</div>`})()}
 ${ep.ep_num?`<div class="sub" style="margin-top:8px"><a href="?ep=${ep.ep_num}" data-go="${ep.ep_num}">🎬 Replay #${ep.ep_num} and keep voting →</a></div>`:''}
