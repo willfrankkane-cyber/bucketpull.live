@@ -17,7 +17,7 @@ const LIB={
 };
 const DEFAULTS=['gunshots','airhorn','fanfare','vader-breath','rimshot','sad-trombone','crowd-ooh','record-scratch'];
 const N=DEFAULTS.length;   // 8 buttons, keys 1-8
-const COLORS=['#e0182d','#6a2fc9','#d4a21f','#3a3fd0','#7d828f','#4b1f94','#b8860b','#2c3fb8'];
+const COLORS=['#ff2d55','#7b4dff','#ff9f1c','#00b8d9','#14b86a','#ff4fd8','#e0a400','#4f6bff'];
 const KEY='bp.soundboard.v1';
 // Built-in sounds ship as base64 in sounds-data.js (text-only hosting); decode once to Blob URLs.
 const _blobUrls={};
@@ -52,8 +52,7 @@ const sb=document.getElementById('sb');
 function meta(i){const s=slots[i];const L=LIB[s.sound]||{em:'🎵',burst:'YEAH!',fx:['🎵','🎶','🔥']};return L}
 function render(){sb.innerHTML=slots.map((s,i)=>{const L=meta(i);const long=s.label.length>11?' long':'';
   return `<div class="snd-wrap"><button class="snd${long}" style="--c:${COLORS[i]}" data-i="${i}" aria-label="Play ${esc(s.label)} (key ${i+1})">
-  <span class="em">${L.em}</span><b>${esc(s.label)}</b><small>${esc(s.sub||'')}</small><span class="k">${i+1}</span><span class="eq"><i></i><i></i><i></i></span></button>
-  <button class="swap" data-i="${i}" title="Swap sound" aria-label="Swap sound for button ${i+1}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>`}).join('')}
+  <span class="em">${L.em}</span><b>${esc(s.label)}</b><small>${esc(s.sub||'')}</small><span class="k">${i+1}</span><span class="eq"><i></i><i></i><i></i></span></button></div>`}).join('')}
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 function trigger(i){const b=sb.querySelector(`.snd[data-i="${i}"]`);if(!b)return;const L=meta(i);
@@ -61,7 +60,8 @@ function trigger(i){const b=sb.querySelector(`.snd[data-i="${i}"]`);if(!b)return
   b.classList.add('hit','playing');setTimeout(()=>b.classList.remove('hit'),120);
   play(urls[i]||src(DEFAULTS[i]),()=>{if(![...live].length)b.classList.remove('playing')});
   clearTimeout(b._t);b._t=setTimeout(()=>b.classList.remove('playing'),4000)}
-sb.addEventListener('click',e=>{const sw=e.target.closest('.swap');if(sw){openModal(+sw.dataset.i);return}const b=e.target.closest('.snd');if(b)trigger(+b.dataset.i)});
+sb.addEventListener('click',e=>{const b=e.target.closest('.snd');if(b)trigger(+b.dataset.i)});
+let lastSlot=0;const setBtn=document.getElementById('sbSet');if(setBtn)setBtn.addEventListener('click',()=>openModal(lastSlot));
 addEventListener('keydown',e=>{if(!modal.hidden){if(e.key==='Escape')closeModal();return}
   const t=document.activeElement.tagName;if(t==='INPUT'||t==='TEXTAREA'||e.metaKey||e.ctrlKey||e.altKey||e.repeat)return;
   const n=+e.key;if(n>=1&&n<=N){e.preventDefault();trigger(n-1)}});
@@ -72,12 +72,14 @@ volEl.addEventListener('input',()=>{vol=volEl.value/100;live.forEach(a=>a.volume
 const modal=document.getElementById('modal');const $=id=>document.getElementById(id);
 let cur=-1,draft=null,pendingFile=null,preview=null;
 function stopPreview(){if(preview){preview.pause();preview=null}document.querySelectorAll('.lib .pv.on,.d-play.on').forEach(x=>x.classList.remove('on'))}
-function openModal(i){cur=i;draft={...slots[i]};pendingFile=null;
+function renderSlots(){const el=$('mSlots');if(!el)return;el.innerHTML=slots.map((x,j)=>{const L=meta(j);return `<button type="button" class="ms${j===cur?' on':''}" data-i="${j}" style="--c:${COLORS[j]}" role="tab" aria-selected="${j===cur}" title="Button ${j+1}: ${esc(x.label)}"><span>${L.em}</span><b>${j+1}</b></button>`}).join('')}
+function openModal(i){i=Math.max(0,Math.min(N-1,+i||0));cur=i;lastSlot=i;draft={...slots[i]};pendingFile=null;stopPreview();renderSlots();
   $('mSlot').textContent=`BUTTON ${i+1} · KEY ${i+1}`;$('mLabel').value=draft.label;$('mSub').value=draft.sub||'';
   $('mFile').value='';
   if(draft.sound==='upload'){$('mFileName').textContent=draft.fileName||'Your uploaded clip';$('mFileHint').textContent='Currently using your upload';$('mUpPlay').hidden=false;$('mDrop').classList.add('has')}
   else{$('mFileName').textContent='Drop an audio file or click to browse';$('mFileHint').textContent='Your clip stays on this device';$('mUpPlay').hidden=true;$('mDrop').classList.remove('has')}
-  renderLib();renderPrev();modal.hidden=false;requestAnimationFrame(()=>modal.classList.add('open'));setTimeout(()=>$('mLabel').focus({preventScroll:true}),50)}
+  renderLib();renderPrev();if(modal.hidden){modal.hidden=false;requestAnimationFrame(()=>modal.classList.add('open'));setTimeout(()=>$('mLabel').focus({preventScroll:true}),50)}}
+if($('mSlots'))$('mSlots').addEventListener('click',e=>{const b=e.target.closest('.ms');if(b&&+b.dataset.i!==cur)openModal(+b.dataset.i)});
 function closeModal(){stopPreview();modal.classList.remove('open');setTimeout(()=>modal.hidden=true,180);cur=-1}
 function renderPrev(){const L=draft.sound==='upload'?{em:'🎵'}:LIB[draft.sound];
   $('mPrev').style.setProperty('--c',COLORS[cur]);$('mPrev').innerHTML=`<span>${L.em}</span>`}

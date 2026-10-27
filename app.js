@@ -1,20 +1,4 @@
-// marquee bulbs: evenly spaced on the centre line of the bulb lane, a bulb on every corner.
-// Count and spacing come from the sign's real size and are recomputed by a ResizeObserver.
-(function(){const lane=document.getElementById('bulbs');if(!lane)return;const sign=lane.parentElement;
-  const TARGET=14;let key='';
-  function layout(){const cs=getComputedStyle(sign);const band=parseFloat(cs.getPropertyValue('--band'))||16;
-    const W=sign.clientWidth,H=sign.clientHeight;if(!W||!H)return;   // padding box (inside the border)
-    const off=band/2,w=W-band,h=H-band;                            // rectangle through the lane centre
-    // pick the bulb counts whose horizontal and vertical spacing match best (near TARGET)
-    let nx=2,ny=1,best=1e9;for(let s=TARGET*.8;s<=TARGET*1.25;s+=.25){const ax=Math.max(2,Math.round(w/s)),ay=Math.max(1,Math.round(h/s));
-      const sx=w/ax,sy=h/ay;const cost=Math.abs(sx-sy)*4+Math.abs((sx+sy)/2-TARGET);if(cost<best){best=cost;nx=ax;ny=ay}}
-    const pts=[];for(let i=0;i<=nx;i++){const x=off+w*i/nx;pts.push([x,off],[x,off+h])}
-    for(let j=1;j<ny;j++){const y=off+h*j/ny;pts.push([off,y],[off+w,y])}
-    const k=pts.length;if(lane.childElementCount!==k){lane.textContent='';for(let i=0;i<k;i++)lane.appendChild(document.createElement('i'))}
-    pts.forEach((p,i)=>{lane.children[i].style.transform=`translate(${p[0].toFixed(2)}px,${p[1].toFixed(2)}px)`});
-    key=`${nx}x${ny}`;sign.dataset.bulbs=`${k} bulbs · ${nx}×${ny} gaps · ${(w/nx).toFixed(1)}/${(h/ny).toFixed(1)}px`}
-  layout();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layout);
-  if('ResizeObserver' in window)new ResizeObserver(layout).observe(sign);else addEventListener('resize',layout)})();
+// (the marquee sign is drawn by marquee.js)
 
 // LIVE = Supabase configured (config.js). Demo sample data and fake counters only run in demo mode.
 const LIVE=!!window.BP_LIVE;

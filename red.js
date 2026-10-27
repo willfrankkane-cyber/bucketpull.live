@@ -1,5 +1,6 @@
 /* "How red is Tony?" thermometer: fans set 0-100 per episode by tap, drag or arrow keys; the mercury is the room average.
-   Text + emoji only (no photo or likeness). Works on its own in demo mode; realtime.js plugs in the shared vote via
+   The drag handle is a cutout of Tony's face (img/tony.webp, Comedy Store photo, CC BY 3.0 via Wikimedia Commons) that
+   turns redder as you slide it up. Works on its own in demo mode; realtime.js plugs in the shared vote via
    BPRed.onPick and paints the average with BPRed.set(). */
 (function(){
 'use strict';
@@ -13,11 +14,12 @@ function horiz(){return th.offsetWidth>th.offsetHeight}
 function paint(){const show=draft!=null?draft:S.avg!=null?+S.avg:null;
   merc.style.setProperty('--v',(show==null?0:Math.max(3,show))+'%');
   el.style.setProperty('--heat',show==null?0:show/100);
-  const m=draft!=null?draft:S.mine;you.hidden=m==null;if(m!=null)you.style.setProperty('--v',m+'%');
+  const m=draft!=null?draft:S.mine,hv=m!=null?m:(S.avg!=null?Math.round(+S.avg):50);
+  you.style.setProperty('--v',hv+'%');you.style.setProperty('--t',hv/100);you.classList.toggle('mine',m!=null);you.classList.toggle('drag',drag);
   if(S.avg==null&&draft==null){avgEl.textContent='—';wordEl.textContent=S.enabled?'Be the first':'No votes';}
   else{const v=draft!=null?draft:Math.round(+S.avg),w=word(v);avgEl.textContent=v+'°';wordEl.textContent=w[2]+' '+w[1]}
   nEl.textContent=draft!=null?'your pick':(S.n?`${S.n.toLocaleString('en-US')} vote${S.n==1?'':'s'}`:'0 votes')+(S.mine!=null?` · you ${S.mine}°`:'');
-  hint.textContent=S.enabled?(S.mine!=null?'Drag to change':'Tap or drag the tube'):(S.why||'Voting opens with the episode');
+  hint.textContent=S.enabled?(S.mine!=null?'Drag Tony to change':'Drag Tony up or down'):(S.why||'Voting opens with the episode');
   th.setAttribute('aria-valuenow',m==null?(S.avg==null?0:Math.round(S.avg)):m);
   th.setAttribute('aria-valuetext',m==null?'not rated':`${m} degrees, ${word(m)[1]}`);
   th.setAttribute('aria-disabled',String(!S.enabled));el.classList.toggle('off',!S.enabled)}

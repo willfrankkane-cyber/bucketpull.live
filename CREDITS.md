@@ -48,3 +48,49 @@ Anton, Bungee, Permanent Marker and Space Grotesk come from Google Fonts. They a
 ## Emoji
 
 Emoji are drawn by each visitor's own system emoji font.
+
+## Images
+
+### Tony Hinchcliffe (thermometer handle, `img/tony.webp`)
+
+- Source: [File:Tony_Hinchcliffe_on_The_Comedy_Store_podcast_(cropped).jpg](https://commons.wikimedia.org/wiki/File:Tony_Hinchcliffe_on_The_Comedy_Store_podcast_(cropped).jpg) on Wikimedia Commons
+- Author: The Comedy Store
+- License: [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
+- Changes: cropped to the head, background removed, white sticker outline added, resized to 144×204 and re-encoded as WebP. It is a real photograph and not an AI likeness.
+
+### Comic photos (`img/comics/`)
+
+Shown only beside regulars and golden ticket winners (never new bucket pulls). Cropped to a 96 px square face thumbnail. Sources, in order of preference: Wikimedia Commons (free licence), the comic's own X profile photo, the comic's own promo headshot (Ticketmaster artist page, as linked from killtonyhq.com) or YouTube channel avatar. Non-Commons images remain the property of their owners and are used as small identifying thumbnails; ask and they come down.
+
+- **William Montgomery** (`img/comics/william-montgomery.webp`): ticketmaster · [https://killtonyhq.com/comedian/william-montgomery](https://killtonyhq.com/comedian/william-montgomery) · William Montgomery · artist promo headshot (Ticketmaster)
+- **Hans Kim** (`img/comics/hans-kim.webp`): x · [https://x.com/DJHansKim](https://x.com/DJHansKim) · @DJHansKim · profile photo (X)
+- **David Lucas** (`img/comics/david-lucas.webp`): x · [https://x.com/funnydavidlucas](https://x.com/funnydavidlucas) · @funnydavidlucas · profile photo (X)
+- **Kam Patterson** (`img/comics/kam-patterson.webp`): commons · [https://commons.wikimedia.org/wiki/File:Kam_Patterson_2024_(2).png](https://commons.wikimedia.org/wiki/File:Kam_Patterson_2024_(2).png) · Roast Battle Chicago · [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
+- **Ari Matti** (`img/comics/ari-matti.webp`): x · [https://x.com/AriMattiComedy](https://x.com/AriMattiComedy) · @AriMattiComedy · profile photo (X)
+- **Casey Rocket** (`img/comics/casey-rocket.webp`): ticketmaster · [https://killtonyhq.com/comedian/casey-rocket](https://killtonyhq.com/comedian/casey-rocket) · Casey Rocket · artist promo headshot (Ticketmaster)
+- **Dedrick Flynn** (`img/comics/dedrick-flynn.webp`): ticketmaster · [https://killtonyhq.com/comedian/dedrick-flynn](https://killtonyhq.com/comedian/dedrick-flynn) · Dedrick Flynn · artist promo headshot (Ticketmaster)
+- **Pat O'Neill** (`img/comics/pat-oneill.webp`): x · [https://x.com/patoneillcomedy](https://x.com/patoneillcomedy) · @patoneillcomedy · profile photo (X)
+- **Brent Reed** (`img/comics/brent-reed.webp`): x · [https://x.com/brentreedcomedy](https://x.com/brentreedcomedy) · @brentreedcomedy · profile photo (X)
+- **Heather McMahan** (`img/comics/heather-mcmahan.webp`): commons · [https://commons.wikimedia.org/wiki/File:Heather_McMahan_2019_01.png](https://commons.wikimedia.org/wiki/File:Heather_McMahan_2019_01.png) · Adam Rippon · [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
+- **Kimberly Congdon** (`img/comics/kimberly-congdon.webp`): youtube · [https://killtonyhq.com/comedian/kimberly-congdon](https://killtonyhq.com/comedian/kimberly-congdon) · Kimberly Congdon · YouTube channel avatar
+- **Sara Weinshenk** (`img/comics/sara-weinshenk.webp`): x · [https://x.com/princessshenk](https://x.com/princessshenk) · @princessshenk · profile photo (X)
+- **Vanessa Johnston** (`img/comics/vanessa-johnston.webp`): youtube · [https://killtonyhq.com/comedian/vanessa-johnston](https://killtonyhq.com/comedian/vanessa-johnston) · Vanessa Johnston · YouTube channel avatar
+- **Martin Phillips** (`img/comics/martin-phillips.webp`): ticketmaster · [https://killtonyhq.com/comedian/martin-phillips](https://killtonyhq.com/comedian/martin-phillips) · Martin Phillips · artist promo headshot (Ticketmaster)
+- **Pat Regan** (`img/comics/pat-regan.webp`): ticketmaster · [https://killtonyhq.com/comedian/pat-regan](https://killtonyhq.com/comedian/pat-regan) · Pat Regan · artist promo headshot (Ticketmaster)
+- **Timmy No Brakes** (`img/comics/timmy-no-brakes.webp`): ticketmaster · [https://killtonyhq.com/comedian/timmy-no-brakes](https://killtonyhq.com/comedian/timmy-no-brakes) · Timmy No Brakes · artist promo headshot (Ticketmaster)
+- **Ahren Belisle** (`img/comics/ahren-belisle.webp`): ticketmaster · [https://killtonyhq.com/comedian/ahren-belisle](https://killtonyhq.com/comedian/ahren-belisle) · Ahren Belisle · artist promo headshot (Ticketmaster)
+- **Enrique Chicone** (`img/comics/enrique-chicone.webp`): youtube · [https://killtonyhq.com/comedian/enrique-chicone](https://killtonyhq.com/comedian/enrique-chicone) · Enrique Chicone · YouTube channel avatar
+- **Tristan Bowling** (`img/comics/tristan-bowling.webp`): youtube · [https://killtonyhq.com/comedian/tristan-bowling](https://killtonyhq.com/comedian/tristan-bowling) · Tristan Bowling · YouTube channel avatar
+- **Nicole Tran** (`img/comics/nicole-tran.webp`): youtube · [https://killtonyhq.com/comedian/nicole-tran](https://killtonyhq.com/comedian/nicole-tran) · Nicole Tran · YouTube channel avatar
+- **Jack Shaw** (`img/comics/jack-shaw.webp`): x · [https://x.com/hijackshaw](https://x.com/hijackshaw) · @hijackshaw · profile photo (X)
+- **Todd Royce** (`img/comics/todd-royce.webp`): x · [https://x.com/ToddRoyceXXL](https://x.com/ToddRoyceXXL) · @ToddRoyceXXL · profile photo (X)
+- **Collin Sledge** (`img/comics/collin-sledge.webp`): youtube · [https://killtonyhq.com/comedian/collin-sledge](https://killtonyhq.com/comedian/collin-sledge) · Collin Sledge · YouTube channel avatar
+- **Fiona Cauley** (`img/comics/fiona-cauley.webp`): x · [https://x.com/FionaCauley](https://x.com/FionaCauley) · @FionaCauley · profile photo (X)
+- **Heath Cordes** (`img/comics/heath-cordes.webp`): youtube · [https://killtonyhq.com/comedian/heath-cordes](https://killtonyhq.com/comedian/heath-cordes) · Heath Cordes · YouTube channel avatar
+- **Colt McNeely** (`img/comics/colt-mcneely.webp`): youtube · [https://killtonyhq.com/comedian/colt-mcneely](https://killtonyhq.com/comedian/colt-mcneely) · Colt McNeely · YouTube channel avatar
+- **Ric Diez** (`img/comics/ric-diez.webp`): x · [https://x.com/sadmanric](https://x.com/sadmanric) · @sadmanric · profile photo (X)
+- **Sir Winston Pickles** (`img/comics/sir-winston-pickles.webp`): commons · [https://commons.wikimedia.org/wiki/File:Sir_Winston_Pickles.jpg](https://commons.wikimedia.org/wiki/File:Sir_Winston_Pickles.jpg) · Sir Winston Pickles · [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Aloe Mean** (`img/comics/aloe-mean.webp`): x · [https://x.com/AloeMean](https://x.com/AloeMean) · @AloeMean · profile photo (X)
+- **Carlos Lopez** (`img/comics/carlos-lopez.webp`): youtube · [https://killtonyhq.com/comedian/carlos-lopez](https://killtonyhq.com/comedian/carlos-lopez) · Carlos Lopez · YouTube channel avatar
+- **Charlie Mac** (`img/comics/charlie-mac.webp`): x · [https://x.com/funnycharliemac](https://x.com/funnycharliemac) · @funnycharliemac · profile photo (X)
+- **Jeremiah Watkins** (`img/comics/jeremiah-watkins.webp`): x · [https://x.com/jeremiahstandup](https://x.com/jeremiahstandup) · @jeremiahstandup · profile photo (X)

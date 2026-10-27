@@ -13,18 +13,19 @@
 <meta property="og:url" content="https://bucketpull.live/">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🪣%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="styles.css?v=club1">
+<link rel="stylesheet" href="styles.css?v=club2">
 </head>
 <body>
 <div class="stage-bg"><div class="beam b1"></div><div class="beam b2"></div><div class="grain"></div></div>
 
+<a class="mq" id="mq" href="#" aria-label="Bucket Pull Live, unofficial fan room">
+  <svg class="mq-svg" aria-hidden="true" focusable="false"></svg>
+  <div class="mq-in"><span class="mq-tag">✶ Unofficial fan room ✶</span><span class="mq-w">BUCKET PULL <em>LIVE</em></span></div>
+</a>
+
 <div class="app">
   <!-- HEADER -->
   <header class="top">
-    <a class="wordmark" href="#">
-      <div class="marquee"><div class="bulbs" id="bulbs" aria-hidden="true"></div><div class="face"><div class="w">BUCKET PULL <em>LIVE</em></div></div></div>
-      <div class="tagline">unofficial<br><b>fan room</b> ✶</div>
-    </a>
     <div class="spacer"></div>
     <div class="ep"><strong>Ep. #000 · Premiere Night</strong>Sample data · fan-made mockup</div>
     <div class="chip live"><span class="dot"></span>LIVE</div>
@@ -94,10 +95,10 @@
         <div class="rc-h"><b>HOW RED IS TONY?</b><small>🌡️ fan thermometer</small></div>
         <div class="rc-body">
           <div class="thermo" role="slider" tabindex="0" aria-label="How red is Tony, 0 to 100" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <div class="tube"><div class="scale" aria-hidden="true"><i>🦞</i><i>🍅</i><i>🥵</i><i>😊</i><i>😐</i></div><div class="merc"></div><div class="you" hidden>YOU</div></div>
+            <div class="tube"><div class="scale" aria-hidden="true"><i>🦞</i><i>🍅</i><i>🥵</i><i>😊</i><i>😐</i></div><div class="merc"></div><div class="you" aria-hidden="true"><img src="img/tony.webp" alt="" width="144" height="204" draggable="false"><span class="tag">YOU</span></div></div>
             <div class="bulb" aria-hidden="true"></div>
           </div>
-          <div class="rc-read"><b class="rc-avg">—</b><span class="rc-word">Be the first</span><small class="rc-n">0 votes</small><small class="rc-hint">Tap or drag the tube</small></div>
+          <div class="rc-read"><b class="rc-avg">—</b><span class="rc-word">Be the first</span><small class="rc-n">0 votes</small><small class="rc-hint">Drag Tony up or down</small></div>
         </div>
       </aside>
       </div>
@@ -105,21 +106,21 @@
       <div class="card kbcard">
         <div class="card-h"><h3><span class="ic" style="background:rgba(242,201,76,.14)">⚖️</span>KILL OR BOMB?</h3><span class="pill kb-who" id="kbWho">Pick a side</span></div>
         <div class="quick kb3">
-          <div class="kbframe kf"><button class="kill" data-burst="KILL!" data-c="#f2c94c"><span class="e">🔥</span>KILL <small>68%</small></button></div>
+          <div class="kbframe bf"><button class="bomb" data-burst="BOMB!" data-c="#e0182d"><span class="e">💣</span>BOMB <small>32%</small></button></div>
           <div class="kb-mid">
             <div class="kb-vs">VS</div>
-            <div class="killmeter"><div class="k" style="width:68%"></div><div class="b" style="width:32%"></div></div>
-            <div class="km-l"><span>8,775 say kill</span><span>4,129 say bomb</span></div>
+            <div class="killmeter"><div class="b" style="width:32%"></div><div class="k" style="width:68%"></div></div>
+            <div class="km-l"><span class="bl">4,129 say bomb</span><span class="kl">8,775 say kill</span></div>
           </div>
-          <div class="kbframe bf"><button class="bomb" data-burst="BOMB!" data-c="#e0182d"><span class="e">💣</span>BOMB <small>32%</small></button></div>
+          <div class="kbframe kf"><button class="kill" data-burst="KILL!" data-c="#f2c94c"><span class="e">🔥</span>KILL <small>68%</small></button></div>
         </div>
       </div>
 
       <div class="card soundcard">
         <div class="card-h"><h3><span class="ic" style="background:rgba(123,63,228,.18)">🎛️</span>SOUNDBOARD</h3>
-          <label class="vol" title="Soundboard volume"><span id="volIc">🔊</span><input type="range" id="vol" min="0" max="100" value="80"></label></div>
+          <div class="sb-ctl"><label class="vol" title="Soundboard volume"><span id="volIc">🔊</span><input type="range" id="vol" min="0" max="100" value="80"></label><button class="sb-set" id="sbSet" type="button" title="Soundboard settings: change any button's sound" aria-label="Soundboard settings"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button></div></div>
         <div class="sb" id="sb"></div>
-        <div class="sb-note"><span>🎹</span><span>Real CC0 recordings from Freesound; swap in your own anytime. Keys <b>1–8</b> play, <b>⚙</b> swaps.</span></div>
+        <div class="sb-note"><span>🎹</span><span>Real CC0 recordings from Freesound; swap in your own anytime. Keys <b>1–8</b> play; <b>⚙ Settings</b> changes any button.</span></div>
       </div>
     </section>
 
@@ -168,7 +169,7 @@
       <div class="bet-me" id="betMe">Pick YES or NO to get on the board.</div>
     </div>
   </section>
-  <div class="foot">Unofficial fan site · not affiliated with or endorsed by the show</div>
+  <div class="foot">Unofficial fan site · not affiliated with or endorsed by the show<br><span class="credit">Tony Hinchcliffe photo: The Comedy Store, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener">CC BY 3.0</a>, via <a href="https://commons.wikimedia.org/wiki/File:Tony_Hinchcliffe_on_The_Comedy_Store_podcast_(cropped).jpg" target="_blank" rel="noopener">Wikimedia Commons</a> (cropped, background removed) · <a href="https://github.com/willfrankkane-cyber/bucketpull.live/blob/main/CREDITS.md" target="_blank" rel="noopener">comic photo credits</a></span></div>
 </div>
 
 <!-- SWAP MODAL -->
@@ -176,10 +177,12 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
     <div class="m-head">
       <div class="m-prev" id="mPrev"></div>
-      <div class="m-ttl"><small id="mSlot">BUTTON 1 · KEY 1</small><h2 id="mTitle">Swap this sound</h2></div>
+      <div class="m-ttl"><small id="mSlot">BUTTON 1 · KEY 1</small><h2 id="mTitle">Soundboard settings</h2></div>
       <button class="m-x" id="mClose" aria-label="Close">✕</button>
     </div>
     <div class="m-body">
+      <div class="m-sec"><span>Pick a button to change</span><small>Each button keeps its own sound, label and key</small></div>
+      <div class="m-slots" id="mSlots" role="tablist" aria-label="Soundboard buttons"></div>
       <div class="m-row">
         <label class="fld"><span>Button label</span><input id="mLabel" maxlength="18" placeholder="e.g. AIRHORN"></label>
         <label class="fld"><span>Subtitle</span><input id="mSub" maxlength="24" placeholder="e.g. Stadium blast"></label>
@@ -203,11 +206,12 @@
   </div>
 </div>
 <script src="config.js"></script>
-<script src="app.js?v=club1"></script>
+<script src="marquee.js?v=club2"></script>
+<script src="app.js?v=club2"></script>
 <script src="sounds-data.js"></script>
-<script src="soundboard.js?v=club1"></script>
-<script src="live.js?v=club1"></script>
-<script src="red.js?v=club1"></script>
-<script src="realtime.js?v=club1"></script>
+<script src="soundboard.js?v=club2"></script>
+<script src="live.js?v=club2"></script>
+<script src="red.js?v=club2"></script>
+<script src="realtime.js?v=club2"></script>
 </body>
 </html>

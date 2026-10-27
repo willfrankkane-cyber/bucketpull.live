@@ -20,6 +20,16 @@ const fmt=n=>Number(n||0).toLocaleString('en-US');
 const WORDS=['','yikes','rough','meh','eh','okay','decent','good','solid set','great','legendary'];
 const GRAD=[['#ffc23d','#b8860b'],['#7b3fe4','#4a55e8'],['#c9ccd6','#3a3fd0'],['#f2c94c','#8a6516'],['#f0263b','#8e0b1a'],['#8f63e8','#3a3fd0']];
 const initials=n=>(String(n).trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2)||'?').toUpperCase();
+/* comic photos: only regulars + the golden ticket winner (never bucket pulls); initials when there is no photo */
+const nrm=n=>String(n||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/['’`]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+const lev=(a,b)=>{if(a===b)return 0;const m=a.length,n=b.length;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]};
+const nameMatch=(a,b)=>{a=nrm(a);b=nrm(b);if(!a||!b)return false;if(a===b||a.replace(/ /g,'')===b.replace(/ /g,''))return true;
+  if(Math.min(a.length,b.length)>=6&&lev(a,b)<=2)return true;const ta=a.split(' '),tb=b.split(' ');
+  return ta.length>1&&tb.length>1&&ta[ta.length-1]===tb[tb.length-1]&&lev(ta[0],tb[0])<=1};
+let PHOTOS=null;fetch('img/comics/photos.json?v=club2').then(r=>r.ok?r.json():{}).then(j=>{PHOTOS=j||{};try{renderRegs()}catch(e){}}).catch(()=>{PHOTOS={}});
+const photoFor=n=>{if(!PHOTOS)return null;const k=nrm(n);if(PHOTOS[k])return PHOTOS[k];let best=null,bd=9;
+  for(const key in PHOTOS){if(nameMatch(k,key)){const d=lev(k,key);if(d<bd){bd=d;best=PHOTOS[key]}}}return best};
+const avInner=n=>{const p=photoFor(n),i=esc(initials(n));return p?`<img src="${esc(p.src)}" alt="" loading="lazy" decoding="async" onerror="this.parentNode.textContent='${i}'">`:i};
 const HOLD=5000;          // ms an auto event waits (no player) before it shows; the autopilot writes events 5 s early
 
 /* ---------- live-mode styling + copy (sample data goes away) ---------- */
@@ -197,7 +207,7 @@ function visibleComicIds(){const po=playerOffset(),vis=new Set(),seen=new Set();
   for(const e of comicEvents()){if(!e.comic_id)continue;seen.add(e.comic_id);if(evVisible(e,po))vis.add(e.comic_id)}
   for(const c of ST.comics||[])if(c.source!=='auto'||!seen.has(c.id))vis.add(c.id);return vis}
 function curComic(){if(!ST)return null;if(FINAL())return finalComic();const id=effectiveComicId();return (ST.comics||[]).find(c=>c.id===id)||null}
-function timelineTick(){if(!ST)return;const id=FINAL()?(finalComic()||{}).id||null:effectiveComicId();const sig=[...visibleComicIds()].join(',');
+function timelineTick(){if(!ST)return;const id=FINAL()?(finalComic()||{}).id||null:effectiveComicId();const sig=[...visibleComicIds()].join(',')+'|gt'+(gtIsReached()?1:0);
   if(id!==effCur||sig!==visSig){const first=effCur===undefined;effCur=id;visSig=sig;if(!first)render()}
   const po=playerOffset();
   for(const e of ST.events||[]){if(e.kind!=='golden_ticket'||e.cancelled||firedGT.has(e.id))continue;
@@ -293,7 +303,7 @@ function setDist(d){const bars=[...document.querySelectorAll('#dist i')];const m
 function setKB(k,b){k=+k||0;b=+b||0;const tot=k+b,pk=tot?Math.round(k/tot*100):50;
   qs('.quick .kill small').textContent=tot?pk+'%':'–';qs('.quick .bomb small').textContent=tot?(100-pk)+'%':'–';
   qs('.killmeter .k').style.width=pk+'%';qs('.killmeter .b').style.width=(100-pk)+'%';
-  const l=document.querySelectorAll('.km-l span');if(l[0]){l[0].textContent=fmt(k)+' say kill';l[1].textContent=fmt(b)+' say bomb'}}
+  const kl=qs('.km-l .kl'),bl=qs('.km-l .bl');if(kl)kl.textContent=fmt(k)+' say kill';if(bl)bl.textContent=fmt(b)+' say bomb'}
 
 function renderBoard(){const lb=qs('.lb');if(!lb)return;const fin=FINAL(),cur=fin?null:effectiveComicId(),vis=visibleComicIds(),sel=fin?(finalComic()||{}).id:null;
   lb.classList.toggle('final',fin);
@@ -309,14 +319,15 @@ function renderBoard(){const lb=qs('.lb');if(!lb)return;const fin=FINAL(),cur=fi
 function starRow(id,name,score){const my=score?Math.round(score/2):0;
   return `<div class="stars" data-id="${id}">${[1,2,3,4,5].map(j=>`<button class="${j<=my?'on':''}" data-v="${j}" aria-label="${j} star${j>1?'s':''} for ${esc(name)}">★</button>`).join('')}</div>`}
 function renderRegs(){const el=$('regs');if(!el)return;const fin=FINAL(),cur=fin?(finalComic()||{}).id:effectiveComicId(),vis=visibleComicIds();
-  const rs=(ST.comics||[]).filter(c=>c.kind==='regular'&&vis.has(c.id)).sort((a,b)=>a.ord-b.ord);
+  const rs=(ST.comics||[]).filter(c=>c.kind==='regular'&&vis.has(c.id));
+  const gtc=gtWinner();if(gtc&&vis.has(gtc.id)&&!rs.some(c=>c.id===gtc.id))rs.push(gtc);rs.sort((a,b)=>a.ord-b.ord);
   const pill=$('regPill');if(pill){pill.textContent=rs.length?(fin?`${rs.length} up · replay`:`${rs.length} up tonight`):(fin?'replay':'0 up');pill.classList.toggle('final',fin)}
   if(!rs.length&&fin){el.innerHTML='<div class="empty">No regulars in this episode\'s lineup.</div>';return}
   if(!rs.length){el.innerHTML='<div class="empty">Regulars and golden ticket winners appear here the moment they hit the stage (start, middle and end of the show) and stay all night.</div>';return}
   const mine=ST.me&&ST.me.votes||{},live=ST.episode.status==='live';
   el.innerHTML=rs.map((r,k)=>{const g=GRAD[(k+2)%GRAD.length],a=r.avg==null?null:+r.avg,now=r.id===cur;
-    return `<div class="pm reg${now?' now':''}${fin&&r.start_offset!=null?' seekable':''}" data-id="${r.id}"${fin&&r.start_offset!=null?` title="Jump the video to ${esc(r.name)}"`:''}><div class="av" style="--g:linear-gradient(135deg,${g[0]},${g[1]});--rc:${g[0]}">${esc(initials(r.name))}</div>
-<div class="info"><b>${esc(r.name)}${now&&!fin?' <span class="tag live">LIVE</span>':''}</b><small>${now?(fin?'On stage in your video':'On stage now'):'Regular · set #'+r.ord}${fin&&r.start_offset!=null?' · ▶ '+mmss(r.start_offset):''}</small>${live||fin?starRow(r.id,r.name,mine[r.id]):''}</div>
+    return `<div class="pm reg${now?' now':''}${fin&&r.start_offset!=null?' seekable':''}" data-id="${r.id}"${fin&&r.start_offset!=null?` title="Jump the video to ${esc(r.name)}"`:''}><div class="av${gtc&&r.id===gtc.id?' av-gt':''}" style="--g:linear-gradient(135deg,${g[0]},${g[1]});--rc:${gtc&&r.id===gtc.id?'#ffc23d':g[0]}">${avInner(r.name)}</div>
+<div class="info"><b>${esc(r.name)}${now&&!fin?' <span class="tag live">LIVE</span>':''}</b><small>${now?(fin?'On stage in your video':'On stage now'):(gtc&&r.id===gtc.id?'🎟️ Golden ticket winner · set #':'Regular · set #')+r.ord}${fin&&r.start_offset!=null?' · ▶ '+mmss(r.start_offset):''}</small>${live||fin?starRow(r.id,r.name,mine[r.id]):''}</div>
 <div class="avg">${a==null?'—':a.toFixed(1)}<small>${fmt(r.votes)} vote${r.votes==1?'':'s'}</small></div></div>`}).join('')}
 
 function renderPanel(){const el=$('panel');if(!el)return;const ps=ST.panel||[];
@@ -328,6 +339,10 @@ function renderPanel(){const el=$('panel');if(!el)return;const ps=ST.panel||[];
 <div class="avg">${a==null?'—':a.toFixed(1)}<small>${fmt(p.votes)} vote${p.votes==1?'':'s'}</small></div></div>`}).join('');
   const rated=ps.filter(p=>p.avg!=null);qs('.panelcard .pill').textContent=(rated.length?'avg '+(rated.reduce((s,p)=>s+ +p.avg,0)/rated.length).toFixed(1):'avg —')+(FINAL()?' · replay':'')}
 
+function gtIsReached(){const ep=ST&&ST.episode;if(!ep)return false;const gtEv=(ST.events||[]).filter(e=>e.kind==='golden_ticket'&&!e.cancelled).pop();
+  return !!ep.golden_ticket_at&&(!gtEv||evVisible(gtEv,playerOffset()))}
+function gtWinner(){const ep=ST&&ST.episode;if(!ep||!ep.golden_ticket_name||!gtIsReached())return null;const cs=ST.comics||[];
+  return cs.find(c=>nrm(c.name)===nrm(ep.golden_ticket_name))||cs.find(c=>nameMatch(c.name,ep.golden_ticket_name))||null}
 function renderBetState(){if(!window.BPLive||!BPLive.applyRemote||!ST)return;const ep=ST.episode,b=ST.bet||{yes:0,no:0};
   const gtEv=(ST.events||[]).filter(e=>e.kind==='golden_ticket'&&!e.cancelled).pop();
   const gtReached=!!ep.golden_ticket_at&&(!gtEv||evVisible(gtEv,playerOffset()));
