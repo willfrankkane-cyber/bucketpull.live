@@ -918,7 +918,7 @@ input,textarea,select{font-family:var(--body)}
 
 /* ===== promo/polish: no blue tap flash or accidental text selection on controls ===== */
 button, .rate button, .stars button, .quick button, .snd, .sb-set, .chip, .thermo, .ms, .conf button,
-.pv, .d-play, a.chip, .opt, .h-tg button, .mq{
+.pv, .d-play, a.chip, .opt, .h-tg button, .mq, .yt-ctl button{
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none; user-select: none;
 }
@@ -926,3 +926,9 @@ button, .rate button, .stars button, .quick button, .snd, .sb-set, .chip, .therm
   -webkit-user-select: none; user-select: none;
 }
 ::selection{background:rgba(240,193,75,.35);color:#fff}
+
+
+/* ===== club5: native-free YT control strip (mirror; primary rules inject with live player) ===== */
+.player .yt-ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;padding:8px 10px;border-radius:12px;
+  background:rgba(12,10,16,.92);border:1px solid rgba(240,193,75,.28)}
+.player .yt-ctl button{-webkit-tap-highlight-color:transparent;user-select:none}

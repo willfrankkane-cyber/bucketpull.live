@@ -63,6 +63,26 @@ const css=document.createElement('style');css.textContent=`
 .player .yt-embed iframe{width:100%;height:100%;border:0;display:block}
 .player .yt-out{position:absolute;right:10px;top:10px;z-index:4;font-size:11.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.6);padding:5px 9px;border-radius:8px;text-decoration:none}
 .player.has-yt .play,.player.has-yt .mic,.player.has-yt .bar,.player.has-yt .yt-top{display:none}
+.player.has-yt{aspect-ratio:auto;overflow:visible;display:flex;flex-direction:column;gap:0;background:transparent;border-color:transparent;box-shadow:none}
+.player.has-yt .curtain,.player.has-yt .spot{display:none}
+.player.has-yt .yt-stage{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;border:1px solid rgba(240,193,75,.28);
+  box-shadow:0 0 0 1px #000,0 24px 50px -20px #000,0 -30px 80px -40px rgba(255,236,196,.35);background:#000}
+.player.has-yt .yt-embed{position:absolute;inset:0;z-index:1;border-radius:inherit}
+.player.has-yt .yt-out{z-index:3}
+.player.has-yt .yt-unmute{z-index:5}
+.player .yt-ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;padding:8px 10px;border-radius:12px;
+  background:rgba(12,10,16,.92);border:1px solid rgba(240,193,75,.28);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.player .yt-ctl button{height:32px;min-width:36px;padding:0 10px;border-radius:9px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);color:#fff;font:800 13px var(--body);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.player .yt-ctl button:hover{background:rgba(240,193,75,.14);border-color:rgba(240,193,75,.45)}
+.player .yt-ctl button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.player .yt-ctl .yt-vol{width:88px;accent-color:var(--gold);cursor:pointer}
+.player .yt-ctl .yt-seek{flex:1;min-width:140px;display:flex;align-items:center;gap:8px}
+.player .yt-ctl .yt-seek[hidden]{display:none!important}
+.player .yt-ctl .yt-scrub{flex:1;min-width:80px;accent-color:var(--gold);cursor:pointer}
+.player .yt-ctl .yt-time{font:700 11.5px/1 var(--body);color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap}
+.player .yt-ctl .yt-fs{margin-left:auto}
+@media (max-width:640px){.player .yt-ctl{gap:6px;padding:7px 8px}.player .yt-ctl .yt-vol{width:64px}.player .yt-ctl .yt-time{font-size:10.5px}}
 .host.live-host{width:300px;max-height:calc(100vh - 32px);overflow:auto}
 
 .host .h-row{display:flex;gap:6px}.host .h-row>*{flex:1;min-width:0}
@@ -253,7 +273,7 @@ function renderNoEpisode(){renderChrome(false);epEl&&(epEl.innerHTML='<strong>No
   const yt=qs('.yt-top>div:nth-child(2)');if(yt)yt.innerHTML=`Waiting for the premiere<small>Unofficial fan room · ${fmt(viewers)} watching</small>`;
   if(window.BPLive&&BPLive.renderTicker)try{BPLive.renderTicker()}catch(e){}}
 
-function render(){if(!ST)return;const ep=ST.episode,fin=FINAL();
+function render(){if(!ST)return;const ep=ST.episode,fin=FINAL();try{syncYtCtl()}catch(e){}
   if(epEl)epEl.innerHTML=`<strong>${esc(ep.title)}</strong>${ep.status==='live'?(synced()?'Live · synced to your player':'Live · real fan votes'):fin?'Replay · voting stays open':'Starting soon'}`;
   const yt=qs('.yt-top>div:nth-child(2)');if(yt)yt.innerHTML=`${esc(ep.title)}<small>${fin?'Replay · tap a comic on the board to jump to their set':'Unofficial fan room · '+fmt(viewers)+' watching'}</small>`;
   renderChrome(fin);
@@ -380,39 +400,76 @@ function loadYTApi(){if(ytApiState!=='none')return;ytApiState='loading';
   const prev=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{ytApiState='ready';prev&&prev();if(ytCur){const c=ytCur;ytCur=null;setPlayer('https://youtu.be/'+c)}};
   const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.async=true;s.onerror=()=>{ytApiState='failed';if(ytCur){const c=ytCur;ytCur=null;setPlayer('https://youtu.be/'+c)}};document.head.appendChild(s);
   setTimeout(()=>{if(ytApiState==='loading'){ytApiState='failed';if(ytCur){const c=ytCur;ytCur=null;setPlayer('https://youtu.be/'+c)}}},8000)}
+const YT_VARS={autoplay:1,mute:0,playsinline:1,rel:0,modestbranding:1,controls:0,iv_load_policy:3,disablekb:1};
+const YT_QS=Object.entries(YT_VARS).map(([k,v])=>k+'='+v).join('&');
+let ytCtlTimer=null,ytScrubbing=false;
+function stopYtCtlPoll(){if(ytCtlTimer){clearInterval(ytCtlTimer);ytCtlTimer=null}}
+function syncYtCtl(){
+  const ctl=qs('.yt-ctl');if(!ctl)return;
+  const pp=ctl.querySelector('.yt-pp'),mu=ctl.querySelector('.yt-mu'),vol=ctl.querySelector('.yt-vol');
+  const seek=ctl.querySelector('.yt-seek'),scrub=ctl.querySelector('.yt-scrub'),tm=ctl.querySelector('.yt-time');
+  const p=ytPlayer;let playing=false,muted=false,cur=0,dur=0,volN=100;
+  if(p&&typeof p.getPlayerState==='function'){
+    try{const st=p.getPlayerState();playing=(st===1||st===3);muted=!!p.isMuted();cur=+p.getCurrentTime()||0;dur=+p.getDuration()||0;volN=+p.getVolume()||0}catch(e){}}
+  if(pp){pp.textContent=playing?'❚❚':'▶';pp.setAttribute('aria-label',playing?'Pause':'Play')}
+  if(mu){mu.textContent=muted||volN===0?'🔇':'🔊';mu.setAttribute('aria-label',muted?'Unmute':'Mute')}
+  if(vol&&document.activeElement!==vol)vol.value=String(muted?0:volN);
+  const showSeek=FINAL();
+  if(seek){seek.hidden=!showSeek;if(showSeek&&scrub&&!ytScrubbing){if(dur>0){scrub.max=String(Math.floor(dur));scrub.value=String(Math.min(Math.floor(cur),Math.floor(dur)))}if(tm)tm.textContent=mmss(cur)+' / '+mmss(dur)}}
+}
+function startYtCtlPoll(){stopYtCtlPoll();syncYtCtl();ytCtlTimer=setInterval(syncYtCtl,500)}
+function buildYtCtl(pl,stage){
+  pl.querySelectorAll('.yt-ctl').forEach(e=>e.remove());
+  const ctl=document.createElement('div');ctl.className='yt-ctl';ctl.setAttribute('role','group');ctl.setAttribute('aria-label','Video controls');
+  ctl.innerHTML=`<button type="button" class="yt-pp" aria-label="Play">▶</button>
+<button type="button" class="yt-mu" aria-label="Mute">🔊</button>
+<input class="yt-vol" type="range" min="0" max="100" value="100" aria-label="Volume">
+<div class="yt-seek" hidden><input class="yt-scrub" type="range" min="0" max="0" value="0" step="1" aria-label="Seek"><span class="yt-time">0:00 / 0:00</span></div>
+<button type="button" class="yt-fs" aria-label="Fullscreen">⛶</button>`;
+  ctl.querySelector('.yt-pp').onclick=()=>{const p=ytPlayer;if(!p)return;try{const st=p.getPlayerState();if(st===1)p.pauseVideo();else p.playVideo()}catch(e){}syncYtCtl()};
+  ctl.querySelector('.yt-mu').onclick=()=>{const p=ytPlayer;if(!p)return;try{if(p.isMuted()||p.getVolume()===0){p.unMute();if(p.getVolume()===0)p.setVolume(80);sound.on=true;const u=qs('.yt-unmute');if(u)u.remove()}else p.mute()}catch(e){}syncYtCtl()};
+  ctl.querySelector('.yt-vol').addEventListener('input',e=>{const p=ytPlayer,v=+e.target.value;if(!p)return;try{p.setVolume(v);if(v>0){p.unMute();sound.on=true;const u=qs('.yt-unmute');if(u)u.remove()}else p.mute()}catch(x){}syncYtCtl()});
+  const scrub=ctl.querySelector('.yt-scrub');
+  scrub.addEventListener('pointerdown',()=>{ytScrubbing=true});
+  scrub.addEventListener('pointerup',()=>{ytScrubbing=false;syncYtCtl()});
+  scrub.addEventListener('change',e=>{const p=ytPlayer,t=+e.target.value;if(!p||!isFinite(t))return;try{p.seekTo(t,true);p.playVideo()}catch(x){}ytScrubbing=false;syncYtCtl()});
+  ctl.querySelector('.yt-fs').onclick=()=>{const el=stage||pl;if(!document.fullscreenElement){const req=el.requestFullscreen||el.webkitRequestFullscreen;req&&req.call(el)}else{const ex=document.exitFullscreen||document.webkitExitFullscreen;ex&&ex.call(document)}};
+  pl.appendChild(ctl);startYtCtlPoll();return ctl;
+}
 function setPlayer(url){const pl=qs('.player');if(!pl)return;const id=ytId(url);if(id===ytCur)return;ytCur=id;
-  pl.querySelectorAll('.yt-embed,.yt-out,.yt-unmute').forEach(e=>e.remove());pl.classList.toggle('has-yt',!!id);
+  stopYtCtlPoll();pl.querySelectorAll('.yt-embed,.yt-out,.yt-unmute,.yt-ctl,.yt-stage').forEach(e=>e.remove());pl.classList.toggle('has-yt',!!id);
   if(ytPlayer){try{ytPlayer.destroy()}catch(e){}ytPlayer=null}
   if(!id)return;
+  const stage=document.createElement('div');stage.className='yt-stage';
   const w=document.createElement('div');w.className='yt-embed';
   if(ytApiState==='none')loadYTApi();
   if(ytApiState==='ready'&&window.YT&&YT.Player){
     const holder=document.createElement('div');w.appendChild(holder);
     ytPlayer=new YT.Player(holder,{host:'https://www.youtube-nocookie.com',videoId:id,
-      playerVars:{autoplay:1,mute:0,playsinline:1,rel:0,modestbranding:1},
-      events:{onReady:ev=>soundOn(ev.target),onStateChange:()=>timelineTick(),onError:e=>console.warn('youtube player error',e&&e.data)}});
-  }else w.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1" title="Kill Tony premiere on YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+      playerVars:Object.assign({},YT_VARS),
+      events:{onReady:ev=>{soundOn(ev.target);syncYtCtl()},onStateChange:()=>{timelineTick();syncYtCtl()},onError:e=>console.warn('youtube player error',e&&e.data)}});
+  }else w.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?${YT_QS}" title="Kill Tony premiere on YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   const a=document.createElement('a');a.className='yt-out';a.href='https://www.youtube.com/watch?v='+encodeURIComponent(id);a.target='_blank';a.rel='noopener';
   a.textContent='Watch on YouTube ↗';a.title='If the video says embedding is disabled, open it on YouTube';
   const u=document.createElement('button');u.className='yt-unmute';u.type='button';u.textContent='🔊 Tap for sound';
   u.style.cssText='position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;padding:9px 16px;border-radius:999px;border:0;background:#ffd23f;color:#111;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.45)';
   u.onclick=e=>{e.stopPropagation();if(ytPlayer&&ytPlayer.unMute){try{ytPlayer.unMute();ytPlayer.setVolume(100);ytPlayer.playVideo()}catch(x){}}
-    else{const f=w.querySelector('iframe');if(f&&/&mute=1/.test(f.src))f.src=f.src.replace('&mute=1','&mute=0')}u.remove();sound.on=true};
+    else{const f=w.querySelector('iframe');if(f&&/[&?]mute=1/.test(f.src))f.src=f.src.replace(/([&?])mute=1/,'$1mute=0')}u.remove();sound.on=true;syncYtCtl()};
   if(getComputedStyle(pl).position==='static')pl.style.position='relative';
-  pl.append(w,a,u)}
+  stage.append(w,a,u);pl.appendChild(stage);buildYtCtl(pl,stage)}
 
 
 /* sound on by default: try unmuted autoplay; if the browser blocks it, play muted and unmute on the first tap/click/key anywhere */
 const sound={on:false,armed:false};
 function soundOn(p){if(p!==ytPlayer)return;try{p.unMute();p.setVolume(100);p.playVideo()}catch(e){}
   setTimeout(()=>{if(p!==ytPlayer)return;let st=-1,muted=true;try{st=p.getPlayerState();muted=p.isMuted()}catch(e){}
-    if(st===1&&!muted){sound.on=true;qs('.yt-unmute')&&qs('.yt-unmute').remove();return}
-    try{p.mute();p.playVideo()}catch(e){}armUnmute()},2500)}
+    if(st===1&&!muted){sound.on=true;qs('.yt-unmute')&&qs('.yt-unmute').remove();syncYtCtl();return}
+    try{p.mute();p.playVideo()}catch(e){}armUnmute();syncYtCtl()},2500)}
 function armUnmute(){if(sound.armed)return;sound.armed=true;
   const go=e=>{if(e.target&&e.target.closest&&e.target.closest('input,textarea,select,.bp-res'))return;
     document.removeEventListener('pointerdown',go,true);document.removeEventListener('keydown',go,true);sound.armed=false;
     const p=ytPlayer;if(!p||!p.unMute)return;try{p.unMute();p.setVolume(100);if(p.getPlayerState()!==1)p.playVideo()}catch(x){}
-    sound.on=true;const u=qs('.yt-unmute');if(u)u.remove()};
+    sound.on=true;const u=qs('.yt-unmute');if(u)u.remove();syncYtCtl()};
   document.addEventListener('pointerdown',go,true);document.addEventListener('keydown',go,true)}
 
 /* ---------- clock on the comic card ---------- */

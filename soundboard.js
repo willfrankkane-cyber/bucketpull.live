@@ -41,11 +41,19 @@ const toDataURL=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.res
 
 // ---------- playback ----------
 const urls=new Array(N).fill(null);  // resolved src per slot
-let vol=+(localStorage.getItem(KEY+'.vol')||80)/100;
+/* Volume: v2 key so an old muted/zero default does not stick. Explicit user choice on v2 is kept. */
+const VOLKEY='bp.soundboard.v2.vol';
+(function(){try{if(localStorage.getItem(VOLKEY)==null)localStorage.removeItem(KEY+'.vol')}catch(e){}})();
+let vol=(()=>{try{const v=localStorage.getItem(VOLKEY);if(v!=null&&v!==''){const n=+v;if(isFinite(n))return Math.min(1,Math.max(0,n/100))}}catch(e){}return .8})();
 async function resolve(i){const s=slots[i];urls[i]=s.sound==='upload'?(await getClip('slot'+i))||src(DEFAULTS[i]):src(s.sound);
   const pre=new Audio(urls[i]);pre.preload='auto'}
 const live=new Set();
-function play(url,onEnd){const a=new Audio(url);a.volume=vol;live.add(a);a.onended=()=>{live.delete(a);onEnd&&onEnd()};a.play().catch(err=>{console.warn('play blocked',err);onEnd&&onEnd()});return a}
+let audioUnlocked=false;
+function unlockAudio(){if(audioUnlocked)return;audioUnlocked=true;
+  try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){const c=window.__bpAC||new AC();window.__bpAC=c;if(c.state==='suspended')c.resume()}}catch(e){}
+  try{const a=new Audio();a.volume=0;const p=a.play();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+function play(url,onEnd){unlockAudio();const a=new Audio(url);a.volume=vol;live.add(a);a.onended=()=>{live.delete(a);onEnd&&onEnd()};
+  const p=a.play();if(p&&p.catch)p.catch(err=>{console.warn('play blocked',err);onEnd&&onEnd()});return a}
 
 // ---------- render ----------
 const sb=document.getElementById('sb');
@@ -55,7 +63,7 @@ function render(){sb.innerHTML=slots.map((s,i)=>{const L=meta(i);const long=s.la
   <span class="em">${L.em}</span><b>${esc(s.label)}</b><small>${esc(s.sub||'')}</small><span class="k">${i+1}</span><span class="eq"><i></i><i></i><i></i></span></button></div>`}).join('')}
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-function trigger(i){const b=sb.querySelector(`.snd[data-i="${i}"]`);if(!b)return;const L=meta(i);
+function trigger(i){unlockAudio();const b=sb.querySelector(`.snd[data-i="${i}"]`);if(!b)return;const L=meta(i);
   const r=b.getBoundingClientRect();window.burst&&burst(r.left+r.width/2,r.top+r.height/2,COLORS[i],L.fx,L.burst);
   b.classList.add('hit','playing');setTimeout(()=>b.classList.remove('hit'),120);
   play(urls[i]||src(DEFAULTS[i]),()=>{if(![...live].length)b.classList.remove('playing')});
@@ -65,8 +73,9 @@ let lastSlot=0;const setBtn=document.getElementById('sbSet');if(setBtn)setBtn.ad
 addEventListener('keydown',e=>{if(!modal.hidden){if(e.key==='Escape')closeModal();return}
   const t=document.activeElement.tagName;if(t==='INPUT'||t==='TEXTAREA'||e.metaKey||e.ctrlKey||e.altKey||e.repeat)return;
   const n=+e.key;if(n>=1&&n<=N){e.preventDefault();trigger(n-1)}});
-const volEl=document.getElementById('vol');volEl.value=vol*100;
-volEl.addEventListener('input',()=>{vol=volEl.value/100;live.forEach(a=>a.volume=vol);document.getElementById('volIc').textContent=vol==0?'🔇':vol<.4?'🔈':'🔊';localStorage.setItem(KEY+'.vol',volEl.value)});
+const volEl=document.getElementById('vol');volEl.value=Math.round(vol*100);
+document.getElementById('volIc').textContent=vol==0?'🔇':vol<.4?'🔈':'🔊';
+volEl.addEventListener('input',()=>{vol=volEl.value/100;live.forEach(a=>a.volume=vol);document.getElementById('volIc').textContent=vol==0?'🔇':vol<.4?'🔈':'🔊';try{localStorage.setItem(VOLKEY,volEl.value)}catch(e){}});
 
 // ---------- modal ----------
 const modal=document.getElementById('modal');const $=id=>document.getElementById(id);
