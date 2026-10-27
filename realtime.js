@@ -404,7 +404,7 @@ function loadYTApi(){if(ytApiState!=='none')return;ytApiState='loading';
   setTimeout(()=>{if(ytApiState==='loading'){ytApiState='failed';if(ytCur){const c=ytCur;ytCur=null;setPlayer('https://youtu.be/'+c)}}},8000)}
 const YT_VARS={autoplay:1,mute:0,playsinline:1,rel:0,modestbranding:1,controls:0,iv_load_policy:3,disablekb:1};
 const YT_QS=Object.entries(YT_VARS).map(([k,v])=>k+'='+v).join('&');
-let ytCtlTimer=null,ytScrubbing=false,ytSeekable=true;
+let ytCtlTimer=null,ytScrubbing=false,ytSeekable=true,ytPendingSeek=null,ytPendingUntil=0;
 function stopYtCtlPoll(){if(ytCtlTimer){clearInterval(ytCtlTimer);ytCtlTimer=null}}
 function ytRead(){const p=ytPlayer;let playing=false,muted=false,cur=0,dur=0,volN=100,st=-1;
   if(p&&typeof p.getPlayerState==='function'){
@@ -413,9 +413,9 @@ function ytRead(){const p=ytPlayer;let playing=false,muted=false,cur=0,dur=0,vol
 /* DVR/VOD seekable when duration is known; pure non-DVR live → hide seek and show LIVE */
 function ytCanSeek(dur,st){if(!(dur>0))return false;if(FINAL())return true;if(!ytSeekable)return false;return st===1||st===2||st===3||st===0}
 function ctlSeekTo(sec,{play=true}={}){if(sec==null||!isFinite(sec))return false;const t=Math.max(0,+sec);
-  const p=ytPlayer;if(p&&typeof p.seekTo==='function'){try{p.seekTo(t,true);if(play)p.playVideo();return true}catch(e){return false}}
+  const p=ytPlayer;if(p&&typeof p.seekTo==='function'){try{p.seekTo(t,true);if(play)p.playVideo();ytPendingSeek=t;ytPendingUntil=Date.now()+2500;return true}catch(e){return false}}
   const f=qs('.yt-embed iframe');if(!f)return false;const base=f.src.replace(/[?&]start=\d+/g,'').replace(/[?&]t=\d+s?/g,'');
-  f.src=base+(base.includes('?')?'&':'?')+'start='+Math.floor(t);return true}
+  f.src=base+(base.includes('?')?'&':'?')+'start='+Math.floor(t);ytPendingSeek=t;ytPendingUntil=Date.now()+2500;return true}
 function syncYtCtl(){
   const ctl=qs('.yt-ctl');if(!ctl)return;
   const pp=ctl.querySelector('.yt-pp'),mu=ctl.querySelector('.yt-mu'),vol=ctl.querySelector('.yt-vol');
@@ -425,14 +425,16 @@ function syncYtCtl(){
   if(pp){pp.textContent=playing?'❚❚':'▶';pp.setAttribute('aria-label',playing?'Pause':'Play')}
   if(mu){mu.textContent=muted||volN===0?'🔇':'🔊';mu.setAttribute('aria-label',muted?'Unmute':'Mute')}
   if(vol&&document.activeElement!==vol)vol.value=String(muted?0:volN);
+  if(ytPendingSeek!=null&&(Math.abs(cur-ytPendingSeek)<2.5||Date.now()>ytPendingUntil))ytPendingSeek=null;
   const can=ytCanSeek(dur,st);
   if(seek){
     seek.hidden=!can;
     if(can&&scrub){
       const max=Math.max(1,Math.floor(dur));
       if(scrub.max!==String(max))scrub.max=String(max);
-      if(!ytScrubbing){scrub.value=String(Math.min(Math.floor(cur),max));if(tm)tm.textContent=mmss(cur)+' / '+mmss(dur)}
-      else if(tm)tm.textContent=mmss(+scrub.value||0)+' / '+mmss(dur)}
+      if(ytScrubbing){if(tm)tm.textContent=mmss(+scrub.value||0)+' / '+mmss(dur)}
+      else if(ytPendingSeek!=null){scrub.value=String(Math.min(Math.floor(ytPendingSeek),max));if(tm)tm.textContent=mmss(ytPendingSeek)+' / '+mmss(dur)}
+      else{scrub.value=String(Math.min(Math.floor(cur),max));if(tm)tm.textContent=mmss(cur)+' / '+mmss(dur)}}
   }
   if(liveEl)liveEl.classList.toggle('on',!FINAL()&&!can&&!!ytCur);
   if(skB)skB.hidden=!can;if(skF)skF.hidden=!can;
@@ -454,12 +456,18 @@ function buildYtCtl(pl,stage){
   ctl.querySelector('.yt-mu').onclick=()=>{const p=ytPlayer;if(!p)return;try{if(p.isMuted()||p.getVolume()===0){p.unMute();if(p.getVolume()===0)p.setVolume(80);sound.on=true;const u=qs('.yt-unmute');if(u)u.remove()}else p.mute()}catch(e){}syncYtCtl()};
   ctl.querySelector('.yt-vol').addEventListener('input',e=>{const p=ytPlayer,v=+e.target.value;if(!p)return;try{p.setVolume(v);if(v>0){p.unMute();sound.on=true;const u=qs('.yt-unmute');if(u)u.remove()}else p.mute()}catch(x){}syncYtCtl()});
   const scrub=ctl.querySelector('.yt-scrub'),tm=ctl.querySelector('.yt-time');
-  const commitScrub=()=>{const t=+scrub.value;ytScrubbing=false;if(!isFinite(t)){syncYtCtl();return}
+  let scrubGesture=0,lastCommitted=-1;
+  const commitScrub=()=>{if(!ytScrubbing&&lastCommitted===scrubGesture)return;
+    const t=+scrub.value;ytScrubbing=false;lastCommitted=scrubGesture;
+    if(!isFinite(t)){syncYtCtl();return}
+    /* freeze UI on the chosen time so a late change/poll cannot snap back */
+    scrub.value=String(Math.floor(t));
     const ok=ctlSeekTo(t,{play:true});if(!ok)ytSeekable=false;syncYtCtl()};
-  const beginScrub=e=>{ytScrubbing=true;try{scrub.setPointerCapture&&e.pointerId!=null&&scrub.setPointerCapture(e.pointerId)}catch(x){}};
+  const beginScrub=e=>{ytScrubbing=true;scrubGesture++;try{scrub.setPointerCapture&&e.pointerId!=null&&scrub.setPointerCapture(e.pointerId)}catch(x){}};
   scrub.addEventListener('pointerdown',beginScrub);
-  scrub.addEventListener('touchstart',()=>{ytScrubbing=true},{passive:true});
-  scrub.addEventListener('input',()=>{ytScrubbing=true;const {dur}=ytRead();if(tm)tm.textContent=mmss(+scrub.value||0)+' / '+mmss(dur)});
+  scrub.addEventListener('touchstart',()=>{ytScrubbing=true;scrubGesture++},{passive:true});
+  scrub.addEventListener('input',()=>{if(!ytScrubbing){ytScrubbing=true;scrubGesture++}
+    const {dur}=ytRead();if(tm)tm.textContent=mmss(+scrub.value||0)+' / '+mmss(dur)});
   scrub.addEventListener('change',commitScrub);
   scrub.addEventListener('pointerup',commitScrub);
   scrub.addEventListener('pointercancel',commitScrub);
