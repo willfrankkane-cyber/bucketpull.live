@@ -112,3 +112,7 @@ Shown in Rate the Panel. All from Wikimedia Commons under the licences below.
 - **Ari Shaffir** (`img/panel/ari-shaffir.webp`): Wikimedia Commons · [File:Ari Shaffir 2016.jpg](https://commons.wikimedia.org/wiki/File:Ari_Shaffir_2016.jpg) · Lisa Gansky · [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) · cropped to a 96 px face thumbnail
 
 Guests not in this map: the page looks up the guest's English Wikipedia article once (REST page summary), and uses its lead image only if the article is a regular page whose description mentions comedy, podcasting, radio, TV, acting or music. and only when that image is hosted on Wikimedia Commons (free licences only; locally hosted non-free files are skipped). The avatar's tooltip and link credit Wikipedia / Wikimedia Commons; otherwise the guest shows initials.
+
+### Sandwich rating icon (`img/sandwich.png`, `img/sandwich-icon.webp`)
+
+Provided by the site owner for Redban's panel rating icons (replaces the sandwich emoji). Background removed and trimmed for transparent use.

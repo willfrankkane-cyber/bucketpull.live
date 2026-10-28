@@ -19,10 +19,12 @@ const panel=[
  {i:'MV',n:'Mo Vance',r:'Guest (fictional)',g:'linear-gradient(135deg,#c9ccd6,#3a3fd0)',rc:'#c9ccd6',s:4,a:'7.8',d:'+0.1'},
  {i:'JO',n:'Jules Ortega',r:'Guest (fictional)',g:'linear-gradient(135deg,#f2c94c,#8a6516)',rc:'#f2c94c',s:3,a:'6.9',d:'-0.3'}];
 const PIMG=['img/panel/tony-hinchcliffe.webp','img/panel/brian-redban.webp'],PIC=['🎤','🥪'];
+const SANDWICH_ICON='img/sandwich-icon.webp?v=club9';
+const picMarkup=ic=>ic==='🥪'?`<img class="ico-sw" src="${SANDWICH_ICON}" alt="" width="26" height="26" draggable="false">`:(ic||'★');
 if(!LIVE)document.getElementById('panel').innerHTML=panel.map((p,k)=>`<div class="pm"><div class="av" style="--g:${p.g};--rc:${p.rc}">${PIMG[k]?`<img src="${PIMG[k]}" alt="" onerror="this.parentNode.textContent='${p.i}'">`:p.i}</div>
-<div class="info"><b>${p.n}</b><small>${p.r}</small><div class="stars${PIC[k]?' emo':''}" data-k="${k}">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}">${PIC[k]||'★'}</button>`).join('')}</div></div>
+<div class="info"><b>${p.n}</b><small>${p.r}</small><div class="stars${PIC[k]?' emo':''}${PIC[k]==='🥪'?' sw':PIC[k]==='🎤'?' mic':''}" data-k="${k}" data-kind="${PIC[k]==='🥪'?'sandwich':PIC[k]==='🎤'?'mic':'star'}">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}" aria-label="${j} ${PIC[k]==='🥪'?'sandwich':PIC[k]==='🎤'?'mic':'star'}${j>1?'s':''} for ${p.n}" aria-pressed="${j<=p.s}">${picMarkup(PIC[k])}</button>`).join('')}</div></div>
 <div class="avg">${p.a}<small><span class="d ${p.d[0]=='+'?'up':'down'}">${p.d[0]=='+'?'▲':'▼'} ${p.d.slice(1)}</span> live</small></div></div>`).join('');
-document.querySelectorAll('.stars').forEach(s=>s.addEventListener('click',e=>{const v=+e.target.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j<v));burst(e.clientX,e.clientY,'#ffc23d','⭐','')}));
+document.querySelectorAll('.stars').forEach(s=>s.addEventListener('click',e=>{const b=e.target.closest('button');const v=b&&+b.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((x,j)=>x.classList.toggle('on',j<v));const k=s.dataset.kind||'';burst(e.clientX,e.clientY,'#ffc23d',k==='sandwich'?'🥪':k==='mic'?'🎤':'⭐','')}));
 
 // Kill Tony regulars (demo: fictional names). Live mode: realtime.js renders the real ones.
 const regs=[
@@ -32,7 +34,7 @@ const regs=[
 if(!LIVE)document.getElementById('regs').innerHTML=regs.map((p,k)=>`<div class="pm reg${p.now?' now':''}"><div class="av" style="--g:${p.g};--rc:${p.rc}">${p.i}</div>
 <div class="info"><b>${p.n}${p.now?' <span class="tag live">LIVE</span>':''}</b><small>${p.r}</small><div class="stars">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}">★</button>`).join('')}</div></div>
 <div class="avg">${p.a}<small>${p.v} votes</small></div></div>`).join('');
-document.querySelectorAll('#regs .stars').forEach(s=>s.addEventListener('click',e=>{const v=+e.target.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j<v));burst(e.clientX,e.clientY,'#ffc23d','⭐','')}));
+document.querySelectorAll('#regs .stars').forEach(s=>s.addEventListener('click',e=>{const b=e.target.closest('button');const v=b&&+b.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((x,j)=>x.classList.toggle('on',j<v));burst(e.clientX,e.clientY,'#ffc23d','⭐','')}));
 
 if(!LIVE&&!/static/.test(location.hash)){
 // viewers + timer

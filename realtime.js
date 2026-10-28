@@ -47,9 +47,11 @@ function wikiAvatar(n){const k=nrm(n);if(!k||k.split(' ').length<2||wikiBusy.has
 const panelPhoto=p=>{const hit=lookup(PANEL_PHOTOS,p.name)||(/^tony$/i.test(String(p.name).trim())&&PANEL_PHOTOS&&PANEL_PHOTOS['tony hinchcliffe'])||null;if(hit)return hit;
   if(PANEL_PHOTOS&&/guest/i.test(p.role||'')){const w=WIKI[nrm(p.name)];if(w&&w.src)return w;wikiAvatar(p.name)}return null};
 const panelInner=p=>{const ph=panelPhoto(p),i=esc(initials(p.name));return ph?imgTag(ph,i):i};
-/* rating icons: Tony gets microphones, Redban sandwiches, guests stars */
+/* rating icons: Tony gets microphones, Redban the sandwich art, guests stars */
+const SANDWICH_ICON='img/sandwich-icon.webp?v=club9';
 const iconFor=p=>{const n=nrm(p&&p.name),r=String(p&&p.role||'').toLowerCase();
   if(/redban/.test(n)||(r==='co-host'&&!/tony/.test(n)))return '🥪';if(/^tony( hinchcliffe)?$/.test(n)||r==='host')return '🎤';return '★'};
+const iconMarkup=ic=>ic==='🥪'?`<img class="ico-sw" src="${SANDWICH_ICON}" alt="" width="26" height="26" draggable="false">`:ic;
 const HOLD=5000;          // ms an auto event waits (no player) before it shows; the autopilot writes events 5 s early
 
 /* ---------- live-mode styling + copy (sample data goes away) ---------- */
@@ -358,8 +360,8 @@ function renderBoard(){const lb=qs('.lb');if(!lb)return;const fin=FINAL(),cur=fi
     const kbs=fin&&kp!=null?` <span class="kbs" title="${fmt(c.kills)} kill · ${fmt(c.bombs)} bomb"><b>🔪${kp}%</b> / <em>💣${100-kp}%</em></span>`:'';
     return `<li data-id="${c.id}"${fin?` title="${c.start_offset!=null?'Jump the video to '+esc(c.name)+'\'s set':esc(c.name)}"`:''} class="${now?'now':''}${c.id===sel?' sel':''}"><span class="rk">${i+1}</span><span class="nm">${esc(c.name)}${now?' <span class="tag live">LIVE</span>':''}<small>Comic #${c.ord} · ${fmt(c.votes)} vote${c.votes==1?'':'s'}${kbs}${fin&&c.start_offset!=null?`<span class="seek">▶ ${mmss(c.start_offset)}</span>`:''}</small></span><span class="sc"><span class="mini"><i style="width:${a==null?0:a*10}%"></i></span>${a==null?'—':a.toFixed(1)}</span></li>`}).join('')}
 
-function starRow(id,name,score,icon){const my=score?Math.round(score/2):0,ic=icon||'★',emo=ic!=='★',w=ic==='🎤'?'mic':ic==='🥪'?'sandwich':'star';
-  return `<div class="stars${emo?' emo':''}" data-id="${id}">${[1,2,3,4,5].map(j=>`<button class="${j<=my?'on':''}" data-v="${j}" aria-label="${j} ${w}${j>1?'s':''} for ${esc(name)}" aria-pressed="${j<=my}">${ic}</button>`).join('')}</div>`}
+function starRow(id,name,score,icon){const my=score?Math.round(score/2):0,ic=icon||'★',emo=ic!=='★',w=ic==='🎤'?'mic':ic==='🥪'?'sandwich':'star',kind=w;
+  return `<div class="stars${emo?' emo':''}${ic==='🥪'?' sw':ic==='🎤'?' mic':''}" data-id="${id}" data-kind="${kind}">${[1,2,3,4,5].map(j=>`<button class="${j<=my?'on':''}" data-v="${j}" aria-label="${j} ${w}${j>1?'s':''} for ${esc(name)}" aria-pressed="${j<=my}">${iconMarkup(ic)}</button>`).join('')}</div>`}
 function renderRegs(){const el=$('regs');if(!el)return;const fin=FINAL(),cur=fin?(finalComic()||{}).id:effectiveComicId(),vis=visibleComicIds();
   const rs=(ST.comics||[]).filter(c=>c.kind==='regular'&&vis.has(c.id));
   const gtc=gtWinner();if(gtc&&vis.has(gtc.id)&&!rs.some(c=>c.id===gtc.id))rs.push(gtc);rs.sort((a,b)=>a.ord-b.ord);
@@ -547,7 +549,7 @@ function wireInputs(){
     mineObj().kb[c.id]=verdict;setComic(c);sendVote('kb',c.id,null,verdict)}));
   // panel + regulars stars (1-5 stars stored as 2-10)
   const stars=(el,kind)=>el&&el.addEventListener('click',e=>{const b=e.target.closest('.stars button');if(!b||!ST)return;const id=b.parentElement.dataset.id,v=+b.dataset.v;
-    b.parentElement.querySelectorAll('button').forEach((x,j)=>x.classList.toggle('on',j<v));if(window.burst){const t=b.textContent.trim();burst(e.clientX,e.clientY,'#ffc23d',t==='★'?'⭐':t,'')}
+    b.parentElement.querySelectorAll('button').forEach((x,j)=>x.classList.toggle('on',j<v));if(window.burst){const k=b.parentElement.dataset.kind||'';const t=k==='sandwich'?'🥪':k==='mic'?'🎤':(b.textContent.trim()||'⭐');burst(e.clientX,e.clientY,'#ffc23d',t==='★'?'⭐':t,'')}
     const m=mineObj();if(kind==='panel')m.panel[id]=v*2;else m.votes[id]=v*2;
     if(kind!=='panel'){const c=curComic();if(c&&c.id===id)setComic(c)}
     sendVote(kind,id,v*2)});
@@ -714,7 +716,7 @@ ${ep.ep_num?`<div class="sub" style="margin-top:8px"><a href="?ep=${ep.ep_num}" 
 <h4>Bucket pulls</h4>${bp.length?bp.map((x,i)=>row(Object.assign({},x,{name:(i+1)+'. '+x.name}),'Comic #'+x.ord+' · '+vs(x.votes)+kbt(x))).join(''):'<div class="row">No bucket pulls</div>'}
 ${rg.length?'<h4>Regulars and Golden ticket winners</h4>'+rg.map(x=>row(x,vs(x.votes)+kbt(x))).join(''):''}
 ${pn.length?'<h4>Panel</h4>'+pn.map(x=>{const ic=iconFor(x),a=x.avg==null?null:+x.avg,k=a==null?0:Math.round(a/2);
-  return `<div class="row pn"><span class="n">${esc(x.name)}<small>${esc(x.role||'')} · ${vs(x.votes)}</small></span><span class="ricons${ic!=='★'?' emo':''}" aria-label="${a==null?'no rating':(a/2).toFixed(1)+' of 5'}">${[1,2,3,4,5].map(j=>`<i class="${j<=k?'on':''}">${ic}</i>`).join('')}</span><span class="a">${a==null?'—':a.toFixed(1)}</span></div>`}).join(''):''}</div>`;
+  return `<div class="row pn"><span class="n">${esc(x.name)}<small>${esc(x.role||'')} · ${vs(x.votes)}</small></span><span class="ricons${ic!=='★'?' emo':''}${ic==='🥪'?' sw':''}" aria-label="${a==null?'no rating':(a/2).toFixed(1)+' of 5'}">${[1,2,3,4,5].map(j=>`<i class="${j<=k?'on':''}">${iconMarkup(ic)}</i>`).join('')}</span><span class="a">${a==null?'—':a.toFixed(1)}</span></div>`}).join(''):''}</div>`;
   const close=()=>{el.remove();document.removeEventListener('keydown',kd)},kd=e=>{if(e.key==='Escape')close()};
   el.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){e.preventDefault();close();goEp(g.dataset.go);return}if(e.target===el||e.target.closest('.x'))close()});document.addEventListener('keydown',kd);document.body.appendChild(el)}
 
