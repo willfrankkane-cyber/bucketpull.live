@@ -105,7 +105,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .ticker .track span.hot i{color:#ffd700}
 
 /* ---------- grid ---------- */
-.grid{display:grid;grid-template-columns:330px minmax(0,1fr) 350px;gap:16px;align-items:start}
+.grid{display:grid;grid-template-columns:320px minmax(0,1fr) 400px;gap:16px;align-items:start}
 .col{display:flex;flex-direction:column;gap:16px;min-width:0}
 .card{position:relative;border-radius:var(--r);background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.03));
   border:1px solid var(--line);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);
@@ -221,7 +221,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:14px;position:relative;
   background:var(--g);box-shadow:0 0 0 2px #070707,0 0 0 4px var(--rc),0 6px 18px -4px var(--rc)}
 .av img{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
-.pm .info{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:6px;row-gap:1px;align-items:center;min-width:0}
+.pm .info{display:grid;grid-template-columns:minmax(64px,1fr) auto;grid-template-rows:auto auto;column-gap:6px;row-gap:1px;align-items:center;min-width:0}
 .pm .info > b{grid-column:1;grid-row:1;font-weight:700;font-size:13.5px;display:block;line-height:1.2;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pm .info > small{grid-column:1;grid-row:2;font-size:11px;color:var(--dim);font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pm .info > .stars{grid-column:2;grid-row:1 / span 2;align-self:center;justify-self:end;margin:0;margin-left:0}
@@ -931,9 +931,9 @@ input,textarea,select{font-family:var(--body)}
 .bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{width:21px;height:21px}
 @media (max-width:640px){
   .pm{gap:8px;padding:7px 8px}
-  .stars button{width:32px;height:32px;font-size:32px}
-  .stars.emo button{font-size:26px;width:32px;height:32px}
-  .stars.emo button .ico-sw,.stars.emo button .ico-mic{width:32px;height:32px}
+  .stars button{width:30px;height:30px;font-size:30px}
+  .stars.emo button{font-size:26px;width:30px;height:30px}
+  .stars.emo button .ico-sw,.stars.emo button .ico-mic{width:30px;height:30px}
   .bp-res .row .ricons{font-size:14px}
   .bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{width:18px;height:18px}
   .pm .info{column-gap:4px}
