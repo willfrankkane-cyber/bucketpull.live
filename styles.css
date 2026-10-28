@@ -221,8 +221,10 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:14px;position:relative;
   background:var(--g);box-shadow:0 0 0 2px #070707,0 0 0 4px var(--rc),0 6px 18px -4px var(--rc)}
 .av img{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
-.pm .info b{font-weight:700;font-size:13.5px;display:block;line-height:1.2}
-.pm .info small{font-size:11px;color:var(--dim);font-weight:500}
+.pm .info{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:6px;row-gap:1px;align-items:center;min-width:0}
+.pm .info > b{grid-column:1;grid-row:1;font-weight:700;font-size:13.5px;display:block;line-height:1.2;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pm .info > small{grid-column:1;grid-row:2;font-size:11px;color:var(--dim);font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pm .info > .stars{grid-column:2;grid-row:1 / span 2;align-self:center;justify-self:end;margin:0;margin-left:0}
 .stars{display:flex;gap:2px;margin-top:3px}
 .stars button{font-size:15px;line-height:1;color:rgba(255,255,255,.18);transition:transform .15s,color .15s}
 .stars button.on{color:var(--gold);text-shadow:0 0 10px rgba(255,194,61,.6)}
@@ -601,7 +603,8 @@ html.gt-on body{overflow:hidden}
 /* ===== v4: kill/bomb card, "How red is Tony?" thermometer, bigger stars, archive ===== */
 /* bigger, thumb-sized panel + regulars stars */
 .stars{gap:0;margin-top:4px;margin-left:-6px}
-.stars button{font-size:27px;width:40px;height:40px;display:grid;place-items:center;border-radius:10px;color:rgba(255,255,255,.2);touch-action:manipulation}
+.pm .info > .stars{margin-top:0;margin-left:0}
+.stars button{font-size:35px;width:36px;height:36px;display:grid;place-items:center;border-radius:10px;color:rgba(255,255,255,.2);touch-action:manipulation}
 .stars button:hover{transform:scale(1.15)}
 .stars button:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 .stars button.on{color:var(--gold);text-shadow:0 0 12px rgba(255,194,61,.65)}
@@ -680,10 +683,12 @@ html.gt-on body{overflow:hidden}
   .onstage{order:2} .kbcard{order:3} .redcard{order:4} .soundcard{order:5} .regcard{order:6} .panelcard{order:7} .lbcard{order:8}
 }
 
-/* header archive button */
-.chip.arch{gap:6px;cursor:pointer;font-weight:800;color:#ffe3a3;border-color:rgba(255,194,61,.35)}
+/* header archive button — wooden Kill Tony Archives cabinet */
+.chip.arch{gap:7px;cursor:pointer;font-weight:800;color:#ffe3a3;border-color:rgba(255,194,61,.35);height:48px;padding:4px 14px 4px 8px;border-radius:14px}
+.chip.arch .arch-ico{display:block;width:36px;height:40px;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.45))}
 .chip.arch:hover{background:rgba(255,194,61,.12)}
-@media (max-width:640px){.chip.arch{order:1;height:32px;padding:0 10px;margin-left:auto}.chip.arch+.chips{order:3}header .chip.live{order:2;margin-left:8px}}
+.bp-res h2 .arch-ico{display:inline-block;width:42px;height:48px;object-fit:contain;vertical-align:-14px;margin-right:8px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+@media (max-width:640px){.chip.arch{order:1;height:44px;padding:3px 10px 3px 6px;margin-left:auto}.chip.arch .arch-ico{width:30px;height:34px}.chip.arch+.chips{order:3}header .chip.live{order:2;margin-left:8px}}
 
 /* =====================================================================
    v5 COMEDY CLUB THEME — black room, red velvet, brick, a spotlight, gold + silver trim.
@@ -905,7 +910,7 @@ input,textarea,select{font-family:var(--body)}
 /* v6 credit line */
 .foot .credit{display:inline-block;margin-top:4px;font-size:10.5px;opacity:.7}.foot .credit a{color:inherit;text-decoration:underline}
 /* panel rating icons: Tony mic art, Redban sandwich art (guests keep ★). Unselected = greyscale + dim, selected = full colour + glow */
-.stars.emo button{font-size:22px;color:inherit;text-shadow:none;filter:grayscale(1) brightness(.85);opacity:.34;transition:transform .15s,opacity .15s,filter .15s;display:inline-flex;align-items:center;justify-content:center}
+.stars.emo button{font-size:29px;color:inherit;text-shadow:none;filter:grayscale(1) brightness(.85);opacity:.34;transition:transform .15s,opacity .15s,filter .15s;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px}
 .stars.emo button.on{opacity:1;filter:drop-shadow(0 0 6px rgba(255,194,61,.85)) drop-shadow(0 0 2px rgba(255,255,255,.35))}
 .stars.emo button:hover{opacity:.75}
 .stars.emo button.on:hover{opacity:1}
@@ -914,17 +919,26 @@ input,textarea,select{font-family:var(--body)}
 .stars.mic button.on{opacity:1;filter:brightness(1.12) saturate(1.08) drop-shadow(0 0 3px rgba(255,255,255,.9)) drop-shadow(0 0 8px rgba(255,220,120,.95)) drop-shadow(0 0 14px rgba(255,180,40,.55))}
 .stars.mic button:hover{opacity:.7;filter:grayscale(.4) brightness(.75)}
 .stars.mic button.on:hover{opacity:1;filter:brightness(1.14) saturate(1.1) drop-shadow(0 0 3px rgba(255,255,255,.95)) drop-shadow(0 0 10px rgba(255,220,120,1))}
-.stars.emo button .ico-sw,.stars.emo button .ico-mic,.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{display:block;width:26px;height:26px;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
-.stars.sw button,.stars.mic button{padding:2px 1px}
-.bp-res .row .ricons{display:flex;gap:1px;font-size:13px;line-height:1;white-space:nowrap;align-items:center}
+.stars.emo button .ico-sw,.stars.emo button .ico-mic,.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{display:block;width:34px;height:34px;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.stars.sw button,.stars.mic button{padding:0}
+.bp-res .row .ricons{display:flex;gap:1px;font-size:17px;line-height:1;white-space:nowrap;align-items:center}
 .bp-res .row .ricons i{font-style:normal;color:rgba(255,255,255,.2);display:inline-flex;align-items:center;justify-content:center}
 .bp-res .row .ricons i.on{color:var(--gold);text-shadow:0 0 8px rgba(255,194,61,.55)}
 .bp-res .row .ricons.emo i{filter:grayscale(1);opacity:.3}
 .bp-res .row .ricons.emo i.on{filter:drop-shadow(0 0 4px rgba(255,194,61,.8));opacity:1;text-shadow:none}
 .bp-res .row .ricons.mic i{filter:grayscale(1) brightness(.5);opacity:.26}
 .bp-res .row .ricons.mic i.on{filter:brightness(1.1) drop-shadow(0 0 3px rgba(255,255,255,.85)) drop-shadow(0 0 6px rgba(255,220,120,.9));opacity:1;text-shadow:none}
-.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{width:16px;height:16px}
-@media (max-width:640px){.stars.emo button{font-size:21px}.stars.emo button .ico-sw,.stars.emo button .ico-mic{width:24px;height:24px}.bp-res .row .ricons{font-size:11px}.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{width:14px;height:14px}}
+.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{width:21px;height:21px}
+@media (max-width:640px){
+  .pm{gap:8px;padding:7px 8px}
+  .stars button{width:32px;height:32px;font-size:32px}
+  .stars.emo button{font-size:26px;width:32px;height:32px}
+  .stars.emo button .ico-sw,.stars.emo button .ico-mic{width:32px;height:32px}
+  .bp-res .row .ricons{font-size:14px}
+  .bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{width:18px;height:18px}
+  .pm .info{column-gap:4px}
+  .pm .avg{font-size:20px}
+}
 
 /* ===== promo/polish: no blue tap flash or accidental text selection on controls ===== */
 button, .rate button, .stars button, .quick button, .snd, .sb-set, .chip, .thermo, .ms, .conf button,

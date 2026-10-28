@@ -120,3 +120,7 @@ Provided by the site owner for Redban's panel rating icons (replaces the sandwic
 ### Microphone rating icon (`img/mic.png`, `img/mic-icon.webp`)
 
 Provided by the site owner for Tony's panel rating icons (replaces the microphone emoji). Black background removed and trimmed for transparent use.
+
+### Archive icon (`img/archive.png`, `img/archive-icon.webp`)
+
+Provided by the site owner for the Episode Archive control (replaces the books emoji). White background and floor shadow removed; trimmed for transparent use.
