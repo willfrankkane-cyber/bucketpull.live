@@ -904,20 +904,27 @@ input,textarea,select{font-family:var(--body)}
 
 /* v6 credit line */
 .foot .credit{display:inline-block;margin-top:4px;font-size:10.5px;opacity:.7}.foot .credit a{color:inherit;text-decoration:underline}
-/* panel rating icons: Tony 🎤, Redban sandwich art (guests keep ★). Unselected = greyscale + dim, selected = full colour + glow */
+/* panel rating icons: Tony mic art, Redban sandwich art (guests keep ★). Unselected = greyscale + dim, selected = full colour + glow */
 .stars.emo button{font-size:22px;color:inherit;text-shadow:none;filter:grayscale(1) brightness(.85);opacity:.34;transition:transform .15s,opacity .15s,filter .15s;display:inline-flex;align-items:center;justify-content:center}
 .stars.emo button.on{opacity:1;filter:drop-shadow(0 0 6px rgba(255,194,61,.85)) drop-shadow(0 0 2px rgba(255,255,255,.35))}
 .stars.emo button:hover{opacity:.75}
 .stars.emo button.on:hover{opacity:1}
-.stars.emo button .ico-sw,.bp-res .row .ricons .ico-sw{display:block;width:26px;height:26px;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
-.stars.sw button{padding:2px 1px}
+/* gold mic: dim empties harder; filled gets a bright cream halo so it doesn't muddy into gold-on-gold */
+.stars.mic button{filter:grayscale(1) brightness(.45) contrast(.95);opacity:.26}
+.stars.mic button.on{opacity:1;filter:brightness(1.12) saturate(1.08) drop-shadow(0 0 3px rgba(255,255,255,.9)) drop-shadow(0 0 8px rgba(255,220,120,.95)) drop-shadow(0 0 14px rgba(255,180,40,.55))}
+.stars.mic button:hover{opacity:.7;filter:grayscale(.4) brightness(.75)}
+.stars.mic button.on:hover{opacity:1;filter:brightness(1.14) saturate(1.1) drop-shadow(0 0 3px rgba(255,255,255,.95)) drop-shadow(0 0 10px rgba(255,220,120,1))}
+.stars.emo button .ico-sw,.stars.emo button .ico-mic,.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{display:block;width:26px;height:26px;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.stars.sw button,.stars.mic button{padding:2px 1px}
 .bp-res .row .ricons{display:flex;gap:1px;font-size:13px;line-height:1;white-space:nowrap;align-items:center}
 .bp-res .row .ricons i{font-style:normal;color:rgba(255,255,255,.2);display:inline-flex;align-items:center;justify-content:center}
 .bp-res .row .ricons i.on{color:var(--gold);text-shadow:0 0 8px rgba(255,194,61,.55)}
 .bp-res .row .ricons.emo i{filter:grayscale(1);opacity:.3}
 .bp-res .row .ricons.emo i.on{filter:drop-shadow(0 0 4px rgba(255,194,61,.8));opacity:1;text-shadow:none}
-.bp-res .row .ricons .ico-sw{width:16px;height:16px}
-@media (max-width:640px){.stars.emo button{font-size:21px}.stars.emo button .ico-sw{width:24px;height:24px}.bp-res .row .ricons{font-size:11px}.bp-res .row .ricons .ico-sw{width:14px;height:14px}}
+.bp-res .row .ricons.mic i{filter:grayscale(1) brightness(.5);opacity:.26}
+.bp-res .row .ricons.mic i.on{filter:brightness(1.1) drop-shadow(0 0 3px rgba(255,255,255,.85)) drop-shadow(0 0 6px rgba(255,220,120,.9));opacity:1;text-shadow:none}
+.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{width:16px;height:16px}
+@media (max-width:640px){.stars.emo button{font-size:21px}.stars.emo button .ico-sw,.stars.emo button .ico-mic{width:24px;height:24px}.bp-res .row .ricons{font-size:11px}.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{width:14px;height:14px}}
 
 /* ===== promo/polish: no blue tap flash or accidental text selection on controls ===== */
 button, .rate button, .stars button, .quick button, .snd, .sb-set, .chip, .thermo, .ms, .conf button,

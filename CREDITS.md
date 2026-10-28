@@ -116,3 +116,7 @@ Guests not in this map: the page looks up the guest's English Wikipedia article 
 ### Sandwich rating icon (`img/sandwich.png`, `img/sandwich-icon.webp`)
 
 Provided by the site owner for Redban's panel rating icons (replaces the sandwich emoji). Background removed and trimmed for transparent use.
+
+### Microphone rating icon (`img/mic.png`, `img/mic-icon.webp`)
+
+Provided by the site owner for Tony's panel rating icons (replaces the microphone emoji). Black background removed and trimmed for transparent use.

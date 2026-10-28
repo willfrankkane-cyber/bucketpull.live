@@ -47,11 +47,12 @@ function wikiAvatar(n){const k=nrm(n);if(!k||k.split(' ').length<2||wikiBusy.has
 const panelPhoto=p=>{const hit=lookup(PANEL_PHOTOS,p.name)||(/^tony$/i.test(String(p.name).trim())&&PANEL_PHOTOS&&PANEL_PHOTOS['tony hinchcliffe'])||null;if(hit)return hit;
   if(PANEL_PHOTOS&&/guest/i.test(p.role||'')){const w=WIKI[nrm(p.name)];if(w&&w.src)return w;wikiAvatar(p.name)}return null};
 const panelInner=p=>{const ph=panelPhoto(p),i=esc(initials(p.name));return ph?imgTag(ph,i):i};
-/* rating icons: Tony gets microphones, Redban the sandwich art, guests stars */
-const SANDWICH_ICON='img/sandwich-icon.webp?v=club9';
+/* rating icons: Tony gets mic art, Redban sandwich art, guests stars */
+const SANDWICH_ICON='img/sandwich-icon.webp?v=club10';
+const MIC_ICON='img/mic-icon.webp?v=club10';
 const iconFor=p=>{const n=nrm(p&&p.name),r=String(p&&p.role||'').toLowerCase();
   if(/redban/.test(n)||(r==='co-host'&&!/tony/.test(n)))return '🥪';if(/^tony( hinchcliffe)?$/.test(n)||r==='host')return '🎤';return '★'};
-const iconMarkup=ic=>ic==='🥪'?`<img class="ico-sw" src="${SANDWICH_ICON}" alt="" width="26" height="26" draggable="false">`:ic;
+const iconMarkup=ic=>ic==='🥪'?`<img class="ico-sw" src="${SANDWICH_ICON}" alt="" width="26" height="26" draggable="false">`:ic==='🎤'?`<img class="ico-mic" src="${MIC_ICON}" alt="" width="26" height="26" draggable="false">`:ic;
 const HOLD=5000;          // ms an auto event waits (no player) before it shows; the autopilot writes events 5 s early
 
 /* ---------- live-mode styling + copy (sample data goes away) ---------- */
@@ -716,7 +717,7 @@ ${ep.ep_num?`<div class="sub" style="margin-top:8px"><a href="?ep=${ep.ep_num}" 
 <h4>Bucket pulls</h4>${bp.length?bp.map((x,i)=>row(Object.assign({},x,{name:(i+1)+'. '+x.name}),'Comic #'+x.ord+' · '+vs(x.votes)+kbt(x))).join(''):'<div class="row">No bucket pulls</div>'}
 ${rg.length?'<h4>Regulars and Golden ticket winners</h4>'+rg.map(x=>row(x,vs(x.votes)+kbt(x))).join(''):''}
 ${pn.length?'<h4>Panel</h4>'+pn.map(x=>{const ic=iconFor(x),a=x.avg==null?null:+x.avg,k=a==null?0:Math.round(a/2);
-  return `<div class="row pn"><span class="n">${esc(x.name)}<small>${esc(x.role||'')} · ${vs(x.votes)}</small></span><span class="ricons${ic!=='★'?' emo':''}${ic==='🥪'?' sw':''}" aria-label="${a==null?'no rating':(a/2).toFixed(1)+' of 5'}">${[1,2,3,4,5].map(j=>`<i class="${j<=k?'on':''}">${iconMarkup(ic)}</i>`).join('')}</span><span class="a">${a==null?'—':a.toFixed(1)}</span></div>`}).join(''):''}</div>`;
+  return `<div class="row pn"><span class="n">${esc(x.name)}<small>${esc(x.role||'')} · ${vs(x.votes)}</small></span><span class="ricons${ic!=='★'?' emo':''}${ic==='🥪'?' sw':ic==='🎤'?' mic':''}" aria-label="${a==null?'no rating':(a/2).toFixed(1)+' of 5'}">${[1,2,3,4,5].map(j=>`<i class="${j<=k?'on':''}">${iconMarkup(ic)}</i>`).join('')}</span><span class="a">${a==null?'—':a.toFixed(1)}</span></div>`}).join(''):''}</div>`;
   const close=()=>{el.remove();document.removeEventListener('keydown',kd)},kd=e=>{if(e.key==='Escape')close()};
   el.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){e.preventDefault();close();goEp(g.dataset.go);return}if(e.target===el||e.target.closest('.x'))close()});document.addEventListener('keydown',kd);document.body.appendChild(el)}
 
