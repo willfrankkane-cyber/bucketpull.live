@@ -48,11 +48,11 @@ const panelPhoto=p=>{const hit=lookup(PANEL_PHOTOS,p.name)||(/^tony$/i.test(Stri
   if(PANEL_PHOTOS&&/guest/i.test(p.role||'')){const w=WIKI[nrm(p.name)];if(w&&w.src)return w;wikiAvatar(p.name)}return null};
 const panelInner=p=>{const ph=panelPhoto(p),i=esc(initials(p.name));return ph?imgTag(ph,i):i};
 /* rating icons: Tony gets mic art, Redban sandwich art, guests stars */
-const SANDWICH_ICON='img/sandwich-icon.webp?v=club11b';
-const MIC_ICON='img/mic-icon.webp?v=club11b';
+const SANDWICH_ICON='img/sandwich-icon.webp?v=club12';
+const MIC_ICON='img/mic-icon.webp?v=club12';
 const iconFor=p=>{const n=nrm(p&&p.name),r=String(p&&p.role||'').toLowerCase();
   if(/redban/.test(n)||(r==='co-host'&&!/tony/.test(n)))return '🥪';if(/^tony( hinchcliffe)?$/.test(n)||r==='host')return '🎤';return '★'};
-const iconMarkup=ic=>ic==='🥪'?`<img class="ico-sw" src="${SANDWICH_ICON}" alt="" width="34" height="34" draggable="false">`:ic==='🎤'?`<img class="ico-mic" src="${MIC_ICON}" alt="" width="34" height="34" draggable="false">`:ic;
+const iconMarkup=ic=>ic==='🥪'?`<img class="ico-sw" src="${SANDWICH_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='🎤'?`<img class="ico-mic" src="${MIC_ICON}" alt="" width="32" height="32" draggable="false">`:ic;
 const HOLD=5000;          // ms an auto event waits (no player) before it shows; the autopilot writes events 5 s early
 
 /* ---------- live-mode styling + copy (sample data goes away) ---------- */
@@ -742,7 +742,7 @@ function parsePaste(t){t=(t||'').trim();if(!t)return null;const id=ytId(t);if(id
   const m=t.match(/^#?\s*(\d{1,5})$/)||t.match(/(?:episode|ep\.?|#)\s*(\d{1,5})\b/i);return m?{num:+m[1]}:id?{video:id}:{bad:true}}
 async function openArchive(prefill){if(!sb)return;if(archEl)archEl.remove();clearTimeout(reqT);
   const el=archEl=document.createElement('div');el.className='bp-res';el.setAttribute('role','dialog');el.setAttribute('aria-label','Episode archive');
-  el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2><img class="arch-ico" src="img/archive-icon.webp?v=club11b" alt="" width="42" height="48" draggable="false"> Episode archive</h2>
+  el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2><img class="arch-ico" src="img/archive-icon.webp?v=club12" alt="" width="42" height="48" draggable="false"> Episode archive</h2>
 <div class="sub">Every Kill Tony from #791 on. Votes never close: replay any episode, rate the sets, and the averages keep updating.</div>
 <h4>Paste an episode</h4>
 <form class="paste"><input type="text" inputmode="url" autocomplete="off" placeholder="Kill Tony YouTube link or #number" aria-label="Kill Tony YouTube link or episode number" value="${prefill?esc(String(prefill)):''}"><button type="submit">Open</button></form>
