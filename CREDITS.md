@@ -135,7 +135,11 @@ Provided by the site owner for the Episode Archive control. Current art is the K
 
 ### Bomb button wallpaper (`img/bomb-wallpaper.webp`)
 
-Provided by the site owner for the Bomb side of Kill or Bomb. Seamless sad-clown / mushroom-cloud pattern on navy; resized for the web (~540 px wide WebP). Used as `background-size: cover` on the Bomb button (Kill stays gold).
+Provided by the site owner for the Bomb side of Kill or Bomb. Seamless sad-clown / mushroom-cloud pattern on navy; resized for the web (~540 px wide WebP). Used as `background-size: cover` on the Bomb button.
+
+### Kill button wallpaper (`img/kill-wallpaper.webp`)
+
+Provided by the site owner for the Kill side of Kill or Bomb. Seamless happy-clown / knife pattern on navy; same size and treatment as the Bomb wallpaper (`background-size: cover` + dark scrim). Kill and Bomb are a matched wallpaper pair.
 
 ### App icon / favicon (`favicon.ico`, `apple-touch-icon.png`, `icons/icon-*.png`, `og.png`)
 

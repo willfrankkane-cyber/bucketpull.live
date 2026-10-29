@@ -48,10 +48,10 @@ const panelPhoto=p=>{const hit=lookup(PANEL_PHOTOS,p.name)||(/^tony$/i.test(Stri
   if(PANEL_PHOTOS&&/guest/i.test(p.role||'')){const w=WIKI[nrm(p.name)];if(w&&w.src)return w;wikiAvatar(p.name)}return null};
 const panelInner=p=>{const ph=panelPhoto(p),i=esc(initials(p.name));return ph?imgTag(ph,i):i};
 /* rating icons: Tony mic, Redban sandwich, Pat O'Neill shirt, Dedrick Flynn gold grills; others ★ */
-const SANDWICH_ICON='img/sandwich-icon.webp?v=club16';
-const MIC_ICON='img/mic-icon.webp?v=club16';
-const SHIRT_ICON='img/shirt-icon.webp?v=club16';
-const GRILL_ICON='img/grill-icon.webp?v=club16';
+const SANDWICH_ICON='img/sandwich-icon.webp?v=club17';
+const MIC_ICON='img/mic-icon.webp?v=club17';
+const SHIRT_ICON='img/shirt-icon.webp?v=club17';
+const GRILL_ICON='img/grill-icon.webp?v=club17';
 const iconFor=p=>{const n=nrm(p&&p.name),r=String(p&&p.role||'').toLowerCase();
   if(/redban/.test(n)||(r==='co-host'&&!/tony/.test(n)))return '🥪';
   if(/^tony( hinchcliffe)?$/.test(n)||r==='host')return '🎤';
@@ -66,7 +66,7 @@ const HOLD=5000;          // ms an auto event waits (no player) before it shows;
 
 /* ---------- live-mode styling + copy (sample data goes away) ---------- */
 const css=document.createElement('style');css.textContent=`
-.quick button.picked{outline:2px solid #fff;outline-offset:2px}
+.quick button.picked{outline-offset:2px}
 .rate button:disabled,.quick button:disabled{opacity:.45;cursor:not-allowed}
 .lb .empty,.panel-list .empty{padding:14px 10px;color:var(--dim);font-size:12.5px;text-align:center}
 .bp-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:120;background:rgba(20,15,28,.95);border:1px solid rgba(255,255,255,.18);color:#fff;
@@ -751,7 +751,7 @@ function parsePaste(t){t=(t||'').trim();if(!t)return null;const id=ytId(t);if(id
   const m=t.match(/^#?\s*(\d{1,5})$/)||t.match(/(?:episode|ep\.?|#)\s*(\d{1,5})\b/i);return m?{num:+m[1]}:id?{video:id}:{bad:true}}
 async function openArchive(prefill){if(!sb)return;if(archEl)archEl.remove();clearTimeout(reqT);
   const el=archEl=document.createElement('div');el.className='bp-res';el.setAttribute('role','dialog');el.setAttribute('aria-label','Episode archive');
-  el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2><img class="arch-ico" src="img/archive-icon.webp?v=club16" alt="" width="43" height="52" draggable="false"> Episode archive</h2>
+  el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2><img class="arch-ico" src="img/archive-icon.webp?v=club17" alt="" width="43" height="52" draggable="false"> Episode archive</h2>
 <div class="sub">Every Kill Tony from #791 on. Votes never close: replay any episode, rate the sets, and the averages keep updating.</div>
 <h4>Paste an episode</h4>
 <form class="paste"><input type="text" inputmode="url" autocomplete="off" placeholder="Kill Tony YouTube link or #number" aria-label="Kill Tony YouTube link or episode number" value="${prefill?esc(String(prefill)):''}"><button type="submit">Open</button></form>

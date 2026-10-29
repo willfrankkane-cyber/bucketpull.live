@@ -19,10 +19,10 @@ const panel=[
  {i:'PO',n:"Pat O'Neill",r:'Guest',g:'linear-gradient(135deg,#ff5cad,#7b3fe4)',rc:'#ff5cad',s:4,a:'7.8',d:'+0.1'},
  {i:'JO',n:'Jules Ortega',r:'Guest (fictional)',g:'linear-gradient(135deg,#f2c94c,#8a6516)',rc:'#f2c94c',s:3,a:'6.9',d:'-0.3'}];
 const PIMG=['img/panel/tony-hinchcliffe.webp','img/panel/brian-redban.webp','img/comics/pat-oneill.webp',null],PIC=['🎤','🥪','👕',null];
-const SANDWICH_ICON='img/sandwich-icon.webp?v=club16';
-const MIC_ICON='img/mic-icon.webp?v=club16';
-const SHIRT_ICON='img/shirt-icon.webp?v=club16';
-const GRILL_ICON='img/grill-icon.webp?v=club16';
+const SANDWICH_ICON='img/sandwich-icon.webp?v=club17';
+const MIC_ICON='img/mic-icon.webp?v=club17';
+const SHIRT_ICON='img/shirt-icon.webp?v=club17';
+const GRILL_ICON='img/grill-icon.webp?v=club17';
 const picKind=ic=>ic==='🎤'?'mic':ic==='🥪'?'sandwich':ic==='👕'?'shirt':ic==='🦷'?'grill':'star';
 const picCls=ic=>ic==='🎤'?' mic':ic==='🥪'?' sw':ic==='👕'?' shirt':ic==='🦷'?' grill':'';
 const picMarkup=ic=>ic==='🥪'?`<img class="ico-sw" src="${SANDWICH_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='🎤'?`<img class="ico-mic" src="${MIC_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='👕'?`<img class="ico-shirt" src="${SHIRT_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='🦷'?`<img class="ico-grill" src="${GRILL_ICON}" alt="" width="32" height="32" draggable="false">`:(ic||'★');

@@ -188,8 +188,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   transition:transform .15s,filter .2s;position:relative;overflow:hidden}
 .quick button:hover{transform:translateY(-2px);filter:brightness(1.12)}
 .quick button:active{transform:scale(.96)}
-.quick .kill{background:linear-gradient(180deg,#ffe08a,#c9971c);color:#0d2400;box-shadow:0 8px 24px rgba(130,230,40,.35),inset 0 -3px 0 rgba(0,0,0,.2)}
-.quick .bomb{background-color:#0a1428;background-image:linear-gradient(180deg,rgba(4,8,20,.45),rgba(4,8,20,.62)),url(img/bomb-wallpaper.webp?v=club16);background-size:cover;background-position:center;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.65);box-shadow:0 8px 24px rgba(8,14,32,.5),inset 0 -3px 0 rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.06)}
+.quick .kill{background-color:#0a1428;background-image:linear-gradient(180deg,rgba(4,8,20,.45),rgba(4,8,20,.62)),url(img/kill-wallpaper.webp?v=club17);background-size:cover;background-position:center;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.65);box-shadow:0 8px 24px rgba(8,14,32,.5),inset 0 -3px 0 rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.06)}
+.quick .bomb{background-color:#0a1428;background-image:linear-gradient(180deg,rgba(4,8,20,.45),rgba(4,8,20,.62)),url(img/bomb-wallpaper.webp?v=club17);background-size:cover;background-position:center;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.65);box-shadow:0 8px 24px rgba(8,14,32,.5),inset 0 -3px 0 rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.06)}
 .quick small{font-family:var(--body);font-size:11px;font-weight:700;opacity:.8;letter-spacing:0}
 .killmeter{margin-top:10px;height:8px;border-radius:8px;overflow:hidden;display:flex;background:rgba(255,255,255,.06)}
 .killmeter .k{background:linear-gradient(90deg,#c9971c,#ffe08a)}
@@ -790,14 +790,17 @@ html .chip.live.replay{background:linear-gradient(180deg,#6a2fc9,#3a3fd0);color:
 .stars button{color:rgba(201,204,214,.28)}
 .stars button.on{color:var(--gold);text-shadow:0 0 10px rgba(240,193,75,.6)}
 
-/* kill = gold frame, bomb = wallpaper fill + red frame */
-.quick .kill{background:linear-gradient(180deg,#f7d77a,#c9971c);color:#140e02;box-shadow:0 8px 22px rgba(240,193,75,.28),inset 0 -3px 0 rgba(0,0,0,.2)}
-.quick .bomb{background-color:#0a1428;background-image:linear-gradient(180deg,rgba(4,8,20,.45),rgba(4,8,20,.62)),url(img/bomb-wallpaper.webp?v=club16);background-size:cover;background-position:center;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.65);box-shadow:0 8px 22px rgba(8,14,32,.5),inset 0 -3px 0 rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.07)}
-.quick .bomb .e,.quick .bomb small{text-shadow:0 1px 2px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.7)}
-.quick .bomb:hover{filter:brightness(1.1) saturate(1.05)}
-.quick .bomb:active{filter:brightness(.92)}
-.quick .bomb:disabled,.quick .bomb[disabled]{filter:grayscale(.35) brightness(.7);opacity:.55}
-.quick .bomb.picked{outline:2px solid #fff;outline-offset:2px;box-shadow:0 8px 22px rgba(8,14,32,.55),inset 0 -3px 0 rgba(0,0,0,.4),0 0 0 2px rgba(224,24,45,.55)}
+/* kill + bomb: matched wallpaper fills; gold/red frames + picked glow */
+.quick .kill,.quick .bomb{background-color:#0a1428;background-size:cover;background-position:center;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.65);box-shadow:0 8px 22px rgba(8,14,32,.5),inset 0 -3px 0 rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.07)}
+.quick .kill{background-image:linear-gradient(180deg,rgba(4,8,20,.45),rgba(4,8,20,.62)),url(img/kill-wallpaper.webp?v=club17)}
+.quick .bomb{background-image:linear-gradient(180deg,rgba(4,8,20,.45),rgba(4,8,20,.62)),url(img/bomb-wallpaper.webp?v=club17)}
+.quick .kill .e,.quick .kill small,.quick .bomb .e,.quick .bomb small{text-shadow:0 1px 2px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.7)}
+.quick .kill:hover,.quick .bomb:hover{filter:brightness(1.1) saturate(1.05)}
+.quick .kill:active,.quick .bomb:active{filter:brightness(.92)}
+.quick .kill:disabled,.quick .kill[disabled],.quick .bomb:disabled,.quick .bomb[disabled]{filter:grayscale(.35) brightness(.7);opacity:.55}
+/* chosen side: gold ring for Kill, red ring for Bomb (readable on pattern) */
+.quick .kill.picked{outline:2px solid #f0c14b;outline-offset:2px;box-shadow:0 8px 22px rgba(240,193,75,.45),inset 0 -3px 0 rgba(0,0,0,.4),0 0 0 2px rgba(240,193,75,.7),0 0 18px rgba(240,193,75,.55)}
+.quick .bomb.picked{outline:2px solid #ff4a5c;outline-offset:2px;box-shadow:0 8px 22px rgba(224,24,45,.45),inset 0 -3px 0 rgba(0,0,0,.4),0 0 0 2px rgba(224,24,45,.7),0 0 18px rgba(224,24,45,.5)}
 .quick button{font-family:var(--display);letter-spacing:.1em}
 .kbframe.kf{background:rgba(240,193,75,.05);border-color:rgba(240,193,75,.45);box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)}
 .kbframe.bf{background:rgba(224,24,45,.06);border-color:rgba(224,24,45,.5);box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)}
