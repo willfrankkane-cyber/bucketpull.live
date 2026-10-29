@@ -1004,3 +1004,7 @@ button, .rate button, .stars button, .quick button, .snd, .sb-set, .chip, .therm
 .lb li:nth-child(2):not(.empty){border-color:rgba(201,204,214,.5);box-shadow:0 0 12px rgba(201,204,214,.28),inset 0 0 10px rgba(201,204,214,.06)}
 .lb li:nth-child(3):not(.empty){border-color:rgba(197,138,82,.5);box-shadow:0 0 12px rgba(197,138,82,.3),inset 0 0 10px rgba(197,138,82,.06)}
 .lb li:nth-child(-n+3):not(.empty) .rk{text-shadow:0 0 8px currentColor}
+
+/* club25: custom BANG flag gun on the Gunshots button */
+.snd .em:has(.em-img),.li-em:has(.em-img),.m-prev>span:has(.em-img){overflow:visible}
+.em-img{width:1.45em;height:1.45em;object-fit:contain;display:block;pointer-events:none;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 0 1px rgba(255,255,255,.55)) drop-shadow(0 2px 3px rgba(0,0,0,.35))}

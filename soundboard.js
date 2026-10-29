@@ -3,7 +3,7 @@
    Choices persist in localStorage; uploaded clips are stored in IndexedDB (fallback: localStorage data URL). */
 (function(){
 const LIB={
-  'gunshots':      {name:'Gunshots',        label:'GUNSHOTS',         sub:'Bang bang bang',   em:'🔫', burst:'BANG BANG!',    fx:['💥','🔫','💨','😱'], cr:{t:'9mm pistol shot',by:'michorvath',u:'https://freesound.org/people/michorvath/sounds/427592/'}},
+  'gunshots':      {name:'Gunshots',        label:'GUNSHOTS',         sub:'Bang bang bang',   em:'<img class="em-img" src="img/gun-icon.webp?v=club25" alt="" draggable="false">', burst:'BANG BANG!',    fx:['💥','💨','😱','💥'], cr:{t:'9mm pistol shot',by:'michorvath',u:'https://freesound.org/people/michorvath/sounds/427592/'}},
   'airhorn':       {name:'Airhorn',         label:'AIRHORN',          sub:'Stadium blast',    em:'📢', burst:'BWAAAMP!',      fx:['📢','🔊','🎉','🤯'], cr:{t:'DJ airhorn sound',by:'pfranzen',u:'https://freesound.org/people/pfranzen/sounds/528807/'}},
   'fanfare':       {name:'Triumphant horns',label:'TRIUMPHANT HORNS', sub:'Ta-ta-ta-TAAA',    em:'🎺', burst:'TA-DAAA!',      fx:['🎺','👑','🏆','✨'], cr:{t:'Success Fanfare Trumpets.mp3',by:'FunWithSound',u:'https://freesound.org/people/FunWithSound/sounds/456966/'}},
   'vader-breath':  {name:'Vader breath',    label:'VADER BREATH',     sub:'Heavy breathing',  em:'🫁', burst:'*kshhh-pahhh*', fx:['🖤','🌑','💨','⚫'], cr:{t:'Gas Mask breath',by:'Nuclearoid',u:'https://freesound.org/people/Nuclearoid/sounds/435825/'}},
