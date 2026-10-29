@@ -985,3 +985,7 @@ button, .rate button, .stars button, .quick button, .snd, .sb-set, .chip, .therm
 .player .yt-ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;padding:8px 10px;border-radius:12px;
   background:rgba(12,10,16,.92);border:1px solid rgba(240,193,75,.28)}
 .player .yt-ctl button{-webkit-tap-highlight-color:transparent;user-select:none}
+
+/* club19: yin-yang Kill or Bomb icon */
+.card-h h3 .ic.ic-yy{width:28px;height:28px;padding:0;background:none!important;border:0!important;border-radius:50%;overflow:visible}
+.card-h h3 .ic.ic-yy img{width:28px;height:28px;display:block;border-radius:50%;box-shadow:0 0 0 1px rgba(201,204,214,.25),0 0 10px rgba(242,201,76,.25);pointer-events:none;user-select:none;-webkit-user-drag:none}
