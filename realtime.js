@@ -380,7 +380,7 @@ function renderRegs(){const el=$('regs');if(!el)return;const fin=FINAL(),cur=fin
   const gtc=gtWinner();if(gtc&&vis.has(gtc.id)&&!rs.some(c=>c.id===gtc.id))rs.push(gtc);rs.sort((a,b)=>a.ord-b.ord);
   const pill=$('regPill');if(pill){pill.textContent=rs.length?(fin?`${rs.length} up · replay`:`${rs.length} up tonight`):(fin?'replay':'0 up');pill.classList.toggle('final',fin)}
   if(!rs.length&&fin){el.innerHTML='<div class="empty">No regulars in this episode\'s lineup.</div>';return}
-  if(!rs.length){el.innerHTML='<div class="empty">Regulars and golden ticket winners appear here the moment they hit the stage (start, middle and end of the show) and stay all night.</div>';return}
+  if(!rs.length){el.innerHTML='<div class="empty">Regulars and golden ticket winners appear here the moment they hit the stage and stay all night.</div>';return}
   const mine=ST.me&&ST.me.votes||{},live=ST.episode.status==='live';
   el.innerHTML=rs.map((r,k)=>{const g=GRAD[(k+2)%GRAD.length],a=r.avg==null?null:+r.avg,now=r.id===cur;
     return `<div class="pm reg${now?' now':''}${fin&&r.start_offset!=null?' seekable':''}" data-id="${r.id}"${fin&&r.start_offset!=null?` title="Jump the video to ${esc(r.name)}"`:''}><div class="av${gtc&&r.id===gtc.id?' av-gt':''}" style="--g:linear-gradient(135deg,${g[0]},${g[1]});--rc:${gtc&&r.id===gtc.id?'#ffc23d':g[0]}">${avInner(r.name)}</div>
