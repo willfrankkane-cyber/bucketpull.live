@@ -91,3 +91,14 @@ function fountain(btn,kind){const cfg=FOUNTAIN[kind];const r=btn.getBoundingClie
   if(navigator.vibrate)try{navigator.vibrate(18)}catch(e){}
   setTimeout(()=>layer.remove(),1400)}
 document.querySelectorAll('.quick button').forEach(b=>b.addEventListener('click',()=>fountain(b,b.classList.contains('kill')?'kill':'bomb')));
+
+/* club28: shared gold ticket mark (replaces red/pink 🎟️ emoji) */
+window.__gtTixN=0;
+window.GT_TIX=function(sizePx,title){
+  const n=++window.__gtTixN,id='bpgtg'+n;
+  const style=sizePx?` style="width:${sizePx}px;height:auto"`:'';
+  const tit=title?` title="${String(title).replace(/"/g,'&quot;')}"`:'';
+  return `<span class="gt-tix"${tit} aria-hidden="true"><svg viewBox="0 0 24 16"${style}><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".45" stop-color="#f2c94c"/><stop offset="1" stop-color="#a8740f"/></linearGradient></defs><path d="M2 1h20a1 1 0 0 1 1 1v3.2a2.8 2.8 0 0 0 0 5.6V14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3.2a2.8 2.8 0 0 0 0-5.6V2a1 1 0 0 1 1-1z" fill="url(#${id})" stroke="#7a5408" stroke-width=".8"/><path d="M16 2.5v11" stroke="#7a5408" stroke-width=".8" stroke-dasharray="1.4 1.2"/><path d="M8.5 4.6l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="#7a5408"/></svg></span>`;
+};
+
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.gt-tix[data-embed]').forEach(el=>{el.outerHTML=window.GT_TIX()})});

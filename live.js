@@ -47,7 +47,7 @@ function renderBet(){if(!bet)return;const t=tally();const py=Math.round(t.p*100)
   const st=$('betStatus'),tx=$('betStatusTxt');st.className='bet-status '+(S.resolved?'res':S.closed?'shut':'open');
   const pickTxt=S.pick?`<b class="${S.pick}">${S.pick.toUpperCase()}</b>${S.conf?' · '+CONF[S.conf]:''}`:'';
   let me;
-  if(S.resolved==='yes'){tx.textContent='Settled: GOLDEN TICKET! 🎟️';
+  if(S.resolved==='yes'){tx.innerHTML='Settled: GOLDEN TICKET! '+(window.GT_TIX?GT_TIX():'');
     me=S.pick==='yes'?`<div class="verdict win">🎉 You called it!</div><div>Your pick: ${pickTxt}. Bragging rights unlocked.</div>`
       :S.pick==='no'?`<div class="verdict bust">💀 Busted</div><div>Your pick: ${pickTxt}. The bucket had other plans.</div>`
       :`<div class="verdict">No bet placed</div><div>A golden ticket was handed out. Next week, get on the board!</div>`;
@@ -68,7 +68,7 @@ function renderBet(){if(!bet)return;const t=tally();const py=Math.round(t.p*100)
   renderHost();if(typeof renderTicker==='function')try{renderTicker()}catch(e){}}
 if(bet){
   bet.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',e=>{if(S.closed)return;const p=b.dataset.pick;S.pick=S.pick===p?null:p;if(!S.pick)S.conf=null;save();renderBet();if(LIVE&&BPL.onPick)BPL.onPick(S.pick,S.conf);
-    if(S.pick&&window.burst){const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,p==='yes'?'#ffc23d':'#8b9bb8',p==='yes'?['🎟️','✨','💰']:['🪣','🙅','💨'],p==='yes'?'YES!':'NO!')}}));
+    if(S.pick&&window.burst){const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,p==='yes'?'#ffc23d':'#8b9bb8',p==='yes'?['🌟','✨','💰']:['🪣','🙅','💨'],p==='yes'?'YES!':'NO!')}}));
   bet.querySelectorAll('#conf button').forEach(b=>b.addEventListener('click',()=>{if(S.closed||!S.pick)return;S.conf=S.conf===b.dataset.c?null:b.dataset.c;save();renderBet();if(LIVE&&BPL.onPick)BPL.onPick(S.pick,S.conf)}));
 }
 function closeBetting(by='host'){if(S.closed)return false;S.closed=true;S.closedBy=by;S.closedAt=Date.now();save();renderBet();return true}
@@ -92,7 +92,7 @@ function finalItems(RS){const items=[],ep=RS.episode||{},cs=(RS.comics||[]);cons
   items.push({k:'fin',hot:true,t:`<i>🏁 FINAL RESULTS</i>${esc(ep.title||'Last episode')}`});
   const bp=cs.filter(c=>c.kind!=='regular'&&avg(c)!=null).sort((a,b)=>avg(b)-avg(a)||b.votes-a.votes);
   if(bp[0])items.push({k:'top',t:`<i>🏆 TOP FAN-RATED</i>${esc(bp[0].name)} · ${avg(bp[0]).toFixed(1)}/10 · ${fmt(+bp[0].votes||0)} votes`});
-  items.push(ep.golden_ticket_name?{k:'gt',hot:true,t:`<i>🎟️ GOLDEN TICKET</i>${esc(ep.golden_ticket_name)}`}:{k:'gt',t:`<i>🎟️ GOLDEN TICKET</i>none this episode`});
+  items.push(ep.golden_ticket_name?{k:'gt',hot:true,t:`<i>${window.GT_TIX?GT_TIX():''} GOLDEN TICKET</i>${esc(ep.golden_ticket_name)}`}:{k:'gt',t:`<i>${window.GT_TIX?GT_TIX():''} GOLDEN TICKET</i>none this episode`});
   const kb=cs.filter(c=>c.kind!=='regular'&&(+c.kills||0)+(+c.bombs||0)>0).map(c=>({c,p:c.kills/((+c.kills)+(+c.bombs))})).sort((a,b)=>b.p-a.p||b.c.kills-a.c.kills);
   if(kb[0])items.push({k:'kill',t:`<i>🔪 BIGGEST KILL</i>${esc(kb[0].c.name)} · ${Math.round(kb[0].p*100)}% kill`});
   const rg=cs.filter(c=>c.kind==='regular'&&avg(c)!=null).sort((a,b)=>avg(b)-avg(a));
@@ -105,7 +105,7 @@ function finalItems(RS){const items=[],ep=RS.episode||{},cs=(RS.comics||[]);cons
 function tickerItems(){const now=Date.now(),st=EP.start.getTime();const items=[];
   const RS0=LIVE&&window.BPRealtime?window.BPRealtime.state:null;
   if(RS0&&RS0.episode&&RS0.episode.status==='ended')return finalItems(RS0);
-  if(S.resolved==='yes')items.push({k:'gt',hot:true,t:`<i>🎟️ GOLDEN TICKET AWARDED</i>${esc(S.gtName||'Tonight\u2019s comic')}`});
+  if(S.resolved==='yes')items.push({k:'gt',hot:true,t:`<i>${window.GT_TIX?GT_TIX():''} GOLDEN TICKET AWARDED</i>${esc(S.gtName||'Tonight\u2019s comic')}`});
   items.push(now<st?{k:'clock',t:`<i>NEXT PREMIERE</i>Mon 8:00 PM CT · starts in ${until(st-now)}`}:{k:'clock',t:`<i>ON AIR</i>${since(now-st)} since the premiere started`});
   const RS=LIVE&&window.BPRealtime?window.BPRealtime.state:null;
   if(LIVE&&!RS){items.push({k:'idle',t:`<i>FAN ROOM</i>Opens when the host starts the episode`});const vc0=txt('#vc');if(vc0)items.push({k:'viewers',t:`<i>WATCHING</i>${esc(vc0)} ${vc0==='1'?'fan':'fans'} in the room`});return items}
@@ -162,7 +162,7 @@ function triggerGoldenTicket(name,opts={}){
        <div class="gt-top">★ ADMIT ONE ★ <span>BUCKET PULL LIVE</span></div>
        <div class="gt-title">GOLDEN<br>TICKET</div>
        <div class="gt-name">${esc(name)}</div>
-       <div class="gt-bot"><span>${serial}</span><span>🎟️ WINNER</span></div>
+       <div class="gt-bot"><span>${serial}</span><span>${window.GT_TIX?GT_TIX():''} WINNER</span></div>
      </div>
      <div class="gt-stub"><span>GOLDEN&nbsp;TICKET</span></div>
    </div></div>`;
@@ -188,7 +188,7 @@ function mountHost(){hostEl=document.createElement('aside');hostEl.className='ho
   <button class="h-head" id="hToggle" aria-expanded="true"><span class="h-dot"></span>Host controls<span class="h-car">▾</span></button>
   <div class="h-body">
     <label class="h-fld"><span>Comic name</span><input id="hName" maxlength="40" placeholder="${esc(currentComic())}"></label>
-    <button class="h-gt" id="hGT">🎟️ GOLDEN TICKET!</button>
+    <button class="h-gt" id="hGT">${window.GT_TIX?GT_TIX(18):''} GOLDEN TICKET!</button>
     <button class="h-btn" id="hClose">🔒 Close betting (opener done)</button>
     <button class="h-btn ghost" id="hReset">↺ Reset for next episode</button>
     <div class="h-foot"><span id="hState"></span><a href="?host=0">Exit host mode</a></div>

@@ -24,7 +24,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=club17">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=club17">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=club17">
-<link rel="stylesheet" href="styles.css?v=club27">
+<link rel="stylesheet" href="styles.css?v=club28">
 </head>
 <body>
 <div class="stage-bg"><div class="beam b1"></div><div class="beam b2"></div><div class="grain"></div></div>
@@ -154,7 +154,7 @@
     <div class="bet-glow"></div>
     <div class="bet-left">
       <div class="bet-top">
-        <span class="bet-badge">🎟️ GOLDEN TICKET BET</span>
+        <span class="bet-badge"><span class="gt-tix" data-embed></span> GOLDEN TICKET BET</span>
         <span class="pill brag">Just for bragging rights · no real money</span>
       </div>
       <h2 class="bet-q" id="betQ">Will there be a <em>Golden Ticket</em> this episode?</h2>
@@ -163,7 +163,7 @@
     </div>
     <div class="bet-mid">
       <div class="bet-opts">
-        <button class="opt yes" data-pick="yes"><span class="o-k">YES</span><span class="o-sub">🎟️ Somebody gets it</span><span class="o-pct" id="pYes">34%</span><span class="o-odds" id="oYes">+194</span><span class="o-mine">YOUR PICK</span></button>
+        <button class="opt yes" data-pick="yes"><span class="o-k">YES</span><span class="o-sub"><span class="gt-tix" data-embed></span> Somebody gets it</span><span class="o-pct" id="pYes">34%</span><span class="o-odds" id="oYes">+194</span><span class="o-mine">YOUR PICK</span></button>
         <button class="opt no" data-pick="no"><span class="o-k">NO</span><span class="o-sub">🪣 Nobody tonight</span><span class="o-pct" id="pNo">66%</span><span class="o-odds" id="oNo">-194</span><span class="o-mine">YOUR PICK</span></button>
       </div>
       <div class="odds-bar"><i id="barYes" style="width:34%"></i><i id="barNo" style="width:66%"></i></div>
@@ -217,12 +217,12 @@
 </div>
 <script src="config.js"></script>
 <script src="marquee.js?v=club3"></script>
-<script src="app.js?v=club17"></script>
+<script src="app.js?v=club28"></script>
 <script src="sounds-data.js"></script>
 <script src="soundboard.js?v=club27"></script>
-<script src="live.js?v=club3"></script>
+<script src="live.js?v=club28"></script>
 <script src="red.js?v=club3"></script>
-<script src="realtime.js?v=club27"></script>
+<script src="realtime.js?v=club28"></script>
 <script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){});});}</script>
 </body>
 </html>

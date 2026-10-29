@@ -367,7 +367,7 @@ function renderBoard(){const lb=qs('.lb');if(!lb)return;const fin=FINAL(),cur=fi
   const cs=(ST.comics||[]).filter(c=>c.kind!=='regular'&&vis.has(c.id));   // no spoilers for fans behind live
   if(!cs.length){lb.innerHTML='<li class="empty">No bucket pulls yet. Scores show up here as the bucket gets pulled.</li>';return}
   cs.sort((a,b)=>(b.avg==null?-1:+b.avg)-(a.avg==null?-1:+a.avg)||a.ord-b.ord);
-  const gtw=gtWinner(),GT='<span class="gt-tix" title="Golden ticket winner"><svg viewBox="0 0 24 16" width="20" height="14" aria-hidden="true"><defs><linearGradient id="gtg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".45" stop-color="#f2c94c"/><stop offset="1" stop-color="#a8740f"/></linearGradient></defs><path d="M2 1h20a1 1 0 0 1 1 1v3.2a2.8 2.8 0 0 0 0 5.6V14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3.2a2.8 2.8 0 0 0 0-5.6V2a1 1 0 0 1 1-1z" fill="url(#gtg)" stroke="#7a5408" stroke-width=".8"/><path d="M16 2.5v11" stroke="#7a5408" stroke-width=".8" stroke-dasharray="1.4 1.2"/><path d="M8.5 4.6l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="#7a5408"/></svg></span>';
+  const gtw=gtWinner(),GT=(window.GT_TIX?GT_TIX(20,'Golden ticket winner'):'');
   lb.innerHTML=cs.map((c,i)=>{const now=c.id===cur,a=c.avg==null?null:+c.avg,gt=gtw&&gtw.id===c.id?' '+GT:'';
     const kt=(+c.kills||0)+(+c.bombs||0),kp=kt?Math.round(c.kills/kt*100):null;
     const kbs=fin&&kp!=null?` <span class="kbs" title="${fmt(c.kills)} kill · ${fmt(c.bombs)} bomb"><b>🔪${kp}%</b> / <em>💣${100-kp}%</em></span>`:'';
@@ -384,7 +384,7 @@ function renderRegs(){const el=$('regs');if(!el)return;const fin=FINAL(),cur=fin
   const mine=ST.me&&ST.me.votes||{},live=ST.episode.status==='live';
   el.innerHTML=rs.map((r,k)=>{const g=GRAD[(k+2)%GRAD.length],a=r.avg==null?null:+r.avg,now=r.id===cur;
     return `<div class="pm reg${now?' now':''}${fin&&r.start_offset!=null?' seekable':''}" data-id="${r.id}"${fin&&r.start_offset!=null?` title="Jump the video to ${esc(r.name)}"`:''}><div class="av${gtc&&r.id===gtc.id?' av-gt':''}" style="--g:linear-gradient(135deg,${g[0]},${g[1]});--rc:${gtc&&r.id===gtc.id?'#ffc23d':g[0]}">${avInner(r.name)}</div>
-<div class="info"><b>${esc(r.name)}${now&&!fin?' <span class="tag live">LIVE</span>':''}</b><small>${now?(fin?'On stage in your video':'On stage now'):(gtc&&r.id===gtc.id?'🎟️ Golden ticket winner · set #':'Regular · set #')+r.ord}${fin&&r.start_offset!=null?' · ▶ '+mmss(r.start_offset):''}</small>${live||fin?starRow(r.id,r.name,mine[r.id],iconFor(r)):''}</div>
+<div class="info"><b>${esc(r.name)}${now&&!fin?' <span class="tag live">LIVE</span>':''}</b><small>${now?(fin?'On stage in your video':'On stage now'):(gtc&&r.id===gtc.id?(window.GT_TIX?GT_TIX(14):'')+' Golden ticket winner · set #':'Regular · set #')+r.ord}${fin&&r.start_offset!=null?' · ▶ '+mmss(r.start_offset):''}</small>${live||fin?starRow(r.id,r.name,mine[r.id],iconFor(r)):''}</div>
 <div class="avg">${a==null?'—':a.toFixed(1)}<small>${fmt(r.votes)} vote${r.votes==1?'':'s'}</small></div></div>`}).join('')}
 
 function renderPanel(){const el=$('panel');if(!el)return;const ps=ST.panel||[];
@@ -605,7 +605,7 @@ async function mountHost(){if(hostEl)hostEl.remove();hostEl=document.createEleme
     <div class="h-state" id="hState" style="font-size:12px;color:var(--mute)"></div>
     <div class="h-sec">Autopilot</div>
     <div class="h-ap" id="hAP">Autopilot has not checked in yet.</div>
-    <div class="h-tg"><button id="hAuto" title="Master switch: auto comics, golden ticket, betting">AUTO</button><button id="hAutoGT" title="Auto golden ticket">AUTO 🎟️</button><button id="hAutoBet" title="Auto close betting after the opener">AUTO BETS</button></div>
+    <div class="h-tg"><button id="hAuto" title="Master switch: auto comics, golden ticket, betting">AUTO</button><button id="hAutoGT" title="Auto golden ticket">${window.GT_TIX?GT_TIX(14):''} AUTO</button><button id="hAutoBet" title="Auto close betting after the opener">AUTO BETS</button></div>
     <button class="h-btn" id="hUndo">↶ Undo last auto action</button>
     <div class="h-tg h-sync" title="Shift every automatic event (already shown or still queued). Use when comics/golden ticket appear too late or too early against the video."><span>Sync</span><button data-d="-5">−5s</button><button data-d="-1">−1s</button><button data-d="1">+1s</button><button data-d="5">+5s</button></div>
     <div class="h-sec">Performers <small style="color:var(--dim);text-transform:none;letter-spacing:0">▶ stage · ⇄ bucket/regular · ✎ · 🗑</small></div>
@@ -618,7 +618,7 @@ async function mountHost(){if(hostEl)hostEl.remove();hostEl=document.createEleme
     <div class="h-row"><input id="hYT" placeholder="YouTube link" class="h-in"><button class="h-btn ok" id="hYTSet" style="flex:none;padding:0 10px">Set</button></div>
     <div class="h-sec">Golden ticket</div>
     <label class="h-fld"><input id="hName" maxlength="60" placeholder="Winner name (default: comic on stage)"></label>
-    <button class="h-gt" id="hGT">🎟️ GOLDEN TICKET!</button>
+    <button class="h-gt" id="hGT">${window.GT_TIX?GT_TIX(18):''} GOLDEN TICKET!</button>
     <button class="h-btn ghost" id="hGTx">✕ Cancel golden ticket</button>
     <button class="h-btn" id="hClose">🔒 Close betting</button>
     <div class="h-sec">Panel</div>
@@ -679,8 +679,8 @@ function renderHostState(){if(!hostEl||!host.ok)return;const v=id=>hostEl.queryS
   if(document.activeElement!==v('#hYT'))v('#hYT').value=ep.youtube_url||'';
   if(document.activeElement!==v('#hTitle'))v('#hTitle').value=ep.title||'';
   if(document.activeElement!==v('#hStart')&&ep.starts_at)v('#hStart').value=toLocalInput(new Date(ep.starts_at));
-  const tg=(id,on,txt)=>{const b=v(id);b.classList.toggle('on',!!on);b.textContent=txt+(on?' ON':' OFF')};
-  tg('#hAuto',ep.auto_enabled,'AUTO');tg('#hAutoGT',ep.auto_gt,'🎟️');tg('#hAutoBet',ep.auto_betting,'BETS');
+  const tg=(id,on,txt,html)=>{const b=v(id);b.classList.toggle('on',!!on);const suf=on?' ON':' OFF';if(html!=null)b.innerHTML=html+suf;else b.textContent=txt+suf};
+  tg('#hAuto',ep.auto_enabled,'AUTO');tg('#hAutoGT',ep.auto_gt,null,window.GT_TIX?GT_TIX(14):'');tg('#hAutoBet',ep.auto_betting,'BETS');
   const lastAuto=(ST.events||[]).filter(e=>e.source==='auto'&&!e.cancelled).pop();const ub=v('#hUndo');ub.disabled=!lastAuto;
   ub.textContent=lastAuto?`↶ Undo: ${lastAuto.kind==='comic'?'staged '+(((ST.comics||[]).find(c=>c.id===lastAuto.comic_id)||{}).name||'comic'):lastAuto.kind==='golden_ticket'?'golden ticket':lastAuto.kind==='betting'?'betting '+(lastAuto.data&&lastAuto.data.open?'opened':'closed'):lastAuto.kind}`:'↶ Undo last auto action';
   const order=[...(ST.comics||[])].sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
@@ -719,7 +719,7 @@ async function openResults(id){if(!id||!sb)return;let d;try{const r=await sb.rpc
   const pn=(m.panel||[]).map(x=>{const v=p[x.id]||[0,null];return Object.assign({},x,{votes:v[0],avg:v[1]})});
   const vs=n=>fmt(n)+' vote'+(n==1?'':'s');const yt=ytId(ep.youtube_url);
   const ended=ep.ended_at?new Date(ep.ended_at).toLocaleString('en-US',{timeZone:'America/Chicago',weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' CT':'';
-  const gt=ep.golden_ticket_name?`🎟️ Golden ticket: <b>${esc(ep.golden_ticket_name)}</b> · the bet settled <b>YES</b>`:'No golden ticket · the bet settled <b>NO</b>';
+  const gt=ep.golden_ticket_name?`${window.GT_TIX?GT_TIX():''} Golden ticket: <b>${esc(ep.golden_ticket_name)}</b> · the bet settled <b>YES</b>`:'No golden ticket · the bet settled <b>NO</b>';
   const el=document.createElement('div');el.className='bp-res';el.setAttribute('role','dialog');el.setAttribute('aria-label','Last week\u2019s final results');
   el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2>${esc(ep.title||'Previous episode')}</h2>
 <div class="sub">Final fan results${ended?' · ended '+esc(ended):''}</div>
