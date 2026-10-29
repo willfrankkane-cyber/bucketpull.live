@@ -1051,3 +1051,6 @@ body{position:relative}
 .bg-float img{position:absolute;top:0;bottom:0;left:50%;height:100%;width:auto;max-width:none;margin:0;transform-origin:50% 100%;animation:bgFloat2 9s ease-in-out infinite;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 8%,#000 80%,transparent);mask-image:linear-gradient(180deg,transparent 0,#000 8%,#000 80%,transparent)}
 @keyframes bgFloat2{0%,100%{transform:translateX(-50%) translateY(0) rotate(-1deg)}50%{transform:translateX(-50%) translateY(-12px) rotate(1deg)}}
 @media (prefers-reduced-motion:reduce){.bg-float img{animation:none;transform:translateX(-50%)}}
+
+/* club37: soundboard header sampler */
+.card-h h3 .ic.ic-sbh img{filter:drop-shadow(0 0 1px rgba(201,204,214,.75)) drop-shadow(0 0 5px rgba(160,120,255,.45))}
