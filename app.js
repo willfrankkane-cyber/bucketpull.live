@@ -17,12 +17,12 @@ const panel=[
  {i:'T',n:'Tony',r:'Host',g:'linear-gradient(135deg,#ffc23d,#b8860b)',rc:'#ffc23d',s:4,a:'8.6',d:'+0.2'},
  {i:'R',n:'Redban',r:'Co-host · soundboard',g:'linear-gradient(135deg,#7b3fe4,#4a55e8)',rc:'#7b3fe4',s:5,a:'9.1',d:'+0.4'},
  {i:'PO',n:"Pat O'Neill",r:'Guest',g:'linear-gradient(135deg,#ff5cad,#7b3fe4)',rc:'#ff5cad',s:4,a:'7.8',d:'+0.1'},
- {i:'DP',n:'Deric Poston',r:'Guest',g:'linear-gradient(135deg,#f0c14b,#8a6516)',rc:'#f0c14b',s:5,a:'8.4',d:'+0.3'}];
-const PIMG=['img/panel/tony-hinchcliffe.webp','img/panel/brian-redban.webp','img/comics/pat-oneill.webp',null],PIC=['🎤','🥪','👕','🦷'];
-const SANDWICH_ICON='img/sandwich-icon.webp?v=club14';
-const MIC_ICON='img/mic-icon.webp?v=club14';
-const SHIRT_ICON='img/shirt-icon.webp?v=club14';
-const GRILL_ICON='img/grill-icon.webp?v=club14';
+ {i:'JO',n:'Jules Ortega',r:'Guest (fictional)',g:'linear-gradient(135deg,#f2c94c,#8a6516)',rc:'#f2c94c',s:3,a:'6.9',d:'-0.3'}];
+const PIMG=['img/panel/tony-hinchcliffe.webp','img/panel/brian-redban.webp','img/comics/pat-oneill.webp',null],PIC=['🎤','🥪','👕',null];
+const SANDWICH_ICON='img/sandwich-icon.webp?v=club15';
+const MIC_ICON='img/mic-icon.webp?v=club15';
+const SHIRT_ICON='img/shirt-icon.webp?v=club15';
+const GRILL_ICON='img/grill-icon.webp?v=club15';
 const picKind=ic=>ic==='🎤'?'mic':ic==='🥪'?'sandwich':ic==='👕'?'shirt':ic==='🦷'?'grill':'star';
 const picCls=ic=>ic==='🎤'?' mic':ic==='🥪'?' sw':ic==='👕'?' shirt':ic==='🦷'?' grill':'';
 const picMarkup=ic=>ic==='🥪'?`<img class="ico-sw" src="${SANDWICH_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='🎤'?`<img class="ico-mic" src="${MIC_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='👕'?`<img class="ico-shirt" src="${SHIRT_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='🦷'?`<img class="ico-grill" src="${GRILL_ICON}" alt="" width="32" height="32" draggable="false">`:(ic||'★');
@@ -31,15 +31,16 @@ if(!LIVE)document.getElementById('panel').innerHTML=panel.map((p,k)=>{const ic=P
 <div class="avg">${p.a}<small><span class="d ${p.d[0]=='+'?'up':'down'}">${p.d[0]=='+'?'▲':'▼'} ${p.d.slice(1)}</span> live</small></div></div>`}).join('');
 document.querySelectorAll('.stars').forEach(s=>s.addEventListener('click',e=>{const b=e.target.closest('button');const v=b&&+b.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((x,j)=>x.classList.toggle('on',j<v));const k=s.dataset.kind||'';burst(e.clientX,e.clientY,'#ffc23d',k==='sandwich'?'🥪':k==='mic'?'🎤':k==='shirt'?'👕':k==='grill'?'🦷':'⭐','')}));
 
-// Kill Tony regulars (demo: fictional names). Live mode: realtime.js renders the real ones.
+// Kill Tony regulars (demo). Live mode: realtime.js renders the real ones.
+// Dedrick Flynn + Pat O'Neill are real regulars (see autopilot/bp_autopilot/regulars.py); mock scores only.
 const regs=[
- {i:'MV',n:'Marlo "Big Spoon" Vega',r:'Regular · opened the show',g:'linear-gradient(135deg,#f2c94c,#8a6516)',rc:'#f2c94c',s:5,a:'8.8',v:'9,410'},
- {i:'BT',n:'Big Tex Okafor',r:'Golden ticket winner',g:'linear-gradient(135deg,#f0263b,#e0182d)',rc:'#f0263b',s:4,a:'8.1',v:'7,236'},
+ {i:'DF',n:'Dedrick Flynn',r:'Regular · opened the show',g:'linear-gradient(135deg,#f0c14b,#8a6516)',rc:'#f0c14b',s:4,a:'8.2',v:'6,104',img:'img/comics/dedrick-flynn.webp',ic:'🦷'},
+ {i:'PO',n:"Pat O'Neill",r:'Regular',g:'linear-gradient(135deg,#ff5cad,#7b3fe4)',rc:'#ff5cad',s:5,a:'8.7',v:'5,882',img:'img/comics/pat-oneill.webp',ic:'👕'},
  {i:'DW',n:'Dot Whitaker',r:'On stage now',g:'linear-gradient(135deg,#8f63e8,#3a3fd0)',rc:'#8f63e8',s:0,a:'7.6',v:'2,048',now:1}];
-if(!LIVE)document.getElementById('regs').innerHTML=regs.map((p,k)=>`<div class="pm reg${p.now?' now':''}"><div class="av" style="--g:${p.g};--rc:${p.rc}">${p.i}</div>
-<div class="info"><b>${p.n}${p.now?' <span class="tag live">LIVE</span>':''}</b><small>${p.r}</small><div class="stars">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}">★</button>`).join('')}</div></div>
-<div class="avg">${p.a}<small>${p.v} votes</small></div></div>`).join('');
-document.querySelectorAll('#regs .stars').forEach(s=>s.addEventListener('click',e=>{const b=e.target.closest('button');const v=b&&+b.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((x,j)=>x.classList.toggle('on',j<v));burst(e.clientX,e.clientY,'#ffc23d','⭐','')}));
+if(!LIVE)document.getElementById('regs').innerHTML=regs.map((p,k)=>{const ic=p.ic||'★',w=picKind(ic);return `<div class="pm reg${p.now?' now':''}"><div class="av" style="--g:${p.g};--rc:${p.rc}">${p.img?`<img src="${p.img}" alt="" onerror="this.parentNode.textContent='${p.i}'">`:p.i}</div>
+<div class="info"><b>${p.n}${p.now?' <span class="tag live">LIVE</span>':''}</b><small>${p.r}</small><div class="stars${ic!=='★'?' emo':''}${picCls(ic)}" data-kind="${w}">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}" aria-label="${j} ${w}${j>1?'s':''} for ${p.n}" aria-pressed="${j<=p.s}">${picMarkup(ic)}</button>`).join('')}</div></div>
+<div class="avg">${p.a}<small>${p.v} votes</small></div></div>`}).join('');
+document.querySelectorAll('#regs .stars').forEach(s=>s.addEventListener('click',e=>{const b=e.target.closest('button');const v=b&&+b.dataset.v;if(!v)return;s.querySelectorAll('button').forEach((x,j)=>x.classList.toggle('on',j<v));const k=s.dataset.kind||'';burst(e.clientX,e.clientY,'#ffc23d',k==='sandwich'?'🥪':k==='mic'?'🎤':k==='shirt'?'👕':k==='grill'?'🦷':'⭐','')}));
 
 if(!LIVE&&!/static/.test(location.hash)){
 // viewers + timer

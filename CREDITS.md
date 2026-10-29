@@ -127,7 +127,7 @@ Provided by the site owner for Pat O'Neill's panel (and regulars) rating icons. 
 
 ### Gold grills rating icon (`img/grill.png`, `img/grill-icon.webp`)
 
-Provided by the site owner for Deric / Dedrick Poston's panel (and regulars) rating icons. Gold dental grills; white studio background removed, trimmed and square-padded (wide subject) for transparent use at icon size.
+Provided by the site owner for Dedrick Flynn's regulars (and panel, if he is on it) rating icons. Gold dental grills; white studio background removed, trimmed and square-padded (wide subject) for transparent use at icon size.
 
 ### Archive icon (`img/archive.png`, `img/archive-icon.webp`)
 

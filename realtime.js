@@ -47,16 +47,17 @@ function wikiAvatar(n){const k=nrm(n);if(!k||k.split(' ').length<2||wikiBusy.has
 const panelPhoto=p=>{const hit=lookup(PANEL_PHOTOS,p.name)||(/^tony$/i.test(String(p.name).trim())&&PANEL_PHOTOS&&PANEL_PHOTOS['tony hinchcliffe'])||null;if(hit)return hit;
   if(PANEL_PHOTOS&&/guest/i.test(p.role||'')){const w=WIKI[nrm(p.name)];if(w&&w.src)return w;wikiAvatar(p.name)}return null};
 const panelInner=p=>{const ph=panelPhoto(p),i=esc(initials(p.name));return ph?imgTag(ph,i):i};
-/* rating icons: Tony mic, Redban sandwich, Pat O'Neill shirt, Deric/Dedrick Poston gold grills; others ★ */
-const SANDWICH_ICON='img/sandwich-icon.webp?v=club14';
-const MIC_ICON='img/mic-icon.webp?v=club14';
-const SHIRT_ICON='img/shirt-icon.webp?v=club14';
-const GRILL_ICON='img/grill-icon.webp?v=club14';
+/* rating icons: Tony mic, Redban sandwich, Pat O'Neill shirt, Dedrick Flynn gold grills; others ★ */
+const SANDWICH_ICON='img/sandwich-icon.webp?v=club15';
+const MIC_ICON='img/mic-icon.webp?v=club15';
+const SHIRT_ICON='img/shirt-icon.webp?v=club15';
+const GRILL_ICON='img/grill-icon.webp?v=club15';
 const iconFor=p=>{const n=nrm(p&&p.name),r=String(p&&p.role||'').toLowerCase();
   if(/redban/.test(n)||(r==='co-host'&&!/tony/.test(n)))return '🥪';
   if(/^tony( hinchcliffe)?$/.test(n)||r==='host')return '🎤';
   if(/^(pat|patrick) oneill?$/.test(n))return '👕';
-  if(/^(deric|derrick|dedrick)( poston)?$/.test(n))return '🦷';
+  /* Dedrick Flynn (regular). Bare "Dedrick" only — not Deric/Derrick/Poston. */
+  if(/^dedrick flynn$/.test(n)||n==='dedrick')return '🦷';
   return '★'};
 const iconKind=ic=>ic==='🎤'?'mic':ic==='🥪'?'sandwich':ic==='👕'?'shirt':ic==='🦷'?'grill':'star';
 const iconCls=ic=>ic==='🎤'?' mic':ic==='🥪'?' sw':ic==='👕'?' shirt':ic==='🦷'?' grill':'';
@@ -750,7 +751,7 @@ function parsePaste(t){t=(t||'').trim();if(!t)return null;const id=ytId(t);if(id
   const m=t.match(/^#?\s*(\d{1,5})$/)||t.match(/(?:episode|ep\.?|#)\s*(\d{1,5})\b/i);return m?{num:+m[1]}:id?{video:id}:{bad:true}}
 async function openArchive(prefill){if(!sb)return;if(archEl)archEl.remove();clearTimeout(reqT);
   const el=archEl=document.createElement('div');el.className='bp-res';el.setAttribute('role','dialog');el.setAttribute('aria-label','Episode archive');
-  el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2><img class="arch-ico" src="img/archive-icon.webp?v=club14" alt="" width="43" height="52" draggable="false"> Episode archive</h2>
+  el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2><img class="arch-ico" src="img/archive-icon.webp?v=club15" alt="" width="43" height="52" draggable="false"> Episode archive</h2>
 <div class="sub">Every Kill Tony from #791 on. Votes never close: replay any episode, rate the sets, and the averages keep updating.</div>
 <h4>Paste an episode</h4>
 <form class="paste"><input type="text" inputmode="url" autocomplete="off" placeholder="Kill Tony YouTube link or #number" aria-label="Kill Tony YouTube link or episode number" value="${prefill?esc(String(prefill)):''}"><button type="submit">Open</button></form>
