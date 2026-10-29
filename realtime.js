@@ -83,6 +83,12 @@ const css=document.createElement('style');css.textContent=`
 .player .yt-ctl{display:flex;flex-direction:column;gap:8px;margin-top:10px;padding:10px 12px 10px;border-radius:14px;
   background:linear-gradient(180deg,rgba(28,22,30,.96),rgba(10,8,12,.97));border:1px solid rgba(240,193,75,.32);
   box-shadow:inset 0 1px 0 rgba(255,236,196,.08),0 10px 28px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.6)}
+.player .yt-ctl{container:ytc/inline-size}
+@media (max-width:640px){.player .yt-ctl{padding:9px clamp(7px,2.4vw,10px);gap:7px}}
+@container ytc (max-width:330px){.player .yt-ctl .yt-time{display:none}}
+.player .yt-ctl .yt-th{border-radius:8px;height:28px;min-width:38px;padding:0 8px}
+.player .yt-ctl .yt-th.on{color:#1a1206;background:linear-gradient(180deg,#ffe58a,#f0b429);border-color:transparent}
+@media (max-width:1100px){.player .yt-ctl .yt-th{display:none}}
 .player .yt-ctl .yt-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .player .yt-ctl .yt-grp{display:flex;align-items:center;gap:8px;min-width:0;flex-shrink:0}
 .player .yt-ctl .yt-mid{justify-content:center}
@@ -115,7 +121,7 @@ const css=document.createElement('style');css.textContent=`
 .player .yt-ctl .yt-live{display:none;align-items:center;gap:6px;margin-left:4px;padding:5px 9px;border-radius:999px;background:rgba(255,59,78,.12);border:1px solid rgba(255,59,78,.35);font:800 10.5px/1 var(--body);letter-spacing:.1em;color:#ff6b7a}
 .player .yt-ctl .yt-live.on{display:inline-flex}
 .player .yt-ctl .yt-live .dot{width:7px;height:7px;border-radius:50%;background:#ff3b4e;box-shadow:0 0 8px #ff3b4e;animation:pulse 1.2s ease-in-out infinite}
-@media (max-width:640px){.player .yt-ctl{padding:9px clamp(7px,2.4vw,10px);gap:7px}.player .yt-ctl .yt-row{gap:clamp(4px,1.4vw,6px)}
+@container ytc (max-width:560px){.player .yt-ctl .yt-row{gap:clamp(4px,1.4vw,6px)}
 .player .yt-ctl .yt-grp{gap:clamp(4px,1.4vw,6px)}.player .yt-ctl .yt-row>.yt-grp:first-child{flex-shrink:1;min-width:0}
 .player .yt-ctl .yt-vol{display:none}.player .yt-ctl .yt-time{margin-left:0;font-size:clamp(9px,2.6vw,10px);overflow:hidden;text-overflow:ellipsis;min-width:0;flex-shrink:1}
 .player .yt-ctl button{height:clamp(28px,8vw,32px);min-width:clamp(28px,8vw,32px)}.player .yt-ctl .yt-pp{height:clamp(32px,9vw,36px);min-width:clamp(32px,9vw,36px)}
@@ -479,8 +485,12 @@ function syncYtCtl(){
   if(liveEl)liveEl.classList.toggle('on',!FINAL()&&!can&&!!ytCur);
   if(skB)skB.hidden=!can;if(skF)skF.hidden=!can;
 if(vol)vol.style.setProperty('--p',(muted?0:volN)+'%');if(scrub&&+scrub.max>0)scrub.style.setProperty('--p',(100*(+scrub.value)/(+scrub.max))+'%');if(tm)tm.hidden=!can;
+  const th=ctl.querySelector('.yt-th');if(th){const on=document.body.classList.contains('theater');th.classList.toggle('on',on);th.setAttribute('aria-pressed',on?'true':'false')}
   const cc=ctl.querySelector('.yt-cc');if(cc){const on=ytCCState();cc.classList.toggle('on',on);cc.setAttribute('aria-pressed',on?'true':'false')}
 }
+/* theater mode (desktop): big player across the top, the three columns underneath */
+function bpSetTheater(on){document.body.classList.toggle('theater',!!on);try{localStorage.setItem('bpTheater',on?'1':'0')}catch(e){}
+  syncYtCtl();setTimeout(()=>window.dispatchEvent(new Event('resize')),60)}
 /* captions toggle (YouTube's own controls are hidden): remembers the fan's choice */
 let ytCC=null,ytCCApplied=false;
 function ytCCState(){const p=ytPlayer;if(p&&typeof p.getOption==='function'){try{const t=p.getOption('captions','track');if(t&&typeof t==='object'){const on=!!t.languageCode;if(ytCC===null||!on||ytCC)ytCC=on}}catch(e){}}return !!ytCC}
@@ -495,7 +505,7 @@ const YI={play:_sv('<path d="M7 4.5v15l12.5-7.5z"/>',1),pause:_sv('<rect x="6" y
   vol:_sv('<path d="M4 9.5v5h3.5l5 4v-13l-5 4z" fill="currentColor" stroke="none"/><path d="M16 9a4.5 4.5 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/>'),
   mute:_sv('<path d="M4 9.5v5h3.5l5 4v-13l-5 4z" fill="currentColor" stroke="none"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/>'),
   back:_sv('<path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4.5v4h4"/>'),fwd:_sv('<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4.5v4h-4"/>'),
-  fs:_sv('<path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>'),fsx:_sv('<path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/>')};
+  fs:_sv('<path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>'),th:_sv('<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10v4M18 10v4"/>'),fsx:_sv('<path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/>')};
 function buildYtCtl(pl,stage){
   pl.querySelectorAll('.yt-ctl').forEach(e=>e.remove());
   const ctl=document.createElement('div');ctl.className='yt-ctl';ctl.tabIndex=0;
@@ -510,8 +520,10 @@ function buildYtCtl(pl,stage){
 <div class="yt-grp yt-mid"><button type="button" class="yt-skip yt-back" aria-label="Back 10 seconds" hidden>${YI.back}<b>10</b></button>
 <button type="button" class="yt-skip yt-fwd" aria-label="Forward 10 seconds" hidden><b>10</b>${YI.fwd}</button></div>
 <div class="yt-grp yt-end"><button type="button" class="yt-cc" aria-label="Captions" aria-pressed="false" title="Captions on/off (C)">CC</button>
+<button type="button" class="yt-th" aria-label="Theater mode" aria-pressed="false" title="Theater mode (T)">${YI.th}</button>
 <button type="button" class="yt-fs" aria-label="Fullscreen" title="Fullscreen">${YI.fs}</button></div>
 </div>`;
+  ctl.querySelector('.yt-th').onclick=()=>{bpSetTheater(!document.body.classList.contains('theater'))};
   ctl.querySelector('.yt-cc').onclick=()=>{ytSetCC(!ytCCState());syncYtCtl()};
   ctl.querySelector('.yt-pp').onclick=()=>{const p=ytPlayer;if(!p)return;try{const st=p.getPlayerState();if(st===1)p.pauseVideo();else p.playVideo()}catch(e){}syncYtCtl()};
   ctl.querySelector('.yt-mu').onclick=()=>{const p=ytPlayer;if(!p)return;try{if(p.isMuted()||p.getVolume()===0){p.unMute();if(p.getVolume()===0)p.setVolume(80);sound.on=true;const u=qs('.yt-unmute');if(u)u.remove()}else p.mute()}catch(e){}syncYtCtl()};
@@ -542,6 +554,7 @@ function buildYtCtl(pl,stage){
     else if(k==='ArrowRight'){e.preventDefault();skipBy(e.shiftKey?30:10)}
     else if(k===' '||k==='k'||k==='K'){e.preventDefault();ctl.querySelector('.yt-pp').click()}
     else if(k==='m'||k==='M'){e.preventDefault();ctl.querySelector('.yt-mu').click()}
+    else if(k==='t'||k==='T'){e.preventDefault();ctl.querySelector('.yt-th').click()}
     else if(k==='c'||k==='C'){e.preventDefault();ctl.querySelector('.yt-cc').click()}
   });
   ctl.querySelector('.yt-fs').onclick=()=>{const el=stage||pl;if(!document.fullscreenElement){const req=el.requestFullscreen||el.webkitRequestFullscreen;req&&req.call(el)}else{const ex=document.exitFullscreen||document.webkitExitFullscreen;ex&&ex.call(document)}};

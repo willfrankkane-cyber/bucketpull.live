@@ -1067,3 +1067,13 @@ body{position:relative}
 .beam.b3{left:calc(clamp(18px,4.5vw,84px) - 150px);transform:rotate(-26deg)}
 .beam.b4{right:calc(clamp(18px,4.5vw,84px) - 150px);transform:rotate(26deg)}
 @media (max-width:640px){.beam.b3,.beam.b4{width:220px}.beam.b3{left:-90px}.beam.b4{right:-90px}}
+/* club45: theater mode (desktop only) — big player on top, three columns below */
+@media (min-width:1101px){
+  body.theater .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  body.theater .col.center{display:contents}
+  body.theater .col.center>.stage-row{grid-column:1/-1;grid-row:1;width:100%;max-width:960px;margin:0 auto}
+  body.theater .col.left{grid-column:1;grid-row:2/span 6}
+  body.theater .col.right{grid-column:2;grid-row:2/span 6;position:static}
+  body.theater .col.center>:not(.stage-row){grid-column:3}
+  body.theater .chat{position:static}
+}
