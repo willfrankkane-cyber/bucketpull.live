@@ -28,7 +28,7 @@ const nameMatch=(a,b)=>{a=nrm(a);b=nrm(b);if(!a||!b)return false;if(a===b||a.rep
   return ta.length>1&&tb.length>1&&ta[ta.length-1]===tb[tb.length-1]&&lev(ta[0],tb[0])<=1};
 const NOPHOTO=new Set(['brent reed']);   // wrong-person photos removed on purpose: always initials
 let PANEL_PHOTOS=null;fetch('img/panel/photos.json?v=club3').then(r=>r.ok?r.json():{}).then(j=>{PANEL_PHOTOS=j||{};try{renderPanel()}catch(e){}}).catch(()=>{PANEL_PHOTOS={}});
-let PHOTOS=null;fetch('img/comics/photos.json?v=club3').then(r=>r.ok?r.json():{}).then(j=>{PHOTOS=j||{};try{renderRegs()}catch(e){}}).catch(()=>{PHOTOS={}});
+let PHOTOS=null;fetch('img/comics/photos.json?v=club3').then(r=>r.ok?r.json():{}).then(j=>{PHOTOS=j||{};try{renderRegs()}catch(e){};try{render()}catch(e){}}).catch(()=>{PHOTOS={}});
 const lookup=(M,n)=>{if(!M)return null;const k=nrm(n);if(!k||NOPHOTO.has(k))return null;if(M[k])return M[k];let best=null,bd=9;
   for(const key in M){if(nameMatch(k,key)){const d=lev(k,key);if(d<bd){bd=d;best=M[key]}}}return best};
 const photoFor=n=>lookup(PHOTOS,n);
@@ -328,13 +328,15 @@ function setComic(c){
   document.querySelectorAll('#rate button,.quick button').forEach(b=>b.disabled=!c||!(live||fin));
   const kw=$('kbWho');if(kw){kw.textContent=c?c.name:'Pick a side';kw.title=c?'Kill or bomb: '+c.name:''}
   if(pill)pill.classList.toggle('final',fin);
-  if(!c){if(num)num.textContent='–';if(who)who.innerHTML='<small>Waiting for the bucket</small><b>No comic on stage</b><span>Ratings open when the next comic is up</span>';
+  if(!c){if(num){num.textContent='–';num.dataset.k='';num.classList.remove('photo')}if(who)who.innerHTML='<small>Waiting for the bucket</small><b>No comic on stage</b><span>Ratings open when the next comic is up</span>';
     if(pill){pill.textContent=fin?'Replay':'Waiting';pill.classList.remove('hot')}
     if(fin&&who)who.innerHTML='<small>Replay</small><b>No comics in this episode yet</b><span>The lineup appears here once it is processed</span>';
     $('avg').innerHTML='—<small>/10</small>';$('votes').textContent='0';setDist([0,0,0,0,0,0,0,0,0,0]);setKB(0,0);$('mine').textContent='—';
     document.querySelectorAll('#rate button').forEach(b=>b.classList.remove('on'));const m=qs('.avg-meta b');if(m)m.textContent='';return}
   const reg=c.kind==='regular';
-  if(num){num.textContent=reg?'★':c.ord;num.classList.toggle('reg',reg)}
+  if(num){const ph=reg?photoFor(c.name):null,key=ph?'p:'+ph.src:reg?'★':String(c.ord);
+    if(num.dataset.k!==key){num.dataset.k=key;if(ph)num.innerHTML=imgTag(ph,'★');else num.textContent=reg?'★':c.ord}
+    num.classList.toggle('reg',reg);num.classList.toggle('photo',!!ph)}
   if(fin){const top=topComic(),isTop=top&&top.id===c.id,rk=isTop?1:null;
     if(who)who.innerHTML=`<small>${isTop?'🏆 Top fan-rated set · ':''}${reg?'Kill Tony regular':'Comic #'+c.ord+' · Bucket Pull'}</small><b>${esc(c.name)}</b><span>${videoComic()&&videoComic().id===c.id?'On stage in your video':'Replay'} · ${fmt(c.votes)} vote${c.votes==1?'':'s'} · rate along</span>`;
     if(pill){pill.textContent='● Replay voting';pill.title='Votes stay open on past episodes';pill.classList.add('hot')}}
