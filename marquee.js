@@ -71,7 +71,7 @@ function draw(){
    const rxi=g.RX-inner,ryi=g.RY-inner,Ai=A+inner;
    const half=y=>y>=Ai?W/2-inner:(y<=g.C-ryi?0:rxi*Math.sqrt(Math.max(0,1-((g.C-y)/ryi)**2)));
    const maxFs=Math.min(g.mob?44:72,W*(g.mob?.085:.05));let fs=maxFs;const bot=inner+(g.mob?2:4)*s;
-   for(;fs>16;fs-=.5){const top=H-bot-fs*1.02,ttop=top-th;if(top>=F+inner-2&&half(top+fs*.12)>=w0*fs/2+6&&half(ttop+th*.6)>=tw0/2)break}
+   for(;fs>16;fs-=.5){const top=H-bot-fs*1.02,ttop=top-th;if(top>=F+inner-2&&half(top+fs*.12)>=w0*fs/2+6&&half(ttop-(g.mob?2:8)*s)>=tw0/2+(g.mob?4:14)*s&&ttop>=F+inner+(g.mob?0:6)*s)break}
    txt.style.fontSize=f(fs)+'px';box.style.bottom=f(bot)+'px'}
   // filigree: scrolls + speed lines beside the letters
   const fil=el('g',{class:'mq-fil',fill:'none',stroke:'url(#mqGoldH)','stroke-linecap':'round'},svg);
