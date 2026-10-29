@@ -303,7 +303,7 @@ function renderChrome(fin){const chip=qs('header .chip.live');
   const h=qs('.onstage .card-h h3');if(h){if(stageH==null)stageH=h.innerHTML;
     const want=fin?'<span class="ic" style="background:rgba(74,85,232,.22)">🎬</span>REPLAY · RATE ALONG':stageH;if(h.innerHTML!==want)h.innerHTML=want}
   const lp=qs('.lbcard .pill');if(lp){lp.textContent=fin?'Replay':'Live scores';lp.classList.toggle('final',fin)}
-  const lh=qs('.lbcard .card-h h3');if(lh)lh.lastChild.textContent=fin?'EPISODE BOARD':"TONIGHT'S BOARD";
+  const lh=qs('.lbcard .card-h h3');if(lh)lh.lastChild.textContent='BUCKET PULL BOARD';
   const pv=META&&META.prev,lh2=qs('.lbcard .card-h');let a=qs('.lbcard .lastwk');
   if(pv&&!fin&&!WANT&&lh2){if(!a){a=document.createElement('button');a.className='lastwk';a.type='button';a.textContent='↩ Last week';lh2.insertBefore(a,lp||null)}
     a.title='Final results: '+(pv.title||'previous episode');a.onclick=()=>openResults(pv.id)}else if(a)a.remove()}

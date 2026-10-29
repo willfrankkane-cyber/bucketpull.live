@@ -993,3 +993,7 @@ button, .rate button, .stars button, .quick button, .snd, .sb-set, .chip, .therm
 /* club20: regular photo in the on-stage badge */
 .comic .num.photo{padding:0;overflow:hidden;background:#111!important;box-shadow:0 0 0 2px #8f63e8,0 6px 18px rgba(74,85,232,.4)!important}
 .comic .num.photo img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* club23: BPL bucket icon on the Bucket Pull Board */
+.card-h h3 .ic.ic-bkt{width:30px;height:30px;padding:2px;background:radial-gradient(circle at 50% 40%,#f4f4f6,#b9bcc6 75%)!important;border:1px solid rgba(201,204,214,.35)!important;border-radius:8px;box-sizing:border-box}
+.card-h h3 .ic.ic-bkt img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;user-select:none;-webkit-user-drag:none}
