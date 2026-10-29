@@ -639,7 +639,7 @@ html.gt-on body{overflow:hidden}
 @keyframes rcpop{40%{transform:scale(1.18)}100%{transform:scale(1)}}
 
 /* horizontal thermometer (mobile, and narrow desktop centers) */
-@media (max-width:640px),(min-width:1101px) and (max-width:1499px){
+@media (max-width:640px),(min-width:1101px){
   .stage-row{display:flex;flex-direction:column;gap:12px}
   .stage-row .player{width:100%}
   .redcard{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px 12px;padding:12px 14px;text-align:left}
@@ -827,7 +827,7 @@ html .chip.live.replay{background:linear-gradient(180deg,#6a2fc9,#3a3fd0);color:
 .rc-avg{font-family:var(--display);letter-spacing:.04em}
 .rc-word{color:#ffb3ba}
 .thermo .you{background:#fff;color:#111}.thermo .you::after{border-left-color:#fff}
-@media (max-width:640px),(min-width:1101px) and (max-width:1499px){.thermo .you::after{border-left-color:transparent;border-bottom-color:#fff}.thermo .merc{background:linear-gradient(90deg,#a50d1f,#e0182d 55%,#ff4a5c)}}
+@media (max-width:640px),(min-width:1101px){.thermo .you::after{border-left-color:transparent;border-bottom-color:#fff}.thermo .merc{background:linear-gradient(90deg,#a50d1f,#e0182d 55%,#ff4a5c)}}
 
 /* modals: results + archive in the same house style */
 html .bp-res{background:rgba(3,3,4,.82)}
@@ -866,7 +866,7 @@ input,textarea,select{font-family:var(--body)}
 .redcard:not(.off) .thermo{cursor:grab}.redcard:not(.off) .thermo:active{cursor:grabbing}
 .redcard.off .thermo .you{filter:grayscale(.7) drop-shadow(0 2px 4px rgba(0,0,0,.6))}
 .thermo:focus-visible .you img{outline:2px solid var(--gold);outline-offset:1px;border-radius:40%}
-@media (max-width:640px),(min-width:1101px) and (max-width:1499px){
+@media (max-width:640px),(min-width:1101px){
   .thermo{height:52px;width:auto}
   .thermo .tube{margin:0 16px 0 0}
   .thermo .scale{margin:0 0 4px}
@@ -875,7 +875,7 @@ input,textarea,select{font-family:var(--body)}
   .thermo .you::after{border:0}
 }
 .thermo .you.drag{transition-property:transform}
-@media (min-width:1101px) and (max-width:1360px){.redcard{grid-template-columns:1fr}.rc-h{display:flex;align-items:baseline;gap:8px}.rc-h small{margin:0}}
+/* (club46: removed narrow-desktop stacked meter) */
 /* bomb on the left, kill on the right: bars grow out from the middle */
 .killmeter .b{background:linear-gradient(90deg,#8e0b1a,#e0182d)}
 .killmeter .k{background:linear-gradient(90deg,#f0c14b,#b8860b)}
@@ -1076,4 +1076,13 @@ body{position:relative}
   body.theater .col.right{grid-column:2;grid-row:2/span 6;position:static}
   body.theater .col.center>:not(.stage-row){grid-column:3}
   body.theater .chat{position:static}
+}
+/* club46: desktop Red-O-Meter is a wide strip between the main boxes and the Golden Ticket Bet */
+@media (min-width:1101px){
+  .redcard.rc-wide{margin-top:16px;grid-template-columns:auto minmax(0,1fr);padding:16px 26px;gap:8px 28px}
+  .redcard.rc-wide .rc-h b{font-size:15px}
+  .redcard.rc-wide .rc-h small{font-size:10.5px}
+  .redcard.rc-wide .rc-body{gap:22px}
+  .redcard.rc-wide .rc-read{width:120px}
+  .redcard.rc-wide .rc-avg{font-size:26px}
 }

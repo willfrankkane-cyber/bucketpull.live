@@ -181,6 +181,10 @@
       <div class="bet-me" id="betMe">Pick YES or NO to get on the board.</div>
     </div>
   </section>
+  <script>/* desktop: Red-O-Meter sits between the main boxes and the Golden Ticket Bet; phone/tablet: under the player */
+  (function(){var mq=matchMedia('(min-width:1101px)');function place(){var rc=document.getElementById('redcard'),bet=document.getElementById('bet'),sr=document.querySelector('.stage-row');if(!rc||!bet||!sr)return;
+    if(mq.matches){if(rc.nextElementSibling!==bet){bet.parentNode.insertBefore(rc,bet)}rc.classList.add('rc-wide')}else{if(rc.parentNode!==sr){sr.appendChild(rc)}rc.classList.remove('rc-wide')}}
+    place();mq.addEventListener?mq.addEventListener('change',function(){place();window.dispatchEvent(new Event('resize'))}):mq.addListener(place)})();</script>
   <div class="foot">Unofficial fan site · not affiliated with or endorsed by the show<br><span class="credit">Tony Hinchcliffe photo: The Comedy Store, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener">CC BY 3.0</a>, via <a href="https://commons.wikimedia.org/wiki/File:Tony_Hinchcliffe_on_The_Comedy_Store_podcast_(cropped).jpg" target="_blank" rel="noopener">Wikimedia Commons</a> (cropped, background removed) · <a href="https://github.com/willfrankkane-cyber/bucketpull.live/blob/main/CREDITS.md" target="_blank" rel="noopener">comic photo credits</a></span></div>
 </div>
 
