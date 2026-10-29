@@ -96,6 +96,12 @@ const css=document.createElement('style');css.textContent=`
 .player .yt-ctl .yt-live .dot{width:7px;height:7px;border-radius:50%;background:#ff3b4e;box-shadow:0 0 8px #ff3b4e;animation:pulse 1.2s ease-in-out infinite}
 .player .yt-ctl .yt-fs{margin-left:auto}
 .player .yt-ctl .yt-skip{min-width:40px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.player .yt-ctl .yt-cc{margin-left:auto;font:800 12px/1 var(--body);letter-spacing:.04em;color:var(--mute)}
+.player .yt-ctl .yt-cc+.yt-fs{margin-left:0}
+.player .yt-ctl .yt-cc,.player .yt-ctl .yt-fs{min-width:32px;padding:0 7px}
+.player .yt-ctl .yt-seek{min-width:110px}
+.player .yt-ctl .yt-vol{width:72px}
+.player .yt-ctl .yt-cc.on{color:#1a1206;background:var(--gold);border-color:var(--gold)}
 @media (max-width:640px){.player .yt-ctl{gap:6px;padding:7px 8px}.player .yt-ctl .yt-vol{width:64px}.player .yt-ctl .yt-time{font-size:10.5px}.player .yt-ctl .yt-skip{min-width:36px;padding:0 6px}}
 .host.live-host{width:300px;max-height:calc(100vh - 32px);overflow:auto}
 
@@ -453,7 +459,16 @@ function syncYtCtl(){
   }
   if(liveEl)liveEl.classList.toggle('on',!FINAL()&&!can&&!!ytCur);
   if(skB)skB.hidden=!can;if(skF)skF.hidden=!can;
+  const cc=ctl.querySelector('.yt-cc');if(cc){const on=ytCCState();cc.classList.toggle('on',on);cc.setAttribute('aria-pressed',on?'true':'false')}
 }
+/* captions toggle (YouTube's own controls are hidden): remembers the fan's choice */
+let ytCC=null,ytCCApplied=false;
+function ytCCState(){const p=ytPlayer;if(p&&typeof p.getOption==='function'){try{const t=p.getOption('captions','track');if(t&&typeof t==='object'){const on=!!t.languageCode;if(ytCC===null||!on||ytCC)ytCC=on}}catch(e){}}return !!ytCC}
+function ytSetCC(on){const p=ytPlayer;ytCC=!!on;try{localStorage.setItem('bpCC',on?'1':'0')}catch(e){}
+  if(!p||typeof p.setOption!=='function')return;
+  try{if(on){p.loadModule('captions');const pick=()=>{try{const l=p.getOption('captions','tracklist')||[];const t=l.find(x=>/^en/i.test(x.languageCode))||l[0];p.setOption('captions','track',t?{languageCode:t.languageCode}:{languageCode:'en'})}catch(e){}};setTimeout(pick,400);setTimeout(pick,1500)}
+    else{p.setOption('captions','track',{});p.unloadModule('captions')}}catch(e){}}
+function ytApplyCCPref(){let v=null;try{v=localStorage.getItem('bpCC')}catch(e){}if(v==='0')ytSetCC(false);else if(v==='1')ytSetCC(true)}
 function startYtCtlPoll(){stopYtCtlPoll();syncYtCtl();ytCtlTimer=setInterval(syncYtCtl,500)}
 function buildYtCtl(pl,stage){
   pl.querySelectorAll('.yt-ctl').forEach(e=>e.remove());
@@ -466,7 +481,9 @@ function buildYtCtl(pl,stage){
 <div class="yt-seek" hidden><input class="yt-scrub" type="range" min="0" max="0" value="0" step="1" aria-label="Seek"><span class="yt-time">0:00 / 0:00</span></div>
 <button type="button" class="yt-skip yt-fwd" aria-label="Forward 10 seconds" hidden>+10</button>
 <span class="yt-live" aria-live="polite"><span class="dot"></span>LIVE</span>
+<button type="button" class="yt-cc" aria-label="Captions" aria-pressed="false" title="Captions on/off (C)">CC</button>
 <button type="button" class="yt-fs" aria-label="Fullscreen">⛶</button>`;
+  ctl.querySelector('.yt-cc').onclick=()=>{ytSetCC(!ytCCState());syncYtCtl()};
   ctl.querySelector('.yt-pp').onclick=()=>{const p=ytPlayer;if(!p)return;try{const st=p.getPlayerState();if(st===1)p.pauseVideo();else p.playVideo()}catch(e){}syncYtCtl()};
   ctl.querySelector('.yt-mu').onclick=()=>{const p=ytPlayer;if(!p)return;try{if(p.isMuted()||p.getVolume()===0){p.unMute();if(p.getVolume()===0)p.setVolume(80);sound.on=true;const u=qs('.yt-unmute');if(u)u.remove()}else p.mute()}catch(e){}syncYtCtl()};
   ctl.querySelector('.yt-vol').addEventListener('input',e=>{const p=ytPlayer,v=+e.target.value;if(!p)return;try{p.setVolume(v);if(v>0){p.unMute();sound.on=true;const u=qs('.yt-unmute');if(u)u.remove()}else p.mute()}catch(x){}syncYtCtl()});
@@ -496,13 +513,14 @@ function buildYtCtl(pl,stage){
     else if(k==='ArrowRight'){e.preventDefault();skipBy(e.shiftKey?30:10)}
     else if(k===' '||k==='k'||k==='K'){e.preventDefault();ctl.querySelector('.yt-pp').click()}
     else if(k==='m'||k==='M'){e.preventDefault();ctl.querySelector('.yt-mu').click()}
+    else if(k==='c'||k==='C'){e.preventDefault();ctl.querySelector('.yt-cc').click()}
   });
   ctl.querySelector('.yt-fs').onclick=()=>{const el=stage||pl;if(!document.fullscreenElement){const req=el.requestFullscreen||el.webkitRequestFullscreen;req&&req.call(el)}else{const ex=document.exitFullscreen||document.webkitExitFullscreen;ex&&ex.call(document)}};
   pl.appendChild(ctl);startYtCtlPoll();return ctl;
 }
 function setPlayer(url){const pl=qs('.player');if(!pl)return;const id=ytId(url);if(id===ytCur)return;ytCur=id;
   stopYtCtlPoll();pl.querySelectorAll('.yt-embed,.yt-out,.yt-unmute,.yt-ctl,.yt-stage').forEach(e=>e.remove());pl.classList.toggle('has-yt',!!id);
-  if(ytPlayer){try{ytPlayer.destroy()}catch(e){}ytPlayer=null}
+  if(ytPlayer){try{ytPlayer.destroy()}catch(e){}ytPlayer=null}ytCC=null;ytCCApplied=false;
   if(!id)return;
   const stage=document.createElement('div');stage.className='yt-stage';
   const w=document.createElement('div');w.className='yt-embed';
@@ -511,7 +529,7 @@ function setPlayer(url){const pl=qs('.player');if(!pl)return;const id=ytId(url);
     const holder=document.createElement('div');w.appendChild(holder);
     ytPlayer=new YT.Player(holder,{host:'https://www.youtube-nocookie.com',videoId:id,
       playerVars:Object.assign({},YT_VARS),
-      events:{onReady:ev=>{soundOn(ev.target);syncYtCtl()},onStateChange:()=>{timelineTick();syncYtCtl()},onError:e=>console.warn('youtube player error',e&&e.data)}});
+      events:{onReady:ev=>{soundOn(ev.target);ytApplyCCPref();syncYtCtl()},onStateChange:ev=>{if(ev&&ev.data===1&&!ytCCApplied){ytCCApplied=true;ytApplyCCPref()}timelineTick();syncYtCtl()},onError:e=>console.warn('youtube player error',e&&e.data)}});
   }else w.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?${YT_QS}" title="Kill Tony premiere on YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
   const u=document.createElement('button');u.className='yt-unmute';u.type='button';u.textContent='🔊 Tap for sound';
   u.style.cssText='position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;padding:9px 16px;border-radius:999px;border:0;background:#ffd23f;color:#111;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.45)';
