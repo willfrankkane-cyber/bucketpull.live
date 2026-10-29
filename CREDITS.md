@@ -123,4 +123,8 @@ Provided by the site owner for Tony's panel rating icons (replaces the microphon
 
 ### Archive icon (`img/archive.png`, `img/archive-icon.webp`)
 
-Provided by the site owner for the Episode Archive control (replaces the books emoji). White background and floor shadow removed; trimmed for transparent use.
+Provided by the site owner for the Episode Archive control. Current art is the KT Archives film reel (image-only button, no text label). White background and floor shadow removed; spoke gaps and sprocket holes made transparent; trimmed for use on dark UI. The previous wooden cabinet art is kept as `img/archive-cabinet.*` backups.
+
+### App icon / favicon (`favicon.ico`, `apple-touch-icon.png`, `icons/icon-*.png`, `og.png`)
+
+Provided by the site owner: black metal bucket stenciled BPL, filled with crumpled paper. White studio background removed; icon set centered on the site's near-black (`#050505`) for home-screen / PWA install, with a maskable 512 variant that keeps extra safe-zone padding.

@@ -19,8 +19,8 @@ const panel=[
  {i:'MV',n:'Mo Vance',r:'Guest (fictional)',g:'linear-gradient(135deg,#c9ccd6,#3a3fd0)',rc:'#c9ccd6',s:4,a:'7.8',d:'+0.1'},
  {i:'JO',n:'Jules Ortega',r:'Guest (fictional)',g:'linear-gradient(135deg,#f2c94c,#8a6516)',rc:'#f2c94c',s:3,a:'6.9',d:'-0.3'}];
 const PIMG=['img/panel/tony-hinchcliffe.webp','img/panel/brian-redban.webp'],PIC=['🎤','🥪'];
-const SANDWICH_ICON='img/sandwich-icon.webp?v=club12';
-const MIC_ICON='img/mic-icon.webp?v=club12';
+const SANDWICH_ICON='img/sandwich-icon.webp?v=club13';
+const MIC_ICON='img/mic-icon.webp?v=club13';
 const picMarkup=ic=>ic==='🥪'?`<img class="ico-sw" src="${SANDWICH_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='🎤'?`<img class="ico-mic" src="${MIC_ICON}" alt="" width="32" height="32" draggable="false">`:(ic||'★');
 if(!LIVE)document.getElementById('panel').innerHTML=panel.map((p,k)=>`<div class="pm"><div class="av" style="--g:${p.g};--rc:${p.rc}">${PIMG[k]?`<img src="${PIMG[k]}" alt="" onerror="this.parentNode.textContent='${p.i}'">`:p.i}</div>
 <div class="info"><b>${p.n}</b><small>${p.r}</small><div class="stars${PIC[k]?' emo':''}${PIC[k]==='🥪'?' sw':PIC[k]==='🎤'?' mic':''}" data-k="${k}" data-kind="${PIC[k]==='🥪'?'sandwich':PIC[k]==='🎤'?'mic':'star'}">${[1,2,3,4,5].map(j=>`<button class="${j<=p.s?'on':''}" data-v="${j}" aria-label="${j} ${PIC[k]==='🥪'?'sandwich':PIC[k]==='🎤'?'mic':'star'}${j>1?'s':''} for ${p.n}" aria-pressed="${j<=p.s}">${picMarkup(PIC[k])}</button>`).join('')}</div></div>
