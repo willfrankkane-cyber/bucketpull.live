@@ -133,6 +133,10 @@ Provided by the site owner for Dedrick Flynn's regulars (and panel, if he is on 
 
 Provided by the site owner for the Episode Archive control. Current art is the KT Archives film reel (image-only button, no text label). White background and floor shadow removed; spoke gaps and sprocket holes made transparent; trimmed for use on dark UI. The previous wooden cabinet art is kept as `img/archive-cabinet.*` backups.
 
+### Bomb button wallpaper (`img/bomb-wallpaper.webp`)
+
+Provided by the site owner for the Bomb side of Kill or Bomb. Seamless sad-clown / mushroom-cloud pattern on navy; resized for the web (~540 px wide WebP). Used as `background-size: cover` on the Bomb button (Kill stays gold).
+
 ### App icon / favicon (`favicon.ico`, `apple-touch-icon.png`, `icons/icon-*.png`, `og.png`)
 
 Provided by the site owner: black metal bucket stenciled BPL, filled with crumpled paper. White studio background removed; icon set centered on the site's near-black (`#050505`) for home-screen / PWA install, with a maskable 512 variant that keeps extra safe-zone padding.
