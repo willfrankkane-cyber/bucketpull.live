@@ -989,6 +989,9 @@ button, .rate button, .stars button, .quick button, .snd, .sb-set, .chip, .therm
 /* club19: yin-yang Kill or Bomb icon */
 .card-h h3 .ic.ic-yy{width:30px;height:30px;padding:0;background:none!important;border:0!important;border-radius:50%;overflow:visible}
 .card-h h3 .ic.ic-yy img{width:30px;height:30px;display:block;filter:drop-shadow(0 0 4px rgba(242,201,76,.35));pointer-events:none;user-select:none;-webkit-user-drag:none}
+.card-h h3 .ic.ic-nb{width:30px;height:30px;padding:0;background:none!important;border:0!important;border-radius:0;overflow:visible}
+.card-h h3 .ic.ic-nb img{width:30px;height:30px;object-fit:contain;display:block;filter:drop-shadow(0 1px 3px rgba(0,0,0,.55)) drop-shadow(0 0 4px rgba(255,194,61,.25));pointer-events:none;user-select:none;-webkit-user-drag:none}
+
 
 /* club20: regular photo in the on-stage badge */
 .comic .num.photo{padding:0;overflow:hidden;background:#111!important;box-shadow:0 0 0 2px #8f63e8,0 6px 18px rgba(74,85,232,.4)!important}
