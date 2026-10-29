@@ -301,7 +301,7 @@ function paintRed(){if(!window.BPRed)return;if(!ST){BPRed.set({avg:null,n:0,mine
 function renderChrome(fin){const chip=qs('header .chip.live');
   if(chip){chip.classList.toggle('final',fin);chip.classList.toggle('replay',fin);chip.innerHTML=fin?`<span class="dot"></span>REPLAY ${epNum()}`:'<span class="dot"></span>LIVE';chip.title=fin?'Replay: votes stay open, rate along with the video':''}
   const h=qs('.onstage .card-h h3');if(h){if(stageH==null)stageH=h.innerHTML;
-    const want=fin?'<span class="ic" style="background:rgba(74,85,232,.22)">🎬</span>REPLAY · RATE ALONG':stageH;if(h.innerHTML!==want)h.innerHTML=want}
+    const want=fin?'<span class="ic ic-nb"><img src="img/replay-icon.webp?v=club32" alt=""></span>REPLAY · RATE ALONG':stageH;if(h.innerHTML!==want)h.innerHTML=want}
   const lp=qs('.lbcard .pill');if(lp){lp.textContent=fin?'Replay':'Live scores';lp.classList.toggle('final',fin)}
   const lh=qs('.lbcard .card-h h3');if(lh)lh.lastChild.textContent='BUCKET PULL BOARD';
   const pv=META&&META.prev,lh2=qs('.lbcard .card-h');let a=qs('.lbcard .lastwk');
@@ -725,7 +725,7 @@ async function openResults(id){if(!id||!sb)return;let d;try{const r=await sb.rpc
 <div class="sub">Final fan results${ended?' · ended '+esc(ended):''}</div>
 <div class="gt">${gt} (${fmt(b[0])} yes · ${fmt(b[1])} no)</div>
 ${(()=>{const r=s.r||[0,null];return r[1]==null?'':`<div class="gt">🌡️ How red was Tony? <b>${Math.round(+r[1])}°</b> ${window.BPRed?BPRed.word(Math.round(+r[1])).slice(1).reverse().join(' '):''} (${vs(+r[0]||0)})</div>`})()}
-${ep.ep_num?`<div class="sub" style="margin-top:8px"><a href="?ep=${ep.ep_num}" data-go="${ep.ep_num}">🎬 Replay #${ep.ep_num} and keep voting →</a></div>`:''}
+${ep.ep_num?`<div class="sub" style="margin-top:8px"><a href="?ep=${ep.ep_num}" data-go="${ep.ep_num}"><img src="img/replay-icon.webp?v=club32" alt="" class="rp-inl"> Replay #${ep.ep_num} and keep voting →</a></div>`:''}
 <h4>Bucket pulls</h4>${bp.length?bp.map((x,i)=>row(Object.assign({},x,{name:(i+1)+'. '+x.name}),'Comic #'+x.ord+' · '+vs(x.votes)+kbt(x))).join(''):'<div class="row">No bucket pulls</div>'}
 ${rg.length?'<h4>Regulars and Golden ticket winners</h4>'+rg.map(x=>row(x,vs(x.votes)+kbt(x))).join(''):''}
 ${pn.length?'<h4>Panel</h4>'+pn.map(x=>{const ic=iconFor(x),a=x.avg==null?null:+x.avg,k=a==null?0:Math.round(a/2);
@@ -745,7 +745,7 @@ function paintLiveBar(){let bar=$('bpLiveBar');const wantLive=LIVEOTHER&&LIVEOTH
   const sig=wantLive?'L'+LIVEOTHER.id:'B';if(bar.dataset.sig===sig)return;bar.dataset.sig=sig;
   bar.className='bp-livebar'+(wantLive?'':' back');
   bar.innerHTML=wantLive?`<span>🔴 ${esc(LIVEOTHER.ep_num?'#'+LIVEOTHER.ep_num:LIVEOTHER.title||'A new episode')} is LIVE now</span><button type="button">Join the live room →</button>`
-    :`<span>🎬 You're watching a replay. Votes still count.</span><button type="button">Back to the live room</button>`;
+    :`<span><img src="img/replay-icon.webp?v=club32" alt="" class="rp-inl"> You're watching a replay. Votes still count.</span><button type="button">Back to the live room</button>`;
   bar.querySelector('button').onclick=()=>goEp(null)}
 
 /* ---------- archive: every episode by show number + paste a YouTube link ---------- */

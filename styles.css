@@ -1043,3 +1043,6 @@ body{position:relative}
 .bg-float img{position:sticky;top:12vh;display:block;margin:0 auto;width:min(68vw,460px);height:auto;opacity:.17;filter:saturate(.9);animation:bgFloat 9s ease-in-out infinite;-webkit-mask-image:linear-gradient(180deg,#000 70%,transparent);mask-image:linear-gradient(180deg,#000 70%,transparent)}
 @keyframes bgFloat{0%,100%{transform:translateY(0) rotate(-1.2deg)}50%{transform:translateY(-18px) rotate(1.2deg)}}
 @media (prefers-reduced-motion:reduce){.bg-float img{animation:none}}
+
+/* club32: replay icon */
+.rp-inl{height:1.3em;width:auto;vertical-align:-.3em;margin-right:2px;filter:drop-shadow(0 0 4px rgba(255,40,40,.45))}
