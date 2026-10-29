@@ -1058,3 +1058,8 @@ body{position:relative}
 /* club38: clown wallpaper behind the marquee title (drawn in marquee.js) */
 .mq-w{text-shadow:0 2px 4px rgba(0,0,0,.95),0 0 14px rgba(0,0,0,.8)}
 .mq-tag{text-shadow:0 1px 3px rgba(0,0,0,.95)}
+
+/* club40: remove decorative "you" badge */
+.me{display:none!important}
+/* club40: no confidence meter in Golden Ticket Bet */
+.conf-l,.conf{display:none!important}

@@ -42,13 +42,10 @@ function draw(){
   <g id="mqB"><circle r="${f(br*2.6)}" fill="url(#mqHalo)"/><circle r="${f(br)}" fill="url(#mqBulb)" stroke="#5a3d06" stroke-width=".6"/></g>
   <pattern id="mqClown" patternUnits="userSpaceOnUse" x="${f(cx-75*Math.max(.7,s))}" y="0" width="${f(150*Math.max(.7,s))}" height="${f(225*Math.max(.7,s))}"><image href="img/marquee-clowns.webp?v=club38" width="${f(150*Math.max(.7,s))}" height="${f(225*Math.max(.7,s))}" preserveAspectRatio="none"/></pattern>
   <clipPath id="mqClip"><path d="${outline(g,ro+2*L+5)}"/></clipPath>`;
-  // finial: a deco fan on top of the dome
-  const fr=F-1.5,fy=F+ro*.6;const fin=el('g',{class:'mq-fin'},svg);
-  el('path',{d:`M${f(cx-fr)},${f(fy)}A${f(fr)},${f(fr)} 0 0 1 ${f(cx+fr)},${f(fy)}Z`,fill:'url(#mqGold)',stroke:'#3a2604','stroke-width':1},fin);
-  for(let i=1;i<8;i++){const a=Math.PI*i/8;el('line',{x1:f(cx),y1:f(fy),x2:f(cx-Math.cos(a)*fr*.92),y2:f(fy-Math.sin(a)*fr*.92),stroke:'#5a3d06','stroke-width':f(Math.max(.8,s))},fin)}
-  el('path',{d:`M${f(cx-fr*.42)},${f(fy)}A${f(fr*.42)},${f(fr*.42)} 0 0 1 ${f(cx+fr*.42)},${f(fy)}Z`,fill:'#1a1006',stroke:'#f6d47a','stroke-width':1},fin);
-  el('circle',{cx:f(cx),cy:f(fy-fr*.15),r:f(Math.max(2,fr*.16)),fill:'#ff2a3f',stroke:'#ffd3da','stroke-width':.8},fin);
+  // crest: stargate stage sitting on top of the dome
+  {const gh=f(.85*.75*((g.mob?40:72)*s+ro*1.6)),gw=gh*1.3768;const img=el('image',{href:'img/gate-top.webp?v=club40',x:f(cx-gw/2),y:f(F-gh*2/3),width:f(gw),height:f(gh),preserveAspectRatio:'xMidYMax meet',class:'mq-fin'},null);g._gate=img}
   // frame layers
+  if(g._gate)svg.appendChild(g._gate);
   el('path',{d:outline(g,0),fill:'url(#mqGold)',stroke:'#2a1a03','stroke-width':1.2},svg);
   el('path',{d:outline(g,ro),fill:'#120c06',stroke:'#3a2604','stroke-width':1},svg);
   el('path',{d:outline(g,ro+L),fill:'none',stroke:'url(#mqGold)','stroke-width':f(Math.max(1.4,2*s))},svg);

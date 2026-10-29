@@ -45,7 +45,7 @@ function renderBet(){if(!bet)return;const t=tally();const py=Math.round(t.p*100)
   bet.querySelectorAll('.opt').forEach(b=>{b.classList.toggle('mine',S.pick===b.dataset.pick);b.disabled=S.closed;b.setAttribute('aria-pressed',S.pick===b.dataset.pick)});
   bet.querySelectorAll('#conf button').forEach(b=>{b.classList.toggle('on',S.conf===b.dataset.c);b.disabled=S.closed||!S.pick});
   const st=$('betStatus'),tx=$('betStatusTxt');st.className='bet-status '+(S.resolved?'res':S.closed?'shut':'open');
-  const pickTxt=S.pick?`<b class="${S.pick}">${S.pick.toUpperCase()}</b>${S.conf?' · '+CONF[S.conf]:''}`:'';
+  const pickTxt=S.pick?`<b class="${S.pick}">${S.pick.toUpperCase()}</b>`:'';
   let me;
   if(S.resolved==='yes'){tx.innerHTML='Settled: GOLDEN TICKET! '+(window.GT_TIX?GT_TIX():'');
     me=S.pick==='yes'?`<div class="verdict win">🎉 You called it!</div><div>Your pick: ${pickTxt}. Bragging rights unlocked.</div>`
