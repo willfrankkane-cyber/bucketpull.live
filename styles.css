@@ -909,7 +909,7 @@ input,textarea,select{font-family:var(--body)}
 
 /* v6 credit line */
 .foot .credit{display:inline-block;margin-top:4px;font-size:10.5px;opacity:.7}.foot .credit a{color:inherit;text-decoration:underline}
-/* panel rating icons: Tony mic art, Redban sandwich art (guests keep ★). Unselected = greyscale + dim, selected = full colour + glow */
+/* panel rating icons: Tony mic, Redban sandwich, Pat shirt, Dedrick/Deric grills (others ★). Unselected = greyscale + dim, selected = full colour + glow */
 .stars.emo button{font-size:28px;color:inherit;text-shadow:none;filter:grayscale(1) brightness(.85);opacity:.34;transition:transform .15s,opacity .15s,filter .15s;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px}
 .stars.emo button.on{opacity:1;filter:drop-shadow(0 0 6px rgba(255,194,61,.85)) drop-shadow(0 0 2px rgba(255,255,255,.35))}
 .stars.emo button:hover{opacity:.75}
@@ -919,8 +919,18 @@ input,textarea,select{font-family:var(--body)}
 .stars.mic button.on{opacity:1;filter:brightness(1.12) saturate(1.08) drop-shadow(0 0 3px rgba(255,255,255,.9)) drop-shadow(0 0 8px rgba(255,220,120,.95)) drop-shadow(0 0 14px rgba(255,180,40,.55))}
 .stars.mic button:hover{opacity:.7;filter:grayscale(.4) brightness(.75)}
 .stars.mic button.on:hover{opacity:1;filter:brightness(1.14) saturate(1.1) drop-shadow(0 0 3px rgba(255,255,255,.95)) drop-shadow(0 0 10px rgba(255,220,120,1))}
-.stars.emo button .ico-sw,.stars.emo button .ico-mic,.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{display:block;width:32px;height:32px;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
-.stars.sw button,.stars.mic button{padding:0}
+/* wacky shirt (Pat): keep colour punch; empties greyscale; filled gets soft neon glow */
+.stars.shirt button{filter:grayscale(1) brightness(.7);opacity:.3}
+.stars.shirt button.on{opacity:1;filter:saturate(1.15) brightness(1.05) drop-shadow(0 0 5px rgba(255,92,173,.75)) drop-shadow(0 0 10px rgba(123,63,228,.45))}
+.stars.shirt button:hover{opacity:.7;filter:grayscale(.35) brightness(.85)}
+.stars.shirt button.on:hover{opacity:1;filter:saturate(1.2) brightness(1.08) drop-shadow(0 0 6px rgba(255,92,173,.9)) drop-shadow(0 0 12px rgba(123,63,228,.55))}
+/* gold grills (Dedrick/Deric): dim empties; filled bright gold halo like mic */
+.stars.grill button{filter:grayscale(1) brightness(.45) contrast(.95);opacity:.26}
+.stars.grill button.on{opacity:1;filter:brightness(1.12) saturate(1.1) drop-shadow(0 0 3px rgba(255,255,255,.9)) drop-shadow(0 0 8px rgba(255,220,120,.95)) drop-shadow(0 0 14px rgba(255,180,40,.55))}
+.stars.grill button:hover{opacity:.7;filter:grayscale(.4) brightness(.75)}
+.stars.grill button.on:hover{opacity:1;filter:brightness(1.14) saturate(1.1) drop-shadow(0 0 3px rgba(255,255,255,.95)) drop-shadow(0 0 10px rgba(255,220,120,1))}
+.stars.emo button .ico-sw,.stars.emo button .ico-mic,.stars.emo button .ico-shirt,.stars.emo button .ico-grill,.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic,.bp-res .row .ricons .ico-shirt,.bp-res .row .ricons .ico-grill{display:block;width:32px;height:32px;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.stars.sw button,.stars.mic button,.stars.shirt button,.stars.grill button{padding:0}
 .bp-res .row .ricons{display:flex;gap:1px;font-size:14.5px;line-height:1;white-space:nowrap;align-items:center}
 .bp-res .row .ricons i{font-style:normal;color:rgba(255,255,255,.2);display:inline-flex;align-items:center;justify-content:center}
 .bp-res .row .ricons i.on{color:var(--gold);text-shadow:0 0 8px rgba(255,194,61,.55)}
@@ -928,14 +938,18 @@ input,textarea,select{font-family:var(--body)}
 .bp-res .row .ricons.emo i.on{filter:drop-shadow(0 0 4px rgba(255,194,61,.8));opacity:1;text-shadow:none}
 .bp-res .row .ricons.mic i{filter:grayscale(1) brightness(.5);opacity:.26}
 .bp-res .row .ricons.mic i.on{filter:brightness(1.1) drop-shadow(0 0 3px rgba(255,255,255,.85)) drop-shadow(0 0 6px rgba(255,220,120,.9));opacity:1;text-shadow:none}
-.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{width:20px;height:20px}
+.bp-res .row .ricons.shirt i{filter:grayscale(1) brightness(.7);opacity:.3}
+.bp-res .row .ricons.shirt i.on{filter:saturate(1.15) drop-shadow(0 0 4px rgba(255,92,173,.8));opacity:1;text-shadow:none}
+.bp-res .row .ricons.grill i{filter:grayscale(1) brightness(.5);opacity:.26}
+.bp-res .row .ricons.grill i.on{filter:brightness(1.1) drop-shadow(0 0 3px rgba(255,255,255,.85)) drop-shadow(0 0 6px rgba(255,220,120,.9));opacity:1;text-shadow:none}
+.bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic,.bp-res .row .ricons .ico-shirt,.bp-res .row .ricons .ico-grill{width:20px;height:20px}
 @media (max-width:640px){
   .pm{gap:8px;padding:7px 8px}
   .stars button{width:25.5px;height:25.5px;font-size:25.5px}
   .stars.emo button{font-size:24px;width:28.5px;height:28.5px}
-  .stars.emo button .ico-sw,.stars.emo button .ico-mic{width:28.5px;height:28.5px}
+  .stars.emo button .ico-sw,.stars.emo button .ico-mic,.stars.emo button .ico-shirt,.stars.emo button .ico-grill{width:28.5px;height:28.5px}
   .bp-res .row .ricons{font-size:12px}
-  .bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic{width:17px;height:17px}
+  .bp-res .row .ricons .ico-sw,.bp-res .row .ricons .ico-mic,.bp-res .row .ricons .ico-shirt,.bp-res .row .ricons .ico-grill{width:17px;height:17px}
   .pm .info{column-gap:4px}
   .pm .avg{font-size:20px}
 }

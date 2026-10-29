@@ -47,12 +47,20 @@ function wikiAvatar(n){const k=nrm(n);if(!k||k.split(' ').length<2||wikiBusy.has
 const panelPhoto=p=>{const hit=lookup(PANEL_PHOTOS,p.name)||(/^tony$/i.test(String(p.name).trim())&&PANEL_PHOTOS&&PANEL_PHOTOS['tony hinchcliffe'])||null;if(hit)return hit;
   if(PANEL_PHOTOS&&/guest/i.test(p.role||'')){const w=WIKI[nrm(p.name)];if(w&&w.src)return w;wikiAvatar(p.name)}return null};
 const panelInner=p=>{const ph=panelPhoto(p),i=esc(initials(p.name));return ph?imgTag(ph,i):i};
-/* rating icons: Tony gets mic art, Redban sandwich art, guests stars */
-const SANDWICH_ICON='img/sandwich-icon.webp?v=club13';
-const MIC_ICON='img/mic-icon.webp?v=club13';
+/* rating icons: Tony mic, Redban sandwich, Pat O'Neill shirt, Deric/Dedrick Poston gold grills; others ★ */
+const SANDWICH_ICON='img/sandwich-icon.webp?v=club14';
+const MIC_ICON='img/mic-icon.webp?v=club14';
+const SHIRT_ICON='img/shirt-icon.webp?v=club14';
+const GRILL_ICON='img/grill-icon.webp?v=club14';
 const iconFor=p=>{const n=nrm(p&&p.name),r=String(p&&p.role||'').toLowerCase();
-  if(/redban/.test(n)||(r==='co-host'&&!/tony/.test(n)))return '🥪';if(/^tony( hinchcliffe)?$/.test(n)||r==='host')return '🎤';return '★'};
-const iconMarkup=ic=>ic==='🥪'?`<img class="ico-sw" src="${SANDWICH_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='🎤'?`<img class="ico-mic" src="${MIC_ICON}" alt="" width="32" height="32" draggable="false">`:ic;
+  if(/redban/.test(n)||(r==='co-host'&&!/tony/.test(n)))return '🥪';
+  if(/^tony( hinchcliffe)?$/.test(n)||r==='host')return '🎤';
+  if(/^(pat|patrick) oneill?$/.test(n))return '👕';
+  if(/^(deric|derrick|dedrick)( poston)?$/.test(n))return '🦷';
+  return '★'};
+const iconKind=ic=>ic==='🎤'?'mic':ic==='🥪'?'sandwich':ic==='👕'?'shirt':ic==='🦷'?'grill':'star';
+const iconCls=ic=>ic==='🎤'?' mic':ic==='🥪'?' sw':ic==='👕'?' shirt':ic==='🦷'?' grill':'';
+const iconMarkup=ic=>ic==='🥪'?`<img class="ico-sw" src="${SANDWICH_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='🎤'?`<img class="ico-mic" src="${MIC_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='👕'?`<img class="ico-shirt" src="${SHIRT_ICON}" alt="" width="32" height="32" draggable="false">`:ic==='🦷'?`<img class="ico-grill" src="${GRILL_ICON}" alt="" width="32" height="32" draggable="false">`:ic;
 const HOLD=5000;          // ms an auto event waits (no player) before it shows; the autopilot writes events 5 s early
 
 /* ---------- live-mode styling + copy (sample data goes away) ---------- */
@@ -361,8 +369,8 @@ function renderBoard(){const lb=qs('.lb');if(!lb)return;const fin=FINAL(),cur=fi
     const kbs=fin&&kp!=null?` <span class="kbs" title="${fmt(c.kills)} kill · ${fmt(c.bombs)} bomb"><b>🔪${kp}%</b> / <em>💣${100-kp}%</em></span>`:'';
     return `<li data-id="${c.id}"${fin?` title="${c.start_offset!=null?'Jump the video to '+esc(c.name)+'\'s set':esc(c.name)}"`:''} class="${now?'now':''}${c.id===sel?' sel':''}"><span class="rk">${i+1}</span><span class="nm">${esc(c.name)}${now?' <span class="tag live">LIVE</span>':''}<small>Comic #${c.ord} · ${fmt(c.votes)} vote${c.votes==1?'':'s'}${kbs}${fin&&c.start_offset!=null?`<span class="seek">▶ ${mmss(c.start_offset)}</span>`:''}</small></span><span class="sc"><span class="mini"><i style="width:${a==null?0:a*10}%"></i></span>${a==null?'—':a.toFixed(1)}</span></li>`}).join('')}
 
-function starRow(id,name,score,icon){const my=score?Math.round(score/2):0,ic=icon||'★',emo=ic!=='★',w=ic==='🎤'?'mic':ic==='🥪'?'sandwich':'star',kind=w;
-  return `<div class="stars${emo?' emo':''}${ic==='🥪'?' sw':ic==='🎤'?' mic':''}" data-id="${id}" data-kind="${kind}">${[1,2,3,4,5].map(j=>`<button class="${j<=my?'on':''}" data-v="${j}" aria-label="${j} ${w}${j>1?'s':''} for ${esc(name)}" aria-pressed="${j<=my}">${iconMarkup(ic)}</button>`).join('')}</div>`}
+function starRow(id,name,score,icon){const my=score?Math.round(score/2):0,ic=icon||'★',emo=ic!=='★',w=iconKind(ic),kind=w;
+  return `<div class="stars${emo?' emo':''}${iconCls(ic)}" data-id="${id}" data-kind="${kind}">${[1,2,3,4,5].map(j=>`<button class="${j<=my?'on':''}" data-v="${j}" aria-label="${j} ${w}${j>1?'s':''} for ${esc(name)}" aria-pressed="${j<=my}">${iconMarkup(ic)}</button>`).join('')}</div>`}
 function renderRegs(){const el=$('regs');if(!el)return;const fin=FINAL(),cur=fin?(finalComic()||{}).id:effectiveComicId(),vis=visibleComicIds();
   const rs=(ST.comics||[]).filter(c=>c.kind==='regular'&&vis.has(c.id));
   const gtc=gtWinner();if(gtc&&vis.has(gtc.id)&&!rs.some(c=>c.id===gtc.id))rs.push(gtc);rs.sort((a,b)=>a.ord-b.ord);
@@ -372,7 +380,7 @@ function renderRegs(){const el=$('regs');if(!el)return;const fin=FINAL(),cur=fin
   const mine=ST.me&&ST.me.votes||{},live=ST.episode.status==='live';
   el.innerHTML=rs.map((r,k)=>{const g=GRAD[(k+2)%GRAD.length],a=r.avg==null?null:+r.avg,now=r.id===cur;
     return `<div class="pm reg${now?' now':''}${fin&&r.start_offset!=null?' seekable':''}" data-id="${r.id}"${fin&&r.start_offset!=null?` title="Jump the video to ${esc(r.name)}"`:''}><div class="av${gtc&&r.id===gtc.id?' av-gt':''}" style="--g:linear-gradient(135deg,${g[0]},${g[1]});--rc:${gtc&&r.id===gtc.id?'#ffc23d':g[0]}">${avInner(r.name)}</div>
-<div class="info"><b>${esc(r.name)}${now&&!fin?' <span class="tag live">LIVE</span>':''}</b><small>${now?(fin?'On stage in your video':'On stage now'):(gtc&&r.id===gtc.id?'🎟️ Golden ticket winner · set #':'Regular · set #')+r.ord}${fin&&r.start_offset!=null?' · ▶ '+mmss(r.start_offset):''}</small>${live||fin?starRow(r.id,r.name,mine[r.id]):''}</div>
+<div class="info"><b>${esc(r.name)}${now&&!fin?' <span class="tag live">LIVE</span>':''}</b><small>${now?(fin?'On stage in your video':'On stage now'):(gtc&&r.id===gtc.id?'🎟️ Golden ticket winner · set #':'Regular · set #')+r.ord}${fin&&r.start_offset!=null?' · ▶ '+mmss(r.start_offset):''}</small>${live||fin?starRow(r.id,r.name,mine[r.id],iconFor(r)):''}</div>
 <div class="avg">${a==null?'—':a.toFixed(1)}<small>${fmt(r.votes)} vote${r.votes==1?'':'s'}</small></div></div>`}).join('')}
 
 function renderPanel(){const el=$('panel');if(!el)return;const ps=ST.panel||[];
@@ -550,7 +558,7 @@ function wireInputs(){
     mineObj().kb[c.id]=verdict;setComic(c);sendVote('kb',c.id,null,verdict)}));
   // panel + regulars stars (1-5 stars stored as 2-10)
   const stars=(el,kind)=>el&&el.addEventListener('click',e=>{const b=e.target.closest('.stars button');if(!b||!ST)return;const id=b.parentElement.dataset.id,v=+b.dataset.v;
-    b.parentElement.querySelectorAll('button').forEach((x,j)=>x.classList.toggle('on',j<v));if(window.burst){const k=b.parentElement.dataset.kind||'';const t=k==='sandwich'?'🥪':k==='mic'?'🎤':(b.textContent.trim()||'⭐');burst(e.clientX,e.clientY,'#ffc23d',t==='★'?'⭐':t,'')}
+    b.parentElement.querySelectorAll('button').forEach((x,j)=>x.classList.toggle('on',j<v));if(window.burst){const k=b.parentElement.dataset.kind||'';const t=k==='sandwich'?'🥪':k==='mic'?'🎤':k==='shirt'?'👕':k==='grill'?'🦷':(b.textContent.trim()||'⭐');burst(e.clientX,e.clientY,'#ffc23d',t==='★'?'⭐':t,'')}
     const m=mineObj();if(kind==='panel')m.panel[id]=v*2;else m.votes[id]=v*2;
     if(kind!=='panel'){const c=curComic();if(c&&c.id===id)setComic(c)}
     sendVote(kind,id,v*2)});
@@ -717,7 +725,7 @@ ${ep.ep_num?`<div class="sub" style="margin-top:8px"><a href="?ep=${ep.ep_num}" 
 <h4>Bucket pulls</h4>${bp.length?bp.map((x,i)=>row(Object.assign({},x,{name:(i+1)+'. '+x.name}),'Comic #'+x.ord+' · '+vs(x.votes)+kbt(x))).join(''):'<div class="row">No bucket pulls</div>'}
 ${rg.length?'<h4>Regulars and Golden ticket winners</h4>'+rg.map(x=>row(x,vs(x.votes)+kbt(x))).join(''):''}
 ${pn.length?'<h4>Panel</h4>'+pn.map(x=>{const ic=iconFor(x),a=x.avg==null?null:+x.avg,k=a==null?0:Math.round(a/2);
-  return `<div class="row pn"><span class="n">${esc(x.name)}<small>${esc(x.role||'')} · ${vs(x.votes)}</small></span><span class="ricons${ic!=='★'?' emo':''}${ic==='🥪'?' sw':ic==='🎤'?' mic':''}" aria-label="${a==null?'no rating':(a/2).toFixed(1)+' of 5'}">${[1,2,3,4,5].map(j=>`<i class="${j<=k?'on':''}">${iconMarkup(ic)}</i>`).join('')}</span><span class="a">${a==null?'—':a.toFixed(1)}</span></div>`}).join(''):''}</div>`;
+  return `<div class="row pn"><span class="n">${esc(x.name)}<small>${esc(x.role||'')} · ${vs(x.votes)}</small></span><span class="ricons${ic!=='★'?' emo':''}${iconCls(ic)}" aria-label="${a==null?'no rating':(a/2).toFixed(1)+' of 5'}">${[1,2,3,4,5].map(j=>`<i class="${j<=k?'on':''}">${iconMarkup(ic)}</i>`).join('')}</span><span class="a">${a==null?'—':a.toFixed(1)}</span></div>`}).join(''):''}</div>`;
   const close=()=>{el.remove();document.removeEventListener('keydown',kd)},kd=e=>{if(e.key==='Escape')close()};
   el.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){e.preventDefault();close();goEp(g.dataset.go);return}if(e.target===el||e.target.closest('.x'))close()});document.addEventListener('keydown',kd);document.body.appendChild(el)}
 
@@ -742,7 +750,7 @@ function parsePaste(t){t=(t||'').trim();if(!t)return null;const id=ytId(t);if(id
   const m=t.match(/^#?\s*(\d{1,5})$/)||t.match(/(?:episode|ep\.?|#)\s*(\d{1,5})\b/i);return m?{num:+m[1]}:id?{video:id}:{bad:true}}
 async function openArchive(prefill){if(!sb)return;if(archEl)archEl.remove();clearTimeout(reqT);
   const el=archEl=document.createElement('div');el.className='bp-res';el.setAttribute('role','dialog');el.setAttribute('aria-label','Episode archive');
-  el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2><img class="arch-ico" src="img/archive-icon.webp?v=club13" alt="" width="43" height="52" draggable="false"> Episode archive</h2>
+  el.innerHTML=`<div class="box"><button class="x" aria-label="Close">×</button><h2><img class="arch-ico" src="img/archive-icon.webp?v=club14" alt="" width="43" height="52" draggable="false"> Episode archive</h2>
 <div class="sub">Every Kill Tony from #791 on. Votes never close: replay any episode, rate the sets, and the averages keep updating.</div>
 <h4>Paste an episode</h4>
 <form class="paste"><input type="text" inputmode="url" autocomplete="off" placeholder="Kill Tony YouTube link or #number" aria-label="Kill Tony YouTube link or episode number" value="${prefill?esc(String(prefill)):''}"><button type="submit">Open</button></form>

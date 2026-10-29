@@ -121,6 +121,14 @@ Provided by the site owner for Redban's panel rating icons (replaces the sandwic
 
 Provided by the site owner for Tony's panel rating icons (replaces the microphone emoji). Black background removed and trimmed for transparent use.
 
+### Wacky shirt rating icon (`img/shirt.png`, `img/shirt-icon.webp`)
+
+Provided by the site owner for Pat O'Neill's panel (and regulars) rating icons. Psychedelic Hawaiian shirt; black studio background removed, trimmed and square-padded for transparent use.
+
+### Gold grills rating icon (`img/grill.png`, `img/grill-icon.webp`)
+
+Provided by the site owner for Deric / Dedrick Poston's panel (and regulars) rating icons. Gold dental grills; white studio background removed, trimmed and square-padded (wide subject) for transparent use at icon size.
+
 ### Archive icon (`img/archive.png`, `img/archive-icon.webp`)
 
 Provided by the site owner for the Episode Archive control. Current art is the KT Archives film reel (image-only button, no text label). White background and floor shadow removed; spoke gaps and sprocket holes made transparent; trimmed for use on dark UI. The previous wooden cabinet art is kept as `img/archive-cabinet.*` backups.
