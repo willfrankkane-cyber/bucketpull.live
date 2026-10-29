@@ -144,3 +144,9 @@ Provided by the site owner for the Kill side of Kill or Bomb. Seamless happy-clo
 ### App icon / favicon (`favicon.ico`, `apple-touch-icon.png`, `icons/icon-*.png`, `og.png`)
 
 Provided by the site owner: black metal bucket stenciled BPL, filled with crumpled paper. White studio background removed; icon set centered on the site's near-black (`#050505`) for home-screen / PWA install, with a maskable 512 variant that keeps extra safe-zone padding.
+
+### Soundboard button icons (`img/sb/*.webp`, `img/gun-icon.webp`)
+
+- **Gunshots** (`img/gun-icon.webp`): provided by the site owner (BANG flag starter pistol). White background removed; used as-is.
+- **Rimshot** (`img/sb/rimshot.webp`): provided by the site owner (red Pearl drum kit photo). White studio background removed, cropped and square-padded.
+- **Airhorn, Triumphant horns, Vader breath, Crowd oooh, Sad trombone, Record scratch, Applause, Bell ding, Synth airhorn** (`img/sb/<id>.webp`): original generated icons made for this project (glossy 3D object on a cut-out background). No likeness of any real person; the “Vader breath” icon is a generic sci-fi villain helmet with a breathing grille, not a trademarked design.
