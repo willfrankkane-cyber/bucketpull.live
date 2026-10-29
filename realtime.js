@@ -115,7 +115,12 @@ const css=document.createElement('style');css.textContent=`
 .player .yt-ctl .yt-live{display:none;align-items:center;gap:6px;margin-left:4px;padding:5px 9px;border-radius:999px;background:rgba(255,59,78,.12);border:1px solid rgba(255,59,78,.35);font:800 10.5px/1 var(--body);letter-spacing:.1em;color:#ff6b7a}
 .player .yt-ctl .yt-live.on{display:inline-flex}
 .player .yt-ctl .yt-live .dot{width:7px;height:7px;border-radius:50%;background:#ff3b4e;box-shadow:0 0 8px #ff3b4e;animation:pulse 1.2s ease-in-out infinite}
-@media (max-width:640px){.player .yt-ctl{padding:9px 10px}.player .yt-ctl .yt-row{gap:6px}.player .yt-ctl .yt-grp{gap:6px}.player .yt-ctl .yt-vol{display:none}.player .yt-ctl .yt-time{font-size:10.5px}.player .yt-ctl .yt-skip{min-width:0;padding:0 7px;gap:2px}.player .yt-ctl .yt-skip svg{width:15px;height:15px}.player .yt-ctl .yt-pp{height:36px;min-width:36px}.player .yt-ctl button{height:32px;min-width:32px}.player .yt-ctl .yt-cc{height:26px;min-width:34px;padding:0 6px}.player .yt-ctl .yt-time{margin-left:0;font-size:10px}}
+@media (max-width:640px){.player .yt-ctl{padding:9px clamp(7px,2.4vw,10px);gap:7px}.player .yt-ctl .yt-row{gap:clamp(4px,1.4vw,6px)}
+.player .yt-ctl .yt-grp{gap:clamp(4px,1.4vw,6px)}.player .yt-ctl .yt-row>.yt-grp:first-child{flex-shrink:1;min-width:0}
+.player .yt-ctl .yt-vol{display:none}.player .yt-ctl .yt-time{margin-left:0;font-size:clamp(9px,2.6vw,10px);overflow:hidden;text-overflow:ellipsis;min-width:0;flex-shrink:1}
+.player .yt-ctl button{height:clamp(28px,8vw,32px);min-width:clamp(28px,8vw,32px)}.player .yt-ctl .yt-pp{height:clamp(32px,9vw,36px);min-width:clamp(32px,9vw,36px)}
+.player .yt-ctl .yt-skip{min-width:0;padding:0 clamp(5px,1.6vw,7px);gap:2px}.player .yt-ctl .yt-skip svg{width:14px;height:14px}.player .yt-ctl .yt-skip b{font-size:clamp(10px,2.8vw,11px)}
+.player .yt-ctl .yt-cc{height:clamp(24px,6.6vw,26px);min-width:0;padding:0 clamp(5px,1.4vw,6px);font-size:clamp(10px,2.8vw,11px)}.player .yt-ctl .yt-fs svg{width:16px;height:16px}}
 .host.live-host{width:300px;max-height:calc(100vh - 32px);overflow:auto}
 
 .host .h-row{display:flex;gap:6px}.host .h-row>*{flex:1;min-width:0}
