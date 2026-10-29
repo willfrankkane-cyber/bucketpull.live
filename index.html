@@ -24,7 +24,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=club17">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=club17">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=club17">
-<link rel="stylesheet" href="styles.css?v=club32">
+<link rel="stylesheet" href="styles.css?v=club33">
 </head>
 <body>
   <div class="bg-float" id="bgFloat" aria-hidden="true"><img src="img/bg-girl.webp?v=club31" alt="" decoding="async" loading="lazy"></div>
@@ -223,7 +223,7 @@
 <script src="soundboard.js?v=club27"></script>
 <script src="live.js?v=club28"></script>
 <script src="red.js?v=club3"></script>
-<script>(function(){var f=document.getElementById("bgFloat"),m=f&&f.parentNode;function p(){var b=document.querySelector(".lbcard");if(!f||!b)return;var t=b.getBoundingClientRect().top-document.body.getBoundingClientRect().top;f.style.top=Math.max(0,t)+"px"}addEventListener("load",p);addEventListener("resize",p);if(window.ResizeObserver)new ResizeObserver(p).observe(document.body);p()})();</script>
+<script>(function(){var f=document.getElementById("bgFloat"),m=f&&f.parentNode;function p(){var b=document.querySelector(".lbcard");if(!f||!b)return;var o=document.body.getBoundingClientRect().top,t=b.getBoundingClientRect().bottom-o+10,g=document.getElementById("bet");if(g)t=Math.max(t,g.getBoundingClientRect().top-o-30);f.style.top=Math.max(0,t)+"px"}addEventListener("load",p);addEventListener("resize",p);if(window.ResizeObserver)new ResizeObserver(p).observe(document.body);p()})();</script>
 <script src="realtime.js?v=club32"></script>
 <script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){});});}</script>
 </body>

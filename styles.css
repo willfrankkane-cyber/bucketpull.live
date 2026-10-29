@@ -1046,3 +1046,8 @@ body{position:relative}
 
 /* club32: replay icon */
 .rp-inl{height:1.3em;width:auto;vertical-align:-.3em;margin-right:2px;filter:drop-shadow(0 0 4px rgba(255,40,40,.45))}
+
+/* club33: figure starts below the board and fills down to the bottom */
+.bg-float img{position:absolute;top:0;bottom:0;left:50%;height:100%;width:auto;max-width:none;margin:0;transform-origin:50% 100%;animation:bgFloat2 9s ease-in-out infinite;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 8%,#000 80%,transparent);mask-image:linear-gradient(180deg,transparent 0,#000 8%,#000 80%,transparent)}
+@keyframes bgFloat2{0%,100%{transform:translateX(-50%) translateY(0) rotate(-1deg)}50%{transform:translateX(-50%) translateY(-12px) rotate(1deg)}}
+@media (prefers-reduced-motion:reduce){.bg-float img{animation:none;transform:translateX(-50%)}}
