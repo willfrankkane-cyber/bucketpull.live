@@ -40,6 +40,7 @@ function draw(){
   <radialGradient id="mqBulb" cx=".4" cy=".35" r=".65"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#fff3c9"/><stop offset=".75" stop-color="#f0c14b"/><stop offset="1" stop-color="#a06d0c"/></radialGradient>
   <radialGradient id="mqHalo"><stop offset="0" stop-color="#ffe6a0" stop-opacity=".75"/><stop offset=".45" stop-color="#f0c14b" stop-opacity=".25"/><stop offset="1" stop-color="#f0c14b" stop-opacity="0"/></radialGradient>
   <g id="mqB"><circle r="${f(br*2.6)}" fill="url(#mqHalo)"/><circle r="${f(br)}" fill="url(#mqBulb)" stroke="#5a3d06" stroke-width=".6"/></g>
+  <pattern id="mqClown" patternUnits="userSpaceOnUse" x="${f(cx-75*Math.max(.7,s))}" y="0" width="${f(150*Math.max(.7,s))}" height="${f(225*Math.max(.7,s))}"><image href="img/marquee-clowns.webp?v=club38" width="${f(150*Math.max(.7,s))}" height="${f(225*Math.max(.7,s))}" preserveAspectRatio="none"/></pattern>
   <clipPath id="mqClip"><path d="${outline(g,ro+2*L+5)}"/></clipPath>`;
   // finial: a deco fan on top of the dome
   const fr=F-1.5,fy=F+ro*.6;const fin=el('g',{class:'mq-fin'},svg);
@@ -53,6 +54,8 @@ function draw(){
   el('path',{d:outline(g,ro+L),fill:'none',stroke:'url(#mqGold)','stroke-width':f(Math.max(1.4,2*s))},svg);
   el('path',{d:outline(g,ro+2*L+1.5),fill:'none',stroke:'url(#mqGold)','stroke-width':f(Math.max(1.4,2.2*s))},svg);
   el('path',{d:outline(g,ro+2*L+5),fill:'url(#mqFace)',stroke:'#f0c14b','stroke-opacity':.55,'stroke-width':.8},svg);
+  el('path',{d:outline(g,ro+2*L+5),fill:'url(#mqClown)'},svg);
+  el('path',{d:outline(g,ro+2*L+5),fill:'#050612','fill-opacity':.5,stroke:'#f0c14b','stroke-opacity':.55,'stroke-width':.8},svg);
   // deco sunburst inside the face
   const sun=el('g',{'clip-path':'url(#mqClip)',class:'mq-sun'},svg);const sy=g.H*1.15,R=Math.hypot(g.W,g.H)*1.1,N=g.mob?26:46;
   for(let i=0;i<N;i++){const a0=Math.PI*(i/N),a1=Math.PI*((i+.5)/N);
