@@ -1086,3 +1086,9 @@ body{position:relative}
   .redcard.rc-wide .rc-read{width:120px}
   .redcard.rc-wide .rc-avg{font-size:26px}
 }
+@media (min-width:1101px){
+  .redcard.rc-side{grid-template-columns:1fr;padding:14px 16px;gap:10px}
+  .redcard.rc-side .rc-h{display:flex;align-items:baseline;gap:8px}
+  .redcard.rc-side .rc-h small{margin:0}
+  .redcard.rc-side .rc-read{width:92px}
+}
