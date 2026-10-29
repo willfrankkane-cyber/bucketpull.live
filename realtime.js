@@ -80,29 +80,42 @@ const css=document.createElement('style');css.textContent=`
   box-shadow:0 0 0 1px #000,0 24px 50px -20px #000,0 -30px 80px -40px rgba(255,236,196,.35);background:#000}
 .player.has-yt .yt-embed{position:absolute;inset:0;z-index:1;border-radius:inherit}
 .player.has-yt .yt-unmute{z-index:5}
-.player .yt-ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;padding:8px 10px;border-radius:12px;
-  background:rgba(12,10,16,.92);border:1px solid rgba(240,193,75,.28);box-shadow:0 8px 24px rgba(0,0,0,.45)}
-.player .yt-ctl button{height:32px;min-width:36px;padding:0 10px;border-radius:9px;border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.06);color:#fff;font:800 13px var(--body);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px}
-.player .yt-ctl button:hover{background:rgba(240,193,75,.14);border-color:rgba(240,193,75,.45)}
+.player .yt-ctl{display:flex;flex-direction:column;gap:8px;margin-top:10px;padding:10px 12px 10px;border-radius:14px;
+  background:linear-gradient(180deg,rgba(28,22,30,.96),rgba(10,8,12,.97));border:1px solid rgba(240,193,75,.32);
+  box-shadow:inset 0 1px 0 rgba(255,236,196,.08),0 10px 28px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.6)}
+.player .yt-ctl .yt-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.player .yt-ctl .yt-grp{display:flex;align-items:center;gap:8px;min-width:0;flex-shrink:0}
+.player .yt-ctl .yt-mid{justify-content:center}
+.player .yt-ctl .yt-end{justify-content:flex-end}
+.player .yt-ctl button{height:34px;min-width:34px;padding:0;border-radius:50%;border:1px solid rgba(240,193,75,.22);
+  background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.10),rgba(255,255,255,.02));color:#f3e7c9;
+  font:800 12px/1 var(--body);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:3px;
+  transition:background .15s,border-color .15s,color .15s,box-shadow .15s,transform .1s}
+.player .yt-ctl button svg{display:block}
+.player .yt-ctl button:hover{color:#ffd76a;border-color:rgba(240,193,75,.6);box-shadow:0 0 12px rgba(240,193,75,.25)}
+.player .yt-ctl button:active{transform:scale(.94)}
 .player .yt-ctl button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.player .yt-ctl .yt-vol{width:88px;accent-color:var(--gold);cursor:pointer}
-.player .yt-ctl .yt-seek{flex:1;min-width:140px;display:flex;align-items:center;gap:6px}
+.player .yt-ctl .yt-pp{height:40px;min-width:40px;color:#1a1206;border:0;background:linear-gradient(180deg,#ffe58a,#f0b429);box-shadow:0 4px 14px rgba(240,180,41,.35)}
+.player .yt-ctl .yt-pp:hover{color:#1a1206;box-shadow:0 4px 18px rgba(240,180,41,.55)}
+.player .yt-ctl .yt-skip{border-radius:999px;padding:0 11px;min-width:58px}
+.player .yt-ctl .yt-skip b{font:800 11.5px/1 var(--body);font-variant-numeric:tabular-nums}
+.player .yt-ctl .yt-skip[hidden]{display:none}
+.player .yt-ctl .yt-cc{border-radius:8px;min-width:38px;height:28px;padding:0 8px;letter-spacing:.06em;font-size:11.5px;color:rgba(243,231,201,.7)}
+.player .yt-ctl .yt-cc.on{color:#1a1206;background:linear-gradient(180deg,#ffe58a,#f0b429);border-color:transparent;box-shadow:0 0 12px rgba(240,180,41,.35)}
+.player .yt-ctl input[type=range]{-webkit-appearance:none;appearance:none;height:5px;border-radius:999px;cursor:pointer;margin:0;
+  background:linear-gradient(90deg,#f0b429 0,#ffd76a var(--p,0%),rgba(255,255,255,.14) var(--p,0%));outline:none}
+.player .yt-ctl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff3c8;border:2px solid #f0b429;box-shadow:0 0 8px rgba(240,180,41,.6)}
+.player .yt-ctl input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff3c8;border:2px solid #f0b429}
+.player .yt-ctl .yt-vol{width:80px}
+.player .yt-ctl .yt-seek{display:flex;align-items:center;padding:2px 2px 0}
 .player .yt-ctl .yt-seek[hidden]{display:none!important}
-.player .yt-ctl .yt-scrub{flex:1;min-width:80px;accent-color:var(--gold);cursor:pointer;touch-action:none;-webkit-user-select:auto;user-select:auto}
-.player .yt-ctl .yt-time{font:700 11.5px/1 var(--body);color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap}
-.player .yt-ctl .yt-live{display:none;align-items:center;gap:6px;margin-left:4px;font:800 11px/1 var(--body);letter-spacing:.06em;color:#ff5a6a}
+.player .yt-ctl .yt-scrub{flex:1;touch-action:none;-webkit-user-select:auto;user-select:auto}
+.player .yt-ctl .yt-time{font:700 11.5px/1 var(--body);color:rgba(243,231,201,.65);font-variant-numeric:tabular-nums;white-space:nowrap;margin-left:4px}
+.player .yt-ctl .yt-time[hidden]{display:none}
+.player .yt-ctl .yt-live{display:none;align-items:center;gap:6px;margin-left:4px;padding:5px 9px;border-radius:999px;background:rgba(255,59,78,.12);border:1px solid rgba(255,59,78,.35);font:800 10.5px/1 var(--body);letter-spacing:.1em;color:#ff6b7a}
 .player .yt-ctl .yt-live.on{display:inline-flex}
 .player .yt-ctl .yt-live .dot{width:7px;height:7px;border-radius:50%;background:#ff3b4e;box-shadow:0 0 8px #ff3b4e;animation:pulse 1.2s ease-in-out infinite}
-.player .yt-ctl .yt-fs{margin-left:auto}
-.player .yt-ctl .yt-skip{min-width:40px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.player .yt-ctl .yt-cc{margin-left:auto;font:800 12px/1 var(--body);letter-spacing:.04em;color:var(--mute)}
-.player .yt-ctl .yt-cc+.yt-fs{margin-left:0}
-.player .yt-ctl .yt-cc,.player .yt-ctl .yt-fs{min-width:32px;padding:0 7px}
-.player .yt-ctl .yt-seek{min-width:110px}
-.player .yt-ctl .yt-vol{width:72px}
-.player .yt-ctl .yt-cc.on{color:#1a1206;background:var(--gold);border-color:var(--gold)}
-@media (max-width:640px){.player .yt-ctl{gap:6px;padding:7px 8px}.player .yt-ctl .yt-vol{width:64px}.player .yt-ctl .yt-time{font-size:10.5px}.player .yt-ctl .yt-skip{min-width:36px;padding:0 6px}}
+@media (max-width:640px){.player .yt-ctl{padding:9px 10px}.player .yt-ctl .yt-row{gap:6px}.player .yt-ctl .yt-grp{gap:6px}.player .yt-ctl .yt-vol{display:none}.player .yt-ctl .yt-time{font-size:10.5px}.player .yt-ctl .yt-skip{min-width:0;padding:0 7px;gap:2px}.player .yt-ctl .yt-skip svg{width:15px;height:15px}.player .yt-ctl .yt-pp{height:36px;min-width:36px}.player .yt-ctl button{height:32px;min-width:32px}.player .yt-ctl .yt-cc{height:26px;min-width:34px;padding:0 6px}.player .yt-ctl .yt-time{margin-left:0;font-size:10px}}
 .host.live-host{width:300px;max-height:calc(100vh - 32px);overflow:auto}
 
 .host .h-row{display:flex;gap:6px}.host .h-row>*{flex:1;min-width:0}
@@ -443,8 +456,9 @@ function syncYtCtl(){
   const seek=ctl.querySelector('.yt-seek'),scrub=ctl.querySelector('.yt-scrub'),tm=ctl.querySelector('.yt-time');
   const liveEl=ctl.querySelector('.yt-live'),skB=ctl.querySelector('.yt-back'),skF=ctl.querySelector('.yt-fwd');
   const {playing,muted,cur,dur,volN,st}=ytRead();
-  if(pp){pp.textContent=playing?'❚❚':'▶';pp.setAttribute('aria-label',playing?'Pause':'Play')}
-  if(mu){mu.textContent=muted||volN===0?'🔇':'🔊';mu.setAttribute('aria-label',muted?'Unmute':'Mute')}
+  if(pp){const k=playing?'pause':'play';if(pp.dataset.i!==k){pp.dataset.i=k;pp.innerHTML=YI[k]}pp.setAttribute('aria-label',playing?'Pause':'Play')}
+  if(mu){const k=muted||volN===0?'mute':'vol';if(mu.dataset.i!==k){mu.dataset.i=k;mu.innerHTML=YI[k]}mu.setAttribute('aria-label',muted?'Unmute':'Mute')}
+  const fsb=ctl.querySelector('.yt-fs');if(fsb){const k=document.fullscreenElement?'fsx':'fs';if(fsb.dataset.i!==k){fsb.dataset.i=k;fsb.innerHTML=YI[k]}}
   if(vol&&document.activeElement!==vol)vol.value=String(muted?0:volN);
   if(ytPendingSeek!=null&&(Math.abs(cur-ytPendingSeek)<2.5||Date.now()>ytPendingUntil))ytPendingSeek=null;
   const can=ytCanSeek(dur,st);
@@ -459,6 +473,7 @@ function syncYtCtl(){
   }
   if(liveEl)liveEl.classList.toggle('on',!FINAL()&&!can&&!!ytCur);
   if(skB)skB.hidden=!can;if(skF)skF.hidden=!can;
+if(vol)vol.style.setProperty('--p',(muted?0:volN)+'%');if(scrub&&+scrub.max>0)scrub.style.setProperty('--p',(100*(+scrub.value)/(+scrub.max))+'%');if(tm)tm.hidden=!can;
   const cc=ctl.querySelector('.yt-cc');if(cc){const on=ytCCState();cc.classList.toggle('on',on);cc.setAttribute('aria-pressed',on?'true':'false')}
 }
 /* captions toggle (YouTube's own controls are hidden): remembers the fan's choice */
@@ -470,19 +485,28 @@ function ytSetCC(on){const p=ytPlayer;ytCC=!!on;try{localStorage.setItem('bpCC',
     else{p.setOption('captions','track',{});p.unloadModule('captions')}}catch(e){}}
 function ytApplyCCPref(){let v=null;try{v=localStorage.getItem('bpCC')}catch(e){}if(v==='0')ytSetCC(false);else if(v==='1')ytSetCC(true)}
 function startYtCtlPoll(){stopYtCtlPoll();syncYtCtl();ytCtlTimer=setInterval(syncYtCtl,500)}
+const _sv=(d,f)=>`<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" ${f?'fill="currentColor"':'fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"'}>${d}</svg>`;
+const YI={play:_sv('<path d="M7 4.5v15l12.5-7.5z"/>',1),pause:_sv('<rect x="6" y="4.5" width="4" height="15" rx="1.2"/><rect x="14" y="4.5" width="4" height="15" rx="1.2"/>',1),
+  vol:_sv('<path d="M4 9.5v5h3.5l5 4v-13l-5 4z" fill="currentColor" stroke="none"/><path d="M16 9a4.5 4.5 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/>'),
+  mute:_sv('<path d="M4 9.5v5h3.5l5 4v-13l-5 4z" fill="currentColor" stroke="none"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/>'),
+  back:_sv('<path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4.5v4h4"/>'),fwd:_sv('<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4.5v4h-4"/>'),
+  fs:_sv('<path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>'),fsx:_sv('<path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/>')};
 function buildYtCtl(pl,stage){
   pl.querySelectorAll('.yt-ctl').forEach(e=>e.remove());
   const ctl=document.createElement('div');ctl.className='yt-ctl';ctl.tabIndex=0;
   ctl.setAttribute('role','group');ctl.setAttribute('aria-label','Video controls');
-  ctl.innerHTML=`<button type="button" class="yt-pp" aria-label="Play">▶</button>
-<button type="button" class="yt-mu" aria-label="Mute">🔊</button>
+  ctl.innerHTML=`<div class="yt-seek" hidden><input class="yt-scrub" type="range" min="0" max="0" value="0" step="1" aria-label="Seek"></div>
+<div class="yt-row">
+<div class="yt-grp"><button type="button" class="yt-pp" aria-label="Play">${YI.play}</button>
+<button type="button" class="yt-mu" aria-label="Mute">${YI.vol}</button>
 <input class="yt-vol" type="range" min="0" max="100" value="100" aria-label="Volume">
-<button type="button" class="yt-skip yt-back" aria-label="Back 10 seconds" hidden>−10</button>
-<div class="yt-seek" hidden><input class="yt-scrub" type="range" min="0" max="0" value="0" step="1" aria-label="Seek"><span class="yt-time">0:00 / 0:00</span></div>
-<button type="button" class="yt-skip yt-fwd" aria-label="Forward 10 seconds" hidden>+10</button>
-<span class="yt-live" aria-live="polite"><span class="dot"></span>LIVE</span>
-<button type="button" class="yt-cc" aria-label="Captions" aria-pressed="false" title="Captions on/off (C)">CC</button>
-<button type="button" class="yt-fs" aria-label="Fullscreen">⛶</button>`;
+<span class="yt-time">0:00 / 0:00</span>
+<span class="yt-live" aria-live="polite"><span class="dot"></span>LIVE</span></div>
+<div class="yt-grp yt-mid"><button type="button" class="yt-skip yt-back" aria-label="Back 10 seconds" hidden>${YI.back}<b>10</b></button>
+<button type="button" class="yt-skip yt-fwd" aria-label="Forward 10 seconds" hidden><b>10</b>${YI.fwd}</button></div>
+<div class="yt-grp yt-end"><button type="button" class="yt-cc" aria-label="Captions" aria-pressed="false" title="Captions on/off (C)">CC</button>
+<button type="button" class="yt-fs" aria-label="Fullscreen" title="Fullscreen">${YI.fs}</button></div>
+</div>`;
   ctl.querySelector('.yt-cc').onclick=()=>{ytSetCC(!ytCCState());syncYtCtl()};
   ctl.querySelector('.yt-pp').onclick=()=>{const p=ytPlayer;if(!p)return;try{const st=p.getPlayerState();if(st===1)p.pauseVideo();else p.playVideo()}catch(e){}syncYtCtl()};
   ctl.querySelector('.yt-mu').onclick=()=>{const p=ytPlayer;if(!p)return;try{if(p.isMuted()||p.getVolume()===0){p.unMute();if(p.getVolume()===0)p.setVolume(80);sound.on=true;const u=qs('.yt-unmute');if(u)u.remove()}else p.mute()}catch(e){}syncYtCtl()};
