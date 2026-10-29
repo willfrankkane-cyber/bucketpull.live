@@ -1063,3 +1063,9 @@ body{position:relative}
 .me{display:none!important}
 /* club40: no confidence meter in Golden Ticket Bet */
 .conf-l,.conf{display:none!important}
+/* club41: two faint corner spotlights angled in toward the stage */
+.beam.b3,.beam.b4{display:block;top:-6%;width:360px;height:125%;margin:0;animation:none;
+  background:linear-gradient(180deg,rgba(255,240,205,.15),rgba(255,240,205,0) 70%)}
+.beam.b3{left:calc(clamp(18px,4.5vw,84px) - 150px);transform:rotate(-26deg)}
+.beam.b4{right:calc(clamp(18px,4.5vw,84px) - 150px);transform:rotate(26deg)}
+@media (max-width:640px){.beam.b3,.beam.b4{width:220px}.beam.b3{left:-90px}.beam.b4{right:-90px}}
