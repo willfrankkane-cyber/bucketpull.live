@@ -1092,3 +1092,55 @@ body{position:relative}
   .redcard.rc-side .rc-h small{margin:0}
   .redcard.rc-side .rc-read{width:92px}
 }
+
+/* club47: clean red rule between stacked cards */
+.col{gap:26px}
+.col > .card + .card::after,
+.app > .card.redcard.rc-wide::after,
+.app > .card.redcard.rc-wide + .card.bet::after{
+  content:"";
+  position:absolute;
+  left:12%;
+  right:12%;
+  top:0;
+  height:1.5px;
+  transform:translateY(-13px); /* centered in the 26px gap */
+  pointer-events:none;
+  z-index:4;
+  background:linear-gradient(90deg,transparent 0%,var(--red) 16%,var(--red) 84%,transparent 100%);
+  box-shadow:0 0 6px rgba(224,24,45,.28);
+}
+/* theater: roomy strip + allow the rule above the bet to paint outside overflow:hidden */
+@media (min-width:1101px){
+  .redcard.rc-wide{margin-top:26px}
+  .app > .card.redcard.rc-wide + .card.bet{overflow:visible;margin-top:26px}
+  .app > .card.redcard.rc-wide::after{transform:translateY(-13px)}
+  .app > .card.redcard.rc-wide + .card.bet::after{transform:translateY(-13px)}
+}
+@media (max-width:640px){
+  .grid{gap:24px}
+  /* phone is one stack (cols are display:contents); rule above every card after On Stage */
+  .kbcard::after,
+  .redcard::after,
+  .soundcard::after,
+  .regcard::after,
+  .panelcard::after,
+  .lbcard::after{
+    content:"";
+    position:absolute;
+    left:10%;
+    right:10%;
+    top:0;
+    height:1.5px;
+    transform:translateY(-12px); /* centered in the 24px gap */
+    pointer-events:none;
+    z-index:4;
+    background:linear-gradient(90deg,transparent 0%,var(--red) 14%,var(--red) 86%,transparent 100%);
+    box-shadow:0 0 5px rgba(224,24,45,.25);
+  }
+  .col > .card + .card::after{content:none;background:none;box-shadow:none}
+}
+@media (min-width:641px) and (max-width:1100px){
+  .col{gap:24px}
+  .col > .card + .card::after{transform:translateY(-12px)}
+}
