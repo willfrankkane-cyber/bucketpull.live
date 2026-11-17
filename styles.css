@@ -680,7 +680,8 @@ html.gt-on body{overflow:hidden}
   .quick.kb3 button{min-height:64px;font-size:18px}
   .stage-row{display:contents}
   .center .player{order:1}
-  .onstage{order:2} .kbcard{order:3} .redcard{order:4} .soundcard{order:5} .regcard{order:6} .panelcard{order:7} .lbcard{order:8}
+  /* club48: soundboard last in the phone stack, directly above the Golden Ticket Bet */
+  .onstage{order:2} .kbcard{order:3} .redcard{order:4} .regcard{order:5} .panelcard{order:6} .lbcard{order:7} .soundcard{order:8}
 }
 
 /* header archive button — KT Archives film reel (image only, no label) */
