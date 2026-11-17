@@ -281,17 +281,30 @@ function playerOffset(){try{if(!ytPlayer||typeof ytPlayer.getPlayerState!=='func
 function evVisible(e,po){if(e.source!=='auto'||FINAL())return true;   // final results: everything is public
   if(e.offset!=null&&po!==undefined&&po!==null)return e.offset<=po;return now()>=new Date(e.at).getTime()+HOLD}
 function synced(){return playerOffset()!=null&&(ST&&ST.events||[]).some(e=>e.source==='auto'&&e.offset!=null)}
-function comicEvents(){return (ST&&ST.events||[]).filter(e=>e.kind==='comic'&&!e.cancelled)}
-function lastComicEvent(){const po=playerOffset();let best=null;for(const e of comicEvents()){if(!evVisible(e,po))continue;if(!best||e.id>best.id)best=e}return best}
-function effectiveComicId(){if(!ST)return null;const ep=ST.episode,evs=comicEvents();if(!evs.length)return ep.current_comic_id;
-  const e=lastComicEvent();if(!e)return null;const newest=evs[evs.length-1];
-  // once this fan has caught up, the DB's current comic is the truth (host overrides without events, undo …)
-  return e.id===newest.id?ep.current_comic_id:e.comic_id}
-function visibleComicIds(){const po=playerOffset(),vis=new Set(),seen=new Set();
-  for(const e of comicEvents()){if(!e.comic_id)continue;seen.add(e.comic_id);if(evVisible(e,po))vis.add(e.comic_id)}
-  for(const c of ST.comics||[])if(c.source!=='auto'||!seen.has(c.id))vis.add(c.id);return vis}
+/* Boards never hide a comic: every comic that has been added stays on the Bucket Pull board / Regulars box for the
+   whole show, wherever the fan scrubs the video. (Only the golden-ticket reveal still follows the player.) */
+function allComicIds(){return new Set((ST&&ST.comics||[]).map(c=>c.id))}
+/* On stage = whichever set the fan's video is in: the comic (any kind) with the largest start_offset <= video time.
+   Offsets are already in video seconds and already include host sync_adjust (host_sync_adjust shifts comics.start_offset).
+   SEEK_LEAD: a click-to-jump seeks 3 s before a set starts, so count a set as started 4 s early. */
+const SEEK_LEAD=4;
+function comicAtOffset(comics,po){if(po==null)return null;let best=null;
+  for(const c of comics||[]){if(c.start_offset==null)continue;const o=+c.start_offset;if(!isFinite(o)||o>po+SEEK_LEAD)continue;
+    if(!best||o>+best.start_offset||(o===+best.start_offset&&c.ord>best.ord))best=c}
+  return best}
+/* Which comic is on stage for this fan: the player position decides; the DB's current_comic_id is only the answer when
+   there is no player time (not playing yet), no comic has a timestamp, or the host put someone on stage without one
+   while the fan is watching the newest set (live edge). Realtime updates can't override the position-based choice. */
+function effectiveComicId(){if(!ST)return null;const ep=ST.episode,cs=ST.comics||[],po=playerOffset();
+  if(po==null||!cs.some(c=>c.start_offset!=null))return ep.current_comic_id||null;
+  const at=comicAtOffset(cs,po);
+  if(!at){return null}   // video is before the first timestamped set: nobody up yet
+  const newest=cs.reduce((m,c)=>c.start_offset!=null&&(!m||+c.start_offset>+m.start_offset)?c:m,null);
+  if(at.id===newest.id&&ep.current_comic_id&&ep.current_comic_id!==at.id){const cur=cs.find(c=>c.id===ep.current_comic_id);
+    if(cur&&cur.start_offset==null)return cur.id}   // host override with no timestamp, fan is at the live edge
+  return at.id}
 function curComic(){if(!ST)return null;if(FINAL())return finalComic();const id=effectiveComicId();return (ST.comics||[]).find(c=>c.id===id)||null}
-function timelineTick(){if(!ST)return;const id=FINAL()?(finalComic()||{}).id||null:effectiveComicId();const sig=[...visibleComicIds()].join(',')+'|gt'+(gtIsReached()?1:0);
+function timelineTick(){if(!ST)return;const id=FINAL()?(finalComic()||{}).id||null:effectiveComicId();const sig=[...allComicIds()].join(',')+'|gt'+(gtIsReached()?1:0);
   if(id!==effCur||sig!==visSig){const first=effCur===undefined;effCur=id;visSig=sig;if(!first)render()}
   const po=playerOffset();
   for(const e of ST.events||[]){if(e.kind!=='golden_ticket'||e.cancelled||firedGT.has(e.id))continue;
@@ -340,8 +353,7 @@ function renderChrome(fin){const chip=qs('header .chip.live');
 function bucketPulls(){return (ST&&ST.comics||[]).filter(c=>c.kind!=='regular')}
 function topComic(){const cs=bucketPulls().filter(c=>c.avg!=null);cs.sort((a,b)=>+b.avg-+a.avg||b.votes-a.votes||a.ord-b.ord);return cs[0]||null}
 /* replay: the comic whose set the fan's video is in (a fresh click wins for a few seconds while the player seeks) */
-function videoComic(){const po=playerOffset();if(po==null)return null;let best=null;
-  for(const c of ST&&ST.comics||[])if(c.start_offset!=null&&+c.start_offset<=po+4&&(!best||+c.start_offset>+best.start_offset))best=c;return best}
+function videoComic(){return comicAtOffset(ST&&ST.comics,playerOffset())}
 function finalComic(){const all=ST&&ST.comics||[],sel=finalSel&&all.find(c=>c.id===finalSel);
   if(sel&&Date.now()-finalAt<5000)return sel;return videoComic()||sel||topComic()||bucketPulls()[0]||all[0]||null}
 function seekTo(sec){if(sec==null||!isFinite(sec))return false;const t=Math.max(0,Math.floor(+sec-3));
@@ -391,10 +403,10 @@ function setKB(k,b){k=+k||0;b=+b||0;const tot=k+b,pk=tot?Math.round(k/tot*100):5
   qs('.killmeter .k').style.width=pk+'%';qs('.killmeter .b').style.width=(100-pk)+'%';
   const kl=qs('.km-l .kl'),bl=qs('.km-l .bl');if(kl)kl.textContent=fmt(k)+' say kill';if(bl)bl.textContent=fmt(b)+' say bomb'}
 
-function renderBoard(){const lb=qs('.lb');if(!lb)return;const fin=FINAL(),cur=fin?null:effectiveComicId(),vis=visibleComicIds(),sel=fin?(finalComic()||{}).id:null;
+function renderBoard(){const lb=qs('.lb');if(!lb)return;const fin=FINAL(),cur=fin?null:effectiveComicId(),vis=allComicIds(),sel=fin?(finalComic()||{}).id:null;
   lb.classList.toggle('final',fin);
   if(fin&&!lb.dataset.fw){lb.dataset.fw=1;lb.addEventListener('click',e=>{if(!FINAL())return;const li=e.target.closest('li[data-id]');if(!li)return;pickReplay(li.dataset.id)})}
-  const cs=(ST.comics||[]).filter(c=>c.kind!=='regular'&&vis.has(c.id));   // no spoilers for fans behind live
+  const cs=(ST.comics||[]).filter(c=>c.kind!=='regular'&&vis.has(c.id));   // all comics stay up, no spoiler hiding
   if(!cs.length){lb.innerHTML='<li class="empty">No bucket pulls yet. Scores show up here as the bucket gets pulled.</li>';return}
   cs.sort((a,b)=>(b.avg==null?-1:+b.avg)-(a.avg==null?-1:+a.avg)||a.ord-b.ord);
   const gtw=gtWinner(),GT=(window.GT_TIX?GT_TIX(20,'Golden ticket winner'):'');
@@ -405,7 +417,7 @@ function renderBoard(){const lb=qs('.lb');if(!lb)return;const fin=FINAL(),cur=fi
 
 function starRow(id,name,score,icon){const my=score?Math.round(score/2):0,ic=icon||'★',emo=ic!=='★',w=iconKind(ic),kind=w;
   return `<div class="stars${emo?' emo':''}${iconCls(ic)}" data-id="${id}" data-kind="${kind}">${[1,2,3,4,5].map(j=>`<button class="${j<=my?'on':''}" data-v="${j}" aria-label="${j} ${w}${j>1?'s':''} for ${esc(name)}" aria-pressed="${j<=my}">${iconMarkup(ic)}</button>`).join('')}</div>`}
-function renderRegs(){const el=$('regs');if(!el)return;const fin=FINAL(),cur=fin?(finalComic()||{}).id:effectiveComicId(),vis=visibleComicIds();
+function renderRegs(){const el=$('regs');if(!el)return;const fin=FINAL(),cur=fin?(finalComic()||{}).id:effectiveComicId(),vis=allComicIds();
   const rs=(ST.comics||[]).filter(c=>c.kind==='regular'&&vis.has(c.id));
   const gtc=gtWinner();if(gtc&&vis.has(gtc.id)&&!rs.some(c=>c.id===gtc.id))rs.push(gtc);rs.sort((a,b)=>a.ord-b.ord);
   const pill=$('regPill');if(pill){pill.textContent=rs.length?(fin?`${rs.length} up · replay`:`${rs.length} up tonight`):(fin?'replay':'0 up');pill.classList.toggle('final',fin)}
@@ -462,6 +474,7 @@ function ctlSeekTo(sec,{play=true}={}){if(sec==null||!isFinite(sec))return false
   const f=qs('.yt-embed iframe');if(!f)return false;const base=f.src.replace(/[?&]start=\d+/g,'').replace(/[?&]t=\d+s?/g,'');
   f.src=base+(base.includes('?')?'&':'?')+'start='+Math.floor(t);ytPendingSeek=t;ytPendingUntil=Date.now()+2500;return true}
 function syncYtCtl(){
+  try{timelineTick()}catch(e){}   // follow seeks/scrubs: recompute the on-stage comic with every player poll
   const ctl=qs('.yt-ctl');if(!ctl)return;
   const pp=ctl.querySelector('.yt-pp'),mu=ctl.querySelector('.yt-mu'),vol=ctl.querySelector('.yt-vol');
   const seek=ctl.querySelector('.yt-seek'),scrub=ctl.querySelector('.yt-scrub'),tm=ctl.querySelector('.yt-time');
@@ -599,9 +612,8 @@ function tickClock(){timelineTick();const tm=$('tm'),sm=qs('.comic .timer small'
   if(FINAL()){const c=curComic(),po=playerOffset();const t=c&&c.start_offset!=null&&po!=null&&po>=+c.start_offset?mmss(po-c.start_offset):'🎬';
     if(tm.textContent!==t)tm.textContent=t;if(sm)sm.textContent=t==='🎬'?'REPLAY':'INTO SET';return}
   if(!ep||!ep.current_comic_at||!curComic()){tm.textContent='–:––';if(sm)sm.textContent='ON STAGE';return}
-  const po=playerOffset(),le=lastComicEvent();
-  const s=le&&le.offset!=null&&le.source==='auto'&&po!=null?Math.max(0,(po-le.offset)|0):
-          le&&le.source==='auto'&&le.offset!=null?Math.max(0,(now()-new Date(le.at).getTime()-HOLD)/1000|0):
+  const po=playerOffset(),cc=curComic();
+  const s=cc&&cc.start_offset!=null&&po!=null?Math.max(0,(po-+cc.start_offset)|0):
           Math.max(0,(now()-new Date(ep.current_comic_at).getTime())/1000|0);
   tm.textContent=(s/60|0)+':'+String(s%60).padStart(2,'0');if(sm)sm.textContent='ON STAGE'}
 
